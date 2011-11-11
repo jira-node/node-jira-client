@@ -13,7 +13,7 @@ var jira = function(protocol, host, port, username, password, apiVersion) {
     this.cookies = [];
 };
 
-jira.prototype.login = function(errorCallback, successCallback) {
+jira.prototype.login = function(callback) {
     console.log("Attempting to log in to JIRA");
 
     var options = {
@@ -34,12 +34,12 @@ jira.prototype.login = function(errorCallback, successCallback) {
     var self = this;
     request(options, function(error, response, body) {
         if (response.statusCode === 401) {
-            errorCallback('Failed to log in to JIRA due to authentication error.');
+            callback('Failed to log in to JIRA due to authentication error.');
             return;
         }
 
         if (response.statusCode !== 200) {
-            errorCallback(response.statusCode + ': Unable to connect to JIRA during login.');
+            callback(response.statusCode + ': Unable to connect to JIRA during login.');
             return;
         }
 
@@ -49,13 +49,13 @@ jira.prototype.login = function(errorCallback, successCallback) {
         }
 
         console.log("Logged in to JIRA successfully.");
-        successCallback();
+        callback(null);
     });
 };
 
-jira.prototype.findIssueStatus = function(issueNumber, errorCallback, successCallback) {
+jira.prototype.findIssueStatus = function(issueNumber, callback) {
     var self = this;
-    this.login(errorCallback, function() {
+    this.login(function() {
         var options = {
             uri: url.format({
                 protocol: self.protocol,
@@ -71,27 +71,27 @@ jira.prototype.findIssueStatus = function(issueNumber, errorCallback, successCal
 
         request(options, function(error, response, body) {
             if (response.statusCode === 404) {
-                errorCallback('Invalid issue number.');
+                callback('Invalid issue number.');
                 return;
             }
 
             if (response.statusCode !== 200) {
-                errorCallback(response.statusCode + ': Unable to connect to JIRA during findIssueStatus.');
+                callback(response.statusCode + ': Unable to connect to JIRA during findIssueStatus.');
                 return;
             }
 
             body = JSON.parse(body);
             status = body.fields.status.value.name;
 
-            successCallback(status);
+            callback(null, status);
 
         });
     });
 };
 
-jira.prototype.getUnresolvedIssueCount = function(version, errorCallback, successCallback) {
+jira.prototype.getUnresolvedIssueCount = function(version, callback) {
     var self = this;
-    this.login(errorCallback, function() {
+    this.login(function() {
         var options = {
             uri: url.format({
                 protocol: self.protocol,
@@ -107,24 +107,24 @@ jira.prototype.getUnresolvedIssueCount = function(version, errorCallback, succes
     
         request(options, function(error, response, body) {
             if (response.statusCode === 404) {
-                errorCallback('Invalid version.');
+                callback('Invalid version.');
                 return;
             }
 
             if (response.statusCode !== 200) {
-                errorCallback(response.statusCode + ': Unable to connect to JIRA during findIssueStatus.');
+                callback(response.statusCode + ': Unable to connect to JIRA during findIssueStatus.');
                 return;
             }
 
             body = JSON.parse(body);
-            successCallback(body.issuesUnresolvedCount);
+            callback(null, body.issuesUnresolvedCount);
         });
     });
 };
 
-jira.prototype.getProject = function(project, errorCallback, successCallback) {
+jira.prototype.getProject = function(project, callback) {
     var self = this;
-    this.login(errorCallback, function() {
+    this.login(function() {
         var options = {
             uri: url.format({
                 protocol: self.protocol,
@@ -140,17 +140,17 @@ jira.prototype.getProject = function(project, errorCallback, successCallback) {
 
         request(options, function(error, response, body) {
             if (response.statusCode === 404) {
-                errorCallback('Invalid project.');
+                callback('Invalid project.');
                 return;
             }
 
             if (response.statusCode !== 200) {
-                errorCallback(response.statusCode + ': Unable to connect to JIRA during getProject.');
+                callback(response.statusCode + ': Unable to connect to JIRA during getProject.');
                 return;
             }
 
             body = JSON.parse(body);
-            successCallback(body);
+            callback(null, body);
         });
     });
 };
@@ -175,9 +175,9 @@ jira.prototype.getProject = function(project, errorCallback, successCallback) {
  * @param errorCallback
  * @param successCallback
  */
-jira.prototype.issueLink = function(link, errorCallback, successCallback) {
+jira.prototype.issueLink = function(link, callback) {
     var self = this;
-    this.login(errorCallback, function() {
+    this.login(function() {
         var options = {
             uri: url.format({
                 protocol: self.protocol,
@@ -195,16 +195,16 @@ jira.prototype.issueLink = function(link, errorCallback, successCallback) {
 
         request(options, function(error, response, body) {
             if (response.statusCode === 404) {
-                errorCallback('Invalid project.');
+                callback('Invalid project.');
                 return;
             }
 
             if (response.statusCode !== 200) {
-                errorCallback(response.statusCode + ': Unable to connect to JIRA during issueLink.');
+                callback(response.statusCode + ': Unable to connect to JIRA during issueLink.');
                 return;
             }
 
-            successCallback();
+            callback(null);
         });
     });
 };
