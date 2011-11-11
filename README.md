@@ -26,7 +26,7 @@ Find the status of an issue.
 
     JiraApi = require('jira').JiraApi;
 
-    var jira = new JiraApi('https', config.host, config.port, config.user, config.password, config.api);
+    var jira = new JiraApi('https', config.host, config.port, config.user, config.password, '2.0.alpha1');
     jira.findIssue(issueNumber, function(error, issue) {
         console.log('Status: ' + issue.fields.status.value.name);
     });
@@ -48,3 +48,4 @@ Currently there is no explicit login call necessary as each API call makes a cal
 * Tests
 * Refactor currently implemented APIs to be more Object Oriented
 * Refactor to make use of built-in node.js events and classes
+* Auto-redirect between `http` and `https` following headers
