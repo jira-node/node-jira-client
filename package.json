@@ -1,6 +1,6 @@
 {
     "name" : "jira",
-    "version" : "0.0.1",
+    "version" : "0.0.2",
     "description" : "Wrapper for the JIRA API",
     "author" : "Steven Surowiec <steven.surowiec@gmail.com>",
     "homepage" : "http://github.com/steves/node-jira",
@@ -15,5 +15,8 @@
     "licenses" : [{
         "type" : "The MIT License",
         "url" : "http://www.opensource.org/licenses/mit-license.php"}
-    ]
+    ],
+    "dependencies": {
+        "request": ">=2.2.0"
+    }
 }
