@@ -55,7 +55,7 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
         });
     };
 
-    this.findIssueStatus = function(issueNumber, callback) {
+    this.findIssue = function(issueNumber, callback) {
         var self = this;
         this.login(function() {
             var options = {
@@ -82,10 +82,7 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
                     return;
                 }
 
-                body = JSON.parse(body);
-                status = body.fields.status.value.name;
-
-                callback(null, status);
+                callback(null, JSON.parse(body));
 
             });
         });
