@@ -207,4 +207,77 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
             });
         });
     };
+
+    this.getVersions = function(project, callback) {
+        var self = this;
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol: self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/project/' + project + '/versions'
+                }),
+                method: 'GET',
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 404) {
+                    callback('Invalid project.');
+                    return;
+                }
+
+                if (response.statusCode !== 200) {
+                    callback(response.statusCode + ': Unable to connect to JIRA during getVersions.');
+                    return;
+                }
+
+                body = JSON.parse(body);
+                callback(null, body);
+            });
+        });
+    };
+
+    this.createVersion = function(version, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/version'
+                }),
+                method: 'POST',
+                json: true,
+                body: version,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+            request(options, function(error, response, body) {
+                if (response.statusCode === 404) {
+                    callback('Version does not exist or the currently authenticated user does not have permission to view it');
+                    return;
+                }
+
+                if (response.statusCode === 403) {
+                    callback('The currently authenticated user does not have permission to edit the version');
+                    return;
+                }
+
+                if (response.statusCode !== 201) {
+                    callback(response.statusCode + ': Unable to connect to JIRA during createVersion.');
+                    return;
+                }
+
+                callback(null, body);
+            });
+        });
+    };
+
 }).call(JiraApi.prototype);
