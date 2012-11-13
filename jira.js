@@ -155,6 +155,139 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
     };
 
     /**
+     * Finds the Rapid View that belongs to a specified project.
+     *
+     * @param projectName
+     * @param callback
+     */
+    this.findRapidView = function(projectName, callback) {
+      var self = this;
+      this.login(function() {
+        var options = {
+          uri: url.format({
+            protocol: self.protocol,
+            host: self.host,
+            port: self.port,
+            pathname: 'rest/greenhopper/' + self.apiVersion + '/rapidviews/list'
+          }),
+          method: 'GET',
+          headers: {
+            Cookie: self.cookies.join(';')
+          },
+          json: true,
+        };
+
+        request(options, function(error, response, body) {
+          if (response.statusCode === 404) {
+            callback('Invalid URL');
+            return;
+          }
+
+          if (response.statusCode !== 200) {
+            callback(response.statusCode + ': Unable to connect to JIRA during rapidView search.');
+            return;
+          }
+
+          if (response.body !== null) {
+            var rapidViews = response.body.views;
+            for (var i = 0; i < rapidViews.length; i++) {
+              if(rapidViews[i].name.toLowerCase() === projectName.toLowerCase()) {
+                callback(null, rapidViews[i]);
+                return;
+              }
+            }
+          }
+        });
+      });
+    };
+
+    /**
+     * Returns a list of sprints belonging to a Rapid View.
+     *
+     * @param rapidView ID
+     * @param callback
+     */
+    this.getLastSprintForRapidView = function(rapidViewId, callback) {
+      var self = this;
+      this.login(function() {
+        var options = {
+          uri: url.format({
+            protocol: self.protocol,
+            host: self.host,
+            port: self.port,
+            pathname: 'rest/greenhopper/' + self.apiVersion + '/sprints/' + rapidViewId
+          }),
+          method: 'GET',
+          headers: {
+            Cookie: self.cookies.join(';')
+          },
+          json:true,
+        };
+
+        request(options, function(error, response, body) {
+          if (response.statusCode === 404) {
+            callback('Invalid URL');
+            return;
+          }
+
+          if (response.statusCode !== 200) {
+            callback(response.statusCode + ': Unable to connect to JIRA during sprints search.');
+            return;
+          }
+
+          if (response.body !== null) {
+            var sprints = response.body.sprints;
+            callback(null, sprints.pop());
+            return;
+          }
+        });
+      });
+    };
+
+    /**
+     * Adds a given issue to a project's current sprint
+     *
+     * @param issueId
+     * @param sprintId
+     * @param callback
+     */
+    this.addIssueToSprint = function(issueId, sprintId, callback) {
+      var self = this;
+      this.login(function() {
+        var options = {
+          uri: url.format({
+            protocol: self.protocol,
+            host: self.host,
+            port: self.port,
+            pathname: 'rest/greenhopper/' + self.apiVersion + '/sprint/' + sprintId + '/issues/add'
+          }),
+          method: 'PUT',
+          headers: {
+            Cookie: self.cookies.join(';')
+          },
+          json:true,
+          body: {
+            issueKeys: [issueId]
+          }
+        };
+
+        console.log(options.uri);
+        request(options, function(error, response, body) {
+          if (response.statusCode === 404) {
+            callback('Invalid URL');
+            return;
+          }
+
+          if (response.statusCode !== 204) {
+            callback(response.statusCode + ': Unable to connect to JIRA to add to sprint.');
+            return;
+          }
+
+        });
+      });
+    };
+
+    /**
      * Creates an issue link between two issues. Link should follow the below format:
      *
      * {

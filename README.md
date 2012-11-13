@@ -42,6 +42,9 @@ Currently there is no explicit login call necessary as each API call makes a cal
 * Issue linking
 * Pulling versions
 * Adding a new version
+* Find a Rapid View based on project name
+* Get the latest Green Hopper sprint for a Rapid View
+* Add an issue to a sprint
 
 ## TODO
 
