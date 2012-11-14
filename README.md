@@ -40,6 +40,8 @@ Currently there is no explicit login call necessary as each API call makes a cal
 * Pulling a project
 * Pulling unresolved issues count for a specific version
 * Issue linking
+* Pulling versions
+* Adding a new version
 
 ## TODO
 
