@@ -59,23 +59,25 @@
 //
 var http = require('http'),
     url = require('url'),
-    request = require('request');
+    request = require('request'),
+    logger = console;
 
 
-var JiraApi = exports.JiraApi = function(protocol, host, port, username, password, apiVersion) {
+var JiraApi = exports.JiraApi = function(protocol, host, port, username, password, apiVersion, verbose) {
     this.protocol = protocol;
     this.host = host;
     this.port = port;
     this.username = username;
     this.password = password;
     this.apiVersion = apiVersion;
+    if (verbose != true) logger = { log: function() {} };
 
     this.cookies = [];
 };
 
 (function() {
     this.login = function(callback) {
-        console.log("Attempting to log in to JIRA");
+        logger.log("Attempting to log in to JIRA");
 
         var options = {
             uri: url.format({
@@ -109,7 +111,7 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
                 self.cookies = response.headers['set-cookie'];
             }
 
-            console.log("Logged in to JIRA successfully.");
+            logger.log("Logged in to JIRA successfully.");
             callback(null);
         });
     };
@@ -400,7 +402,7 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
           }
         };
 
-        console.log(options.uri);
+        logger.log(options.uri);
         request(options, function(error, response, body) {
           if (response.statusCode === 404) {
             callback('Invalid URL');
@@ -585,5 +587,225 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
             });
         });
     };
+    
+    // ## Get issues related to a user ##
+    // ### Takes ###
+    //
+    // *  user: username of user to search for
+    // *  open: `boolean` determines if only open issues should be returned
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // 
+    // *  error: string if there's an error
+    // *  issues: array of issues for the user
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id296043)
+    //
+    this.getUsersIssues = function(username, open, callback) {
+        var self = this;
 
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/search'
+                }),
+                method: 'POST',
+                json: true,
+                body: {
+                    jql:"assignee = " + username, 
+                    startAt: 0,
+                    fields: ["summary", "status", "assignee"]
+                },
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            var openText = ' AND status in (Open, "In Progress", Reopened)';
+            if (open) options.body.jql += openText;
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 400) {
+                    callback('Problem with the JQL query');
+                    return;
+                }
+
+                if (response.statusCode !== 200) {
+                    callback(response.statusCode + ': Unable to connect to JIRA during search.');
+                    return;
+                }
+
+                callback(null, body);
+            });
+        });
+    };
+
+    // ## Add issue to Jira ##
+    // ### Takes ###
+    //
+    // *  issue: Properly Formatted Issue
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error object (check out the Jira Doc)
+    // *  success object
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
+    this.addNewIssue = function(issue, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issue'
+                }),
+                method: 'POST',
+                json: true,
+                body: issue,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 400) {
+                    callback(body);
+                    return;
+                }
+
+                if ((response.statusCode !== 200) && (response.statusCode !== 201)) {
+                    callback(response.statusCode + ': Unable to connect to JIRA during search.');
+                    return;
+                }
+
+                callback(null, body);
+            });
+        });
+    };
+    // ## Delete issue to Jira ##
+    // ### Takes ###
+    //
+    // *  issueId: the Id of the issue to delete
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  success object
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
+    this.deleteIssue = function(issueNum, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issue/' + issueNum
+                }),
+                method: 'DELETE',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 204) {
+                    callback(null, "Success");
+                    return;
+                }
+
+                callback(response.statusCode + ': Error while deleting');
+            });
+        });
+    };
+    // ## Update issue in Jira ##
+    // ### Takes ###
+    //
+    // *  issueId: the Id of the issue to delete
+    // *  issueUpdate: update Object
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  success string
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290878)
+    this.updateIssue = function(issueNum, issueUpdate, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issue/' + issueNum
+                }),
+                body: issueUpdate,
+                method: 'PUT',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 200) {
+                    callback(null, "Success");
+                    return;
+                }
+                callback(response.statusCode + ': Error while updating');
+            });
+        });
+    };
+    // ## Transition issue in Jira ##
+    // ### Takes ###
+    //
+    // *  issueId: the Id of the issue to delete
+    // *  issueTransition: transition Object
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  success string
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+    this.transitionIssue = function(issueNum, issueTransition, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issue/' + issueNum + '/transitions'
+                }),
+                body: issueTransition,
+                method: 'POST',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 204) {
+                    callback(null, "Success");
+                    return;
+                }
+                callback(response.statusCode + ': Error while updating');
+            });
+        });
+    };
 }).call(JiraApi.prototype);
