@@ -990,5 +990,127 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
             });
         });
     };
+    // ## Add a worklog to a project ##
+    // ### Takes ###
+    // *  issueId: Issue to add a worklog to
+    // *  worklog: worklog object
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  success string
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id291617)
+    /*
+     * Worklog item is in the format:
+     *  {
+     *      "self": "http://www.example.com/jira/rest/api/2.0/issue/10010/worklog/10000",
+     *      "author": {
+     *          "self": "http://www.example.com/jira/rest/api/2.0/user?username=fred",
+     *          "name": "fred",
+     *          "displayName": "Fred F. User",
+     *          "active": false
+     *      },
+     *      "updateAuthor": {
+     *          "self": "http://www.example.com/jira/rest/api/2.0/user?username=fred",
+     *          "name": "fred",
+     *          "displayName": "Fred F. User",
+     *          "active": false
+     *      },
+     *      "comment": "I did some work here.",
+     *      "visibility": {
+     *          "type": "group",
+     *          "value": "jira-developers"
+     *      },
+     *      "started": "2012-11-22T04:19:46.736-0600",
+     *      "timeSpent": "3h 20m",
+     *      "timeSpentSeconds": 12000,
+     *      "id": "100028"
+     *  }
+     */
+    this.addWorklog = function(issueId, worklog, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issue/' + issueId + '/worklog'
+                }),
+                body: worklog,
+                method: 'POST',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 201) {
+                    callback(null, "Success");
+                    return;
+                }
+                if (response.statusCode === 400) {
+                    callback("Invalid Fields: " + JSON.stringify(body));
+                    return;
+                }
+                if (response.statusCode === 403) {
+                    callback("Insufficient Permissions");
+                    return;
+                }
+                callback(response.statusCode + ': Error while updating');
+            });
+        });
+    };
+    // ## List all Issue Types ##
+    // ### Takes ###
+    //
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  array of types
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id295946)
+    /*
+     * Result items are in the format:
+     * {
+     *  "self": "http://localhost:8090/jira/rest/api/2.0/issueType/3",
+     *  "id": "3",
+     *  "description": "A task that needs to be done.",
+     *  "iconUrl": "http://localhost:8090/jira/images/icons/task.gif",
+     *  "name": "Task",
+     *  "subtask": false
+     * }
+     */
+    this.listIssueTypes = function(callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issuetype'
+                }),
+                method: 'GET',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 200) {
+                    callback(null, body);
+                    return;
+                }
+                callback(response.statusCode + ': Error while retreiving issue types');
+            });
+        });
+    };
 
 }).call(JiraApi.prototype);
