@@ -808,4 +808,60 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
             });
         });
     };
+    
+    // ## List all Viewable Projects ##
+    // ### Takes ###
+    //
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  array of projects
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289193)
+    /*
+     * Result items are in the format:
+     * {
+     *      "self": "http://www.example.com/jira/rest/api/2/project/ABC",
+     *      "id": "10001",
+     *      "key": "ABC",
+     *      "name": "Alphabetical",
+     *      "avatarUrls": {
+     *          "16x16": "http://www.example.com/jira/secure/projectavatar?size=small&pid=10001",
+     *          "48x48": "http://www.example.com/jira/secure/projectavatar?size=large&pid=10001"
+     *      }
+     * }
+     */
+    this.listProjects = function(callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/project'
+                }),
+                method: 'GET',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 200) {
+                    callback(null, body);
+                    return;
+                }
+                if (response.statusCode === 500) {
+                    callback(response.statusCode + ': Error while retrieving list.');
+                }
+
+                callback(response.statusCode + ': Error while updating');
+            });
+        });
+    };
+
 }).call(JiraApi.prototype);
