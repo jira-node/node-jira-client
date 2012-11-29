@@ -827,7 +827,6 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
                     port: self.port,
                     pathname: 'rest/api/' + self.apiVersion + '/issue/' + issueNum + '/transitions'
                 }),
-                body: issueTransition,
                 method: 'GET',
                 json: true,
                 headers: {
