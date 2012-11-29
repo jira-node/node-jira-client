@@ -850,6 +850,118 @@ jira.findIssue(issueNumber, function(error, issue) {
             <span class="p">});</span>
         <span class="p">});</span>
     <span class="p">};</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
+
+<h3>Takes</h3>
+
+<ul>
+<li>callback: for when it's done</li>
+</ul>
+
+<h3>Returns</h3>
+
+<ul>
+<li>error string</li>
+<li>array of projects</li>
+</ul>
+
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id289193">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="cm">/*</span>
+<span class="cm">     * Result items are in the format:</span>
+<span class="cm">     * {</span>
+<span class="cm">     *      &quot;self&quot;: &quot;http://www.example.com/jira/rest/api/2/project/ABC&quot;,</span>
+<span class="cm">     *      &quot;id&quot;: &quot;10001&quot;,</span>
+<span class="cm">     *      &quot;key&quot;: &quot;ABC&quot;,</span>
+<span class="cm">     *      &quot;name&quot;: &quot;Alphabetical&quot;,</span>
+<span class="cm">     *      &quot;avatarUrls&quot;: {</span>
+<span class="cm">     *          &quot;16x16&quot;: &quot;http://www.example.com/jira/secure/projectavatar?size=small&amp;pid=10001&quot;,</span>
+<span class="cm">     *          &quot;48x48&quot;: &quot;http://www.example.com/jira/secure/projectavatar?size=large&amp;pid=10001&quot;</span>
+<span class="cm">     *      }</span>
+<span class="cm">     * }</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">listProjects</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="nx">uri</span><span class="o">:</span> <span class="nx">url</span><span class="p">.</span><span class="nx">format</span><span class="p">({</span>
+                    <span class="nx">protocol</span><span class="o">:</span>  <span class="nx">self</span><span class="p">.</span><span class="nx">protocol</span><span class="p">,</span>
+                    <span class="nx">host</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
+                    <span class="nx">port</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
+                    <span class="nx">pathname</span><span class="o">:</span> <span class="s1">&#39;rest/api/&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">+</span> <span class="s1">&#39;/project&#39;</span>
+                <span class="p">}),</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+                <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="nx">Cookie</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">};</span>
+
+            <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">500</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while retrieving list.&#39;</span><span class="p">);</span>
+                <span class="p">}</span>
+
+                <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>List all Issue Types</h2>
+
+<h3>Takes</h3>
+
+<ul>
+<li>callback: for when it's done</li>
+</ul>
+
+<h3>Returns</h3>
+
+<ul>
+<li>error string</li>
+<li>array of types</li>
+</ul>
+
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id295946">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="cm">/*</span>
+<span class="cm">     * Result items are in the format:</span>
+<span class="cm">     * {</span>
+<span class="cm">     *  &quot;self&quot;: &quot;http://localhost:8090/jira/rest/api/2.0/issueType/3&quot;,</span>
+<span class="cm">     *  &quot;id&quot;: &quot;3&quot;,</span>
+<span class="cm">     *  &quot;description&quot;: &quot;A task that needs to be done.&quot;,</span>
+<span class="cm">     *  &quot;iconUrl&quot;: &quot;http://localhost:8090/jira/images/icons/task.gif&quot;,</span>
+<span class="cm">     *  &quot;name&quot;: &quot;Task&quot;,</span>
+<span class="cm">     *  &quot;subtask&quot;: false</span>
+<span class="cm">     * }</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">listIssueTypes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="nx">uri</span><span class="o">:</span> <span class="nx">url</span><span class="p">.</span><span class="nx">format</span><span class="p">({</span>
+                    <span class="nx">protocol</span><span class="o">:</span>  <span class="nx">self</span><span class="p">.</span><span class="nx">protocol</span><span class="p">,</span>
+                    <span class="nx">host</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
+                    <span class="nx">port</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
+                    <span class="nx">pathname</span><span class="o">:</span> <span class="s1">&#39;rest/api/&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">+</span> <span class="s1">&#39;/issuetype&#39;</span>
+                <span class="p">}),</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+                <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="nx">Cookie</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">};</span>
+
+            <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while retreiving issue types&#39;</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">};</span>
+
 <span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="nx">JiraApi</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

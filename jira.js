@@ -863,5 +863,53 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
             });
         });
     };
+    // ## List all Issue Types ##
+    // ### Takes ###
+    //
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  array of types
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id295946)
+    /*
+     * Result items are in the format:
+     * {
+     *  "self": "http://localhost:8090/jira/rest/api/2.0/issueType/3",
+     *  "id": "3",
+     *  "description": "A task that needs to be done.",
+     *  "iconUrl": "http://localhost:8090/jira/images/icons/task.gif",
+     *  "name": "Task",
+     *  "subtask": false
+     * }
+     */
+    this.listIssueTypes = function(callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issuetype'
+                }),
+                method: 'GET',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 200) {
+                    callback(null, body);
+                    return;
+                }
+                callback(response.statusCode + ': Error while retreiving issue types');
+            });
+        });
+    };
 
 }).call(JiraApi.prototype);
