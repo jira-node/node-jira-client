@@ -836,7 +836,7 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
 
             request(options, function(error, response, body) {
                 if (response.statusCode === 200) {
-                    callback(null, body);
+                    callback(null, body.transitions);
                     return;
                 }
                 if (response.statusCode === 404) {
