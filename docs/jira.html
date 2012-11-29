@@ -805,7 +805,91 @@ jira.findIssue(issueNumber, function(error, issue) {
                 <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             <span class="p">});</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>List Transitions</h2>
+
+<h3>Takes</h3>
+
+<ul>
+<li>issueId: get transitions available for the issue</li>
+<li>callback: for when it's done</li>
+</ul>
+
+<h3>Returns</h3>
+
+<ul>
+<li>error string</li>
+<li>array of transitions</li>
+</ul>
+
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id290489">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="cm">/*</span>
+<span class="cm">     *  {</span>
+<span class="cm">     *  &quot;expand&quot;: &quot;transitions&quot;,</span>
+<span class="cm">     *  &quot;transitions&quot;: [</span>
+<span class="cm">     *      {</span>
+<span class="cm">     *          &quot;id&quot;: &quot;2&quot;,</span>
+<span class="cm">     *          &quot;name&quot;: &quot;Close Issue&quot;,</span>
+<span class="cm">     *          &quot;to&quot;: {</span>
+<span class="cm">     *              &quot;self&quot;: &quot;http://localhost:8090/jira/rest/api/2.0/status/10000&quot;,</span>
+<span class="cm">     *              &quot;description&quot;: &quot;The issue is currently being worked on.&quot;,</span>
+<span class="cm">     *              &quot;iconUrl&quot;: &quot;http://localhost:8090/jira/images/icons/progress.gif&quot;,</span>
+<span class="cm">     *              &quot;name&quot;: &quot;In Progress&quot;,</span>
+<span class="cm">     *              &quot;id&quot;: &quot;10000&quot;</span>
+<span class="cm">     *          },</span>
+<span class="cm">     *          &quot;fields&quot;: {</span>
+<span class="cm">     *              &quot;summary&quot;: {</span>
+<span class="cm">     *                  &quot;required&quot;: false,</span>
+<span class="cm">     *                  &quot;schema&quot;: {</span>
+<span class="cm">     *                      &quot;type&quot;: &quot;array&quot;,</span>
+<span class="cm">     *                      &quot;items&quot;: &quot;option&quot;,</span>
+<span class="cm">     *                      &quot;custom&quot;: &quot;com.atlassian.jira.plugin.system.customfieldtypes:multiselect&quot;,</span>
+<span class="cm">     *                      &quot;customId&quot;: 10001</span>
+<span class="cm">     *                  },</span>
+<span class="cm">     *                  &quot;name&quot;: &quot;My Multi Select&quot;,</span>
+<span class="cm">     *                  &quot;operations&quot;: [</span>
+<span class="cm">     *                      &quot;set&quot;,</span>
+<span class="cm">     *                      &quot;add&quot;</span>
+<span class="cm">     *                  ],</span>
+<span class="cm">     *                  &quot;allowedValues&quot;: [</span>
+<span class="cm">     *                      &quot;red&quot;,</span>
+<span class="cm">     *                      &quot;blue&quot;</span>
+<span class="cm">     *                  ]</span>
+<span class="cm">     *              }</span>
+<span class="cm">     *          }</span>
+<span class="cm">     *      }</span>
+<span class="cm">     *  ]}</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">listTransitions</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="nx">uri</span><span class="o">:</span> <span class="nx">url</span><span class="p">.</span><span class="nx">format</span><span class="p">({</span>
+                    <span class="nx">protocol</span><span class="o">:</span>  <span class="nx">self</span><span class="p">.</span><span class="nx">protocol</span><span class="p">,</span>
+                    <span class="nx">host</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
+                    <span class="nx">port</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
+                    <span class="nx">pathname</span><span class="o">:</span> <span class="s1">&#39;rest/api/&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">+</span> <span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span> <span class="o">+</span> <span class="s1">&#39;/transitions&#39;</span>
+                <span class="p">}),</span>
+                <span class="nx">body</span><span class="o">:</span> <span class="nx">issueTransition</span><span class="p">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+                <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="nx">Cookie</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">};</span>
+
+            <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">404</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">callback</span><span class="p">(</span><span class="s2">&quot;Issue not found&quot;</span><span class="p">);</span>
+                <span class="p">}</span>
+
+                <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
+            <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -850,7 +934,7 @@ jira.findIssue(issueNumber, function(error, issue) {
             <span class="p">});</span>
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
 
 <h3>Takes</h3>
 
@@ -908,7 +992,7 @@ jira.findIssue(issueNumber, function(error, issue) {
                 <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             <span class="p">});</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>List all Issue Types</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>List all Issue Types</h2>
 
 <h3>Takes</h3>
 

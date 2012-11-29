@@ -768,6 +768,86 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
             });
         });
     };
+    // ## List Transitions ##
+    // ### Takes ###
+    //
+    // *  issueId: get transitions available for the issue
+    // *  callback: for when it's done
+    //
+    // ### Returns ###
+    // *  error string
+    // *  array of transitions
+    //
+    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+    /*
+     *  {
+     *  "expand": "transitions",
+     *  "transitions": [
+     *      {
+     *          "id": "2",
+     *          "name": "Close Issue",
+     *          "to": {
+     *              "self": "http://localhost:8090/jira/rest/api/2.0/status/10000",
+     *              "description": "The issue is currently being worked on.",
+     *              "iconUrl": "http://localhost:8090/jira/images/icons/progress.gif",
+     *              "name": "In Progress",
+     *              "id": "10000"
+     *          },
+     *          "fields": {
+     *              "summary": {
+     *                  "required": false,
+     *                  "schema": {
+     *                      "type": "array",
+     *                      "items": "option",
+     *                      "custom": "com.atlassian.jira.plugin.system.customfieldtypes:multiselect",
+     *                      "customId": 10001
+     *                  },
+     *                  "name": "My Multi Select",
+     *                  "operations": [
+     *                      "set",
+     *                      "add"
+     *                  ],
+     *                  "allowedValues": [
+     *                      "red",
+     *                      "blue"
+     *                  ]
+     *              }
+     *          }
+     *      }
+     *  ]}
+     */
+    this.listTransitions = function(issueId, callback) {
+        var self = this;
+
+        this.login(function() {
+            var options = {
+                uri: url.format({
+                    protocol:  self.protocol,
+                    host: self.host,
+                    port: self.port,
+                    pathname: 'rest/api/' + self.apiVersion + '/issue/' + issueNum + '/transitions'
+                }),
+                body: issueTransition,
+                method: 'GET',
+                json: true,
+                headers: {
+                    Cookie: self.cookies.join(';')
+                }
+            };
+
+            request(options, function(error, response, body) {
+                if (response.statusCode === 200) {
+                    callback(null, body);
+                    return;
+                }
+                if (response.statusCode === 404) {
+                    callback("Issue not found");
+                }
+
+                callback(response.statusCode + ': Error while updating');
+            });
+        });
+    };
     // ## Transition issue in Jira ##
     // ### Takes ###
     //
