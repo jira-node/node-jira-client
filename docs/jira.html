@@ -867,7 +867,7 @@ jira.findIssue(issueNumber, function(error, issue) {
                     <span class="nx">protocol</span><span class="o">:</span>  <span class="nx">self</span><span class="p">.</span><span class="nx">protocol</span><span class="p">,</span>
                     <span class="nx">host</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
                     <span class="nx">port</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
-                    <span class="nx">pathname</span><span class="o">:</span> <span class="s1">&#39;rest/api/&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">+</span> <span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span> <span class="o">+</span> <span class="s1">&#39;/transitions&#39;</span>
+                    <span class="nx">pathname</span><span class="o">:</span> <span class="s1">&#39;rest/api/&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">+</span> <span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueId</span> <span class="o">+</span> <span class="s1">&#39;/transitions&#39;</span>
                 <span class="p">}),</span>
                 <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
                 <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
