@@ -25,7 +25,6 @@
     "request": ">=2.2.0"
   },
   "devDependencies": {
-    "docco": ">=0.4.0",
     "grunt": "~0.3.17",
     "grunt-bump": "0.0.1",
     "grunt-docco": "~0.1.2"
