@@ -3,6 +3,7 @@
 // A node.js module, which provides an object oriented wrapper for the JIRA REST API.
 // 
 // This library is built to support version `2.0.alpha1` of the JIRA REST API.
+// This library is also tested with version `2` of the JIRA REST API
 // 
 // JIRA REST API documentation can be found [here](http://docs.atlassian.com/jira/REST/latest/)
 // 
@@ -34,27 +35,28 @@
 // 
 // Currently there is no explicit login call necessary as each API call makes a call to `login` before processing. This causes a lot of unnecessary logins and will be cleaned up in a future version.
 // 
-// ## Implemented APIs
-// 
-// * Authentication
-// * Pulling an issue
-// * Pulling a project
-// * Pulling unresolved issues count for a specific version
-// * Issue linking
-// * Pulling versions
-// * Adding a new version
-// * Find a Rapid View based on project name
-// * Get the latest Green Hopper sprint for a Rapid View
-// * Add an issue to a sprint
-// 
-// ## TODO
-// 
-// * API docs
-//  * Better most methods are currently undocumented
-// * Tests
-// * Refactor currently implemented APIs to be more Object Oriented
-// * Refactor to make use of built-in node.js events and classes
-// * Auto-redirect between `http` and `https` following headers
+// *  Authentication
+// *  Projects
+//   *  Pulling a project
+//   *  List all projects viewable to the user
+// *  Versions
+//   *  Pulling versions
+//   *  Adding a new version
+//   *  Pulling unresolved issues count for a specific version
+// *  Find a Rapid View based on project name
+// *  Get the latest Green Hopper sprint for a Rapid View
+// *  Issues
+//   *  Add a new issue
+//   *  Update an issue
+//   *  Transition an issue
+//   *  Pulling an issue
+//   *  Issue linking
+//   *  Add an issue to a sprint
+//   *  Get a users issues (open or all)
+//   *  List issue types
+//   *  Add a worklog
+// *  Transitions
+//   *  List
 //
 //
 var http = require('http'),
@@ -939,54 +941,6 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
                 }
 
                 callback(response.statusCode + ': Error while updating');
-            });
-        });
-    };
-    // ## List all Issue Types ##
-    // ### Takes ###
-    //
-    // *  callback: for when it's done
-    //
-    // ### Returns ###
-    // *  error string
-    // *  array of types
-    //
-    // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id295946)
-    /*
-     * Result items are in the format:
-     * {
-     *  "self": "http://localhost:8090/jira/rest/api/2.0/issueType/3",
-     *  "id": "3",
-     *  "description": "A task that needs to be done.",
-     *  "iconUrl": "http://localhost:8090/jira/images/icons/task.gif",
-     *  "name": "Task",
-     *  "subtask": false
-     * }
-     */
-    this.listIssueTypes = function(callback) {
-        var self = this;
-
-        this.login(function() {
-            var options = {
-                uri: url.format({
-                    protocol:  self.protocol,
-                    host: self.host,
-                    port: self.port,
-                    pathname: 'rest/api/' + self.apiVersion + '/issuetype'
-                }),
-                method: 'GET',
-                json: true,
-                headers: {
-                    Cookie: self.cookies.join(';')
-                }
-            };
-
-            request(options, function(error, response, body) {
-                if (response.statusCode === 200) {
-                    callback(null, body);
-                    return;
-                }
-                callback(response.statusCode + ': Error while retreiving issue types');
             });
         });
     };

@@ -2,7 +2,8 @@
 
 <p>A node.js module, which provides an object oriented wrapper for the JIRA REST API.</p>
 
-<p>This library is built to support version <code>2.0.alpha1</code> of the JIRA REST API.</p>
+<p>This library is built to support version <code>2.0.alpha1</code> of the JIRA REST API.
+This library is also tested with version <code>2</code> of the JIRA REST API</p>
 
 <p>JIRA REST API documentation can be found <a href="http://docs.atlassian.com/jira/REST/latest/">here</a></p>
 
@@ -37,30 +38,29 @@ jira.findIssue(issueNumber, function(error, issue) {
 
 <p>Currently there is no explicit login call necessary as each API call makes a call to <code>login</code> before processing. This causes a lot of unnecessary logins and will be cleaned up in a future version.</p>
 
-<h2>Implemented APIs</h2>
-
 <ul>
 <li>Authentication</li>
-<li>Pulling an issue</li>
-<li>Pulling a project</li>
-<li>Pulling unresolved issues count for a specific version</li>
-<li>Issue linking</li>
-<li>Pulling versions</li>
+<li>Projects
+<ul><li>Pulling a project</li>
+<li>List all projects viewable to the user</li></ul></li>
+<li>Versions
+<ul><li>Pulling versions</li>
 <li>Adding a new version</li>
+<li>Pulling unresolved issues count for a specific version</li></ul></li>
 <li>Find a Rapid View based on project name</li>
 <li>Get the latest Green Hopper sprint for a Rapid View</li>
+<li>Issues
+<ul><li>Add a new issue</li>
+<li>Update an issue</li>
+<li>Transition an issue</li>
+<li>Pulling an issue</li>
+<li>Issue linking</li>
 <li>Add an issue to a sprint</li>
-</ul>
-
-<h2>TODO</h2>
-
-<ul>
-<li>API docs
-<ul><li>Better most methods are currently undocumented</li></ul></li>
-<li>Tests</li>
-<li>Refactor currently implemented APIs to be more Object Oriented</li>
-<li>Refactor to make use of built-in node.js events and classes</li>
-<li>Auto-redirect between <code>http</code> and <code>https</code> following headers</li>
+<li>Get a users issues (open or all)</li>
+<li>List issue types</li>
+<li>Add a worklog</li></ul></li>
+<li>Transitions
+<ul><li>List</li></ul></li>
 </ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">),</span>
     <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">),</span>
     <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">),</span>
@@ -991,59 +991,7 @@ jira.findIssue(issueNumber, function(error, issue) {
                 <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             <span class="p">});</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>List all Issue Types</h2>
-
-<h3>Takes</h3>
-
-<ul>
-<li>callback: for when it's done</li>
-</ul>
-
-<h3>Returns</h3>
-
-<ul>
-<li>error string</li>
-<li>array of types</li>
-</ul>
-
-<p><a href="http://docs.atlassian.com/jira/REST/latest/#id295946">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="cm">/*</span>
-<span class="cm">     * Result items are in the format:</span>
-<span class="cm">     * {</span>
-<span class="cm">     *  &quot;self&quot;: &quot;http://localhost:8090/jira/rest/api/2.0/issueType/3&quot;,</span>
-<span class="cm">     *  &quot;id&quot;: &quot;3&quot;,</span>
-<span class="cm">     *  &quot;description&quot;: &quot;A task that needs to be done.&quot;,</span>
-<span class="cm">     *  &quot;iconUrl&quot;: &quot;http://localhost:8090/jira/images/icons/task.gif&quot;,</span>
-<span class="cm">     *  &quot;name&quot;: &quot;Task&quot;,</span>
-<span class="cm">     *  &quot;subtask&quot;: false</span>
-<span class="cm">     * }</span>
-<span class="cm">     */</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">listIssueTypes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-
-        <span class="k">this</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-            <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="nx">uri</span><span class="o">:</span> <span class="nx">url</span><span class="p">.</span><span class="nx">format</span><span class="p">({</span>
-                    <span class="nx">protocol</span><span class="o">:</span>  <span class="nx">self</span><span class="p">.</span><span class="nx">protocol</span><span class="p">,</span>
-                    <span class="nx">host</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
-                    <span class="nx">port</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span>
-                    <span class="nx">pathname</span><span class="o">:</span> <span class="s1">&#39;rest/api/&#39;</span> <span class="o">+</span> <span class="nx">self</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">+</span> <span class="s1">&#39;/issuetype&#39;</span>
-                <span class="p">}),</span>
-                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
-                <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-                <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
-                    <span class="nx">Cookie</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
-                <span class="p">}</span>
-            <span class="p">};</span>
-
-            <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
-                    <span class="k">return</span><span class="p">;</span>
-                <span class="p">}</span>
-                <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while retreiving issue types&#39;</span><span class="p">);</span>
-            <span class="p">});</span>
-        <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
 
 <h3>Takes</h3>
 
@@ -1122,7 +1070,7 @@ jira.findIssue(issueNumber, function(error, issue) {
                 <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             <span class="p">});</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>List all Issue Types</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>List all Issue Types</h2>
 
 <h3>Takes</h3>
 

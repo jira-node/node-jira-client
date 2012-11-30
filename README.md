@@ -3,6 +3,7 @@
 A node.js module, which provides an object oriented wrapper for the JIRA REST API.
 
 This library is built to support version `2.0.alpha1` of the JIRA REST API.
+This library is also tested with version `2` of the JIRA REST API
 
 JIRA REST API documentation can be found [here](http://docs.atlassian.com/jira/REST/latest/)
 
@@ -35,22 +36,34 @@ Currently there is no explicit login call necessary as each API call makes a cal
 
 ## Implemented APIs
 
-* Authentication
-* Pulling an issue
-* Pulling a project
-* Pulling unresolved issues count for a specific version
-* Issue linking
-* Pulling versions
-* Adding a new version
-* Find a Rapid View based on project name
-* Get the latest Green Hopper sprint for a Rapid View
-* Add an issue to a sprint
+*  Authentication
+*  Projects
+  *  Pulling a project
+  *  List all projects viewable to the user
+*  Versions
+  *  Pulling versions
+  *  Adding a new version
+  *  Pulling unresolved issues count for a specific version
+*  Find a Rapid View based on project name
+*  Get the latest Green Hopper sprint for a Rapid View
+*  Issues
+  *  Add a new issue
+  *  Update an issue
+  *  Transition an issue
+  *  Pulling an issue
+  *  Issue linking
+  *  Add an issue to a sprint
+  *  Get a users issues (open or all)
+  *  List issue types
+  *  Add a worklog
+*  Transitions
+  *  List
 
 ## TODO
 
-* API docs
- * Better most methods are currently undocumented
-* Tests
-* Refactor currently implemented APIs to be more Object Oriented
-* Refactor to make use of built-in node.js events and classes
-* Auto-redirect between `http` and `https` following headers
+*  API docs
+  *  Better most methods are currently undocumented
+*  Tests
+*  Refactor currently implemented APIs to be more Object Oriented
+*  Refactor to make use of built-in node.js events and classes
+*  Auto-redirect between `http` and `https` following headers
