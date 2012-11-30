@@ -1,12 +1,12 @@
 {
-    "name" : "node-jira-devel",
-    "version" : "0.1.8",
+    "name" : "jira",
+    "version" : "0.0.2",
     "description" : "Wrapper for the JIRA API",
     "author" : "Steven Surowiec <steven.surowiec@gmail.com>",
-    "homepage" : "http://github.com/tebriel/node-jira",
+    "homepage" : "http://github.com/steves/node-jira",
     "repository" : {
         "type" : "git",
-        "url" : "http://github.com/tebriel/node-jira.git"
+        "url" : "http://github.com/steves/node-jira.git"
     },
     "engine" : {
         "node" : ">=0.4.0"
