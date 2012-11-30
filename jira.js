@@ -620,7 +620,7 @@ var JiraApi = exports.JiraApi = function(protocol, host, port, username, passwor
                 body: {
                     jql:"assignee = " + username, 
                     startAt: 0,
-                    fields: ["summary", "status", "assignee"]
+                    fields: ["summary", "status", "assignee", "description"]
                 },
                 headers: {
                     Cookie: self.cookies.join(';')
