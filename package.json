@@ -18,5 +18,8 @@
     ],
     "dependencies": {
         "request": ">=2.2.0"
+    },
+    "devDependencies": {
+        "docco": ">=0.4.0"
     }
 }
