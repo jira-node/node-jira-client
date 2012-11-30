@@ -1,4 +1,4 @@
-# JavaScript JIRA API for node.js
+# JavaScript JIRA API for node.js #
 
 A node.js module, which provides an object oriented wrapper for the JIRA REST API.
 
@@ -7,7 +7,7 @@ This library is also tested with version `2` of the JIRA REST API
 
 JIRA REST API documentation can be found [here](http://docs.atlassian.com/jira/REST/latest/)
 
-## Installation
+## Installation ##
 
   Install with the node package manager [npm](http://npmjs.org):
 
@@ -21,7 +21,7 @@ or
     $ cd node-jira
     $ npm install
 
-## Example
+## Example ##
 
 Find the status of an issue.
 
@@ -34,7 +34,7 @@ Find the status of an issue.
 
 Currently there is no explicit login call necessary as each API call makes a call to `login` before processing. This causes a lot of unnecessary logins and will be cleaned up in a future version.
 
-## Implemented APIs
+## Implemented APIs ##
 
 *  Authentication
 *  Projects
@@ -59,11 +59,14 @@ Currently there is no explicit login call necessary as each API call makes a cal
 *  Transitions
   *  List
 
-## TODO
+## TODO ##
 
-*  API docs
-  *  Better most methods are currently undocumented
 *  Tests
 *  Refactor currently implemented APIs to be more Object Oriented
 *  Refactor to make use of built-in node.js events and classes
 *  Auto-redirect between `http` and `https` following headers
+
+## Changelog ##
+
+_0.0.3 Added APIs and Docco documentation_
+_0.0.2 Initial version_

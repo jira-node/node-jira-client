@@ -29,14 +29,15 @@ $ npm install
 
 <pre><code>JiraApi = require('jira').JiraApi;
 
-var jira = new JiraApi('https', config.host, 
-    config.port, config.user, config.password, '2.0.alpha1');
+var jira = new JiraApi('https', config.host, config.port, config.user, config.password, '2.0.alpha1');
 jira.findIssue(issueNumber, function(error, issue) {
     console.log('Status: ' + issue.fields.status.value.name);
 });
 </code></pre>
 
 <p>Currently there is no explicit login call necessary as each API call makes a call to <code>login</code> before processing. This causes a lot of unnecessary logins and will be cleaned up in a future version.</p>
+
+<h2>Implemented APIs</h2>
 
 <ul>
 <li>Authentication</li>
@@ -61,7 +62,21 @@ jira.findIssue(issueNumber, function(error, issue) {
 <li>Add a worklog</li></ul></li>
 <li>Transitions
 <ul><li>List</li></ul></li>
-</ul>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">),</span>
+</ul>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Tests</li>
+<li>Refactor currently implemented APIs to be more Object Oriented</li>
+<li>Refactor to make use of built-in node.js events and classes</li>
+<li>Auto-redirect between <code>http</code> and <code>https</code> following headers</li>
+</ul>
+
+<h2>Changelog</h2>
+
+<p><em>0.0.3 Added APIs and Docco documentation</em>
+<em>0.0.2 Initial version</em></p>             </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">),</span>
     <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">),</span>
     <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">),</span>
     <span class="nx">logger</span> <span class="o">=</span> <span class="nx">console</span><span class="p">;</span>
