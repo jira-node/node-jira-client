@@ -55,6 +55,7 @@ Currently there is no explicit login call necessary as each API call makes a cal
   *  Add an issue to a sprint
   *  Get a users issues (open or all)
   *  List issue types
+  *  Search using jql
   *  Add a worklog
 *  Transitions
   *  List
@@ -68,5 +69,6 @@ Currently there is no explicit login call necessary as each API call makes a cal
 
 ## Changelog ##
 
-_0.0.3 Added APIs and Docco documentation_
-_0.0.2 Initial version_
+*  _0.0.4 Added jql search_
+*  _0.0.3 Added APIs and Docco documentation_
+*  _0.0.2 Initial version_
