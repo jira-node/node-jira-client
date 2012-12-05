@@ -69,6 +69,7 @@ Currently there is no explicit login call necessary as each API call makes a cal
 
 ## Changelog ##
 
+*  _0.0.5 JQL search now takes a list of fields_
 *  _0.0.4 Added jql search_
 *  _0.0.3 Added APIs and Docco documentation_
 *  _0.0.2 Initial version_

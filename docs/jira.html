@@ -77,6 +77,7 @@ jira.findIssue(issueNumber, function(error, issue) {
 <h2>Changelog</h2>
 
 <ul>
+<li><em>0.0.4 JQL search now takes a list of fields</em></li>
 <li><em>0.0.4 Added jql search</em></li>
 <li><em>0.0.3 Added APIs and Docco documentation</em></li>
 <li><em>0.0.2 Initial version</em></li>
@@ -637,6 +638,11 @@ jira.findIssue(issueNumber, function(error, issue) {
 
 <ul>
 <li>searchString: jira query string</li>
+<li>fields: optional array of desired fields, defaults when null: 
+<ul><li>"summary"</li>
+<li>"status"</li>
+<li>"assignee"</li>
+<li>"description" </li></ul></li>
 <li>callback: for when it's done</li>
 </ul>
 
@@ -647,9 +653,11 @@ jira.findIssue(issueNumber, function(error, issue) {
 <li>issues: array of issues for the user</li>
 </ul>
 
-<p><a href="http://docs.atlassian.com/jira/REST/latest/#id296043">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id296043">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">fields</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-
+        
+        <span class="k">if</span> <span class="p">(</span><span class="nx">fields</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span>
+            <span class="nx">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;assignee&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">];</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
             <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="nx">uri</span><span class="o">:</span> <span class="nx">url</span><span class="p">.</span><span class="nx">format</span><span class="p">({</span>
@@ -663,7 +671,7 @@ jira.findIssue(issueNumber, function(error, issue) {
                 <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
                     <span class="nx">jql</span><span class="o">:</span><span class="nx">searchString</span><span class="p">,</span>
                     <span class="nx">startAt</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-                    <span class="nx">fields</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;assignee&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+                    <span class="nx">fields</span><span class="o">:</span> <span class="nx">fields</span> 
                 <span class="p">},</span>
                 <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
                     <span class="nx">Cookie</span><span class="o">:</span> <span class="nx">self</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
@@ -706,7 +714,7 @@ jira.findIssue(issueNumber, function(error, issue) {
         <span class="nx">jql</span> <span class="o">=</span> <span class="s2">&quot;assignee = &quot;</span> <span class="o">+</span> <span class="nx">username</span><span class="p">;</span>
         <span class="kd">var</span> <span class="nx">openText</span> <span class="o">=</span> <span class="s1">&#39; AND status in (Open, &quot;In Progress&quot;, Reopened)&#39;</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">open</span><span class="p">)</span> <span class="nx">jql</span> <span class="o">+=</span> <span class="nx">openText</span><span class="p">;</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span><span class="p">(</span><span class="nx">jql</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span><span class="p">(</span><span class="nx">jql</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
     <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
 
 <h3>Takes</h3>
