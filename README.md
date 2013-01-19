@@ -4,6 +4,8 @@ A node.js module, which provides an object oriented wrapper for the JIRA REST AP
 
 This library is built to support version `2.0.alpha1` of the JIRA REST API.
 This library is also tested with version `2` of the JIRA REST API
+  It has been noted that with Jira OnDemand, `2.0.alpha1` does not work, devs
+  should revert to `2`. If this changes, please notify us.
 
 JIRA REST API documentation can be found [here](http://docs.atlassian.com/jira/REST/latest/)
 
