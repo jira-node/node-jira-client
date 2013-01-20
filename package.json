@@ -27,6 +27,8 @@
   "devDependencies": {
     "grunt": "~0.3.17",
     "grunt-bump": "0.0.1",
-    "grunt-docco": "~0.1.2"
+    "grunt-docco": "~0.1.2",
+    "grunt-jasmine-node": "0.0.5",
+    "coffee-script": "~1.4.0"
   }
 }
