@@ -3,13 +3,15 @@ url         = require 'url'
 nodeJira    = require '../lib/jira'
 
 describe "Node Jira Tests", ->
-    makeUrl = (path) ->
+    makeUrl = (path, altBase) ->
+        base = 'rest/api/2/'
+        base = 'rest/greenhopper/2/' if altBase?
         url.format
                 protocol: 'http'
                 hostname: 'localhost'
                 auth: 'test:test'
                 port: 80
-                pathname: "rest/api/2/#{path}"
+                pathname: "#{base}#{path}"
 
 
     beforeEach ->
@@ -87,13 +89,79 @@ describe "Node Jira Tests", ->
             .toEqual body:"none"
 
     it "Finds a Rapid View", ->
-        ## TODO
+        options =
+            uri: makeUrl("rapidviews/list", true)
+            method: 'GET'
+            json: true
+
+        @jira.findRapidView 'ABC', @cb
+        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+
+        # Invalid URL 
+        @jira.request.mostRecentCall.args[1] null, statusCode:404, null
+        expect(@cb).toHaveBeenCalledWith 'Invalid URL'
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:401, null
+        expect(@cb.mostRecentCall.args[0])
+            .toEqual '401: Unable to connect to JIRA during rapidView search.'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null,
+            statusCode:200,
+            body:
+                views: [name: 'ABC']
+
+        expect(@cb.mostRecentCall.args[0])
+            .toEqual null
+        expect(@cb.mostRecentCall.args[1])
+            .toEqual name: 'ABC'
 
     it "Gets the last sprint for a Rapid View", ->
-        ## TODO
+        options =
+            uri: makeUrl("sprints/1", true)
+            method: 'GET'
+            json: true
+
+        @jira.getLastSprintForRapidView 1, @cb
+        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+
+        # Invalid URL 
+        @jira.request.mostRecentCall.args[1] null, statusCode:404, null
+        expect(@cb).toHaveBeenCalledWith 'Invalid URL'
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:401, null
+        expect(@cb.mostRecentCall.args[0])
+            .toEqual '401: Unable to connect to JIRA during sprints search.'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null,
+            statusCode:200,
+            body:
+                sprints: [name: 'ABC']
+
+        expect(@cb.mostRecentCall.args[0])
+            .toEqual null
+        expect(@cb.mostRecentCall.args[1])
+            .toEqual name: 'ABC'
         
     it "Adds an issue to a sprint", ->
-        ## TODO
+        options =
+            uri: makeUrl("sprint/1/issues/add", true)
+            method: 'PUT'
+            json: true
+            body:
+                issueKeys: [2]
+
+        @jira.addIssueToSprint 2, 1, @cb
+        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+
+        # Invalid URL 
+        @jira.request.mostRecentCall.args[1] null, statusCode:404, null
+        expect(@cb).toHaveBeenCalledWith 'Invalid URL'
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:401, null
+        expect(@cb.mostRecentCall.args[0])
+            .toEqual '401: Unable to connect to JIRA to add to sprint.'
 
     it "Creates a Link Between two Issues", ->
         options =
@@ -380,7 +448,7 @@ describe "Node Jira Tests", ->
         expect(@cb.mostRecentCall.args[1])
             .toEqual "Success"
 
-    it "Adds a worklog to a project", ->
+    it "Lists Issue Types", ->
         options =
             uri: makeUrl "issuetype"
             method: 'GET'
