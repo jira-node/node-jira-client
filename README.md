@@ -34,7 +34,7 @@ Find the status of an issue.
         console.log('Status: ' + issue.fields.status.value.name);
     });
 
-Currently there is no explicit login call necessary as each API call makes a call to `login` before processing. This causes a lot of unnecessary logins and will be cleaned up in a future version.
+Currently there is no explicit login call necessary as each API call uses Basic Authentication to authenticate. 
 
 ## Implemented APIs ##
 
@@ -64,13 +64,15 @@ Currently there is no explicit login call necessary as each API call makes a cal
 
 ## TODO ##
 
-*  Tests
 *  Refactor currently implemented APIs to be more Object Oriented
 *  Refactor to make use of built-in node.js events and classes
 *  Auto-redirect between `http` and `https` following headers
 
 ## Changelog ##
 
+*  _0.1.0 Using Basic Auth instead of cookies, all calls unit tested, URI
+   creation refactored_
+*  _0.0.6 Now linting, preparing to refactor_
 *  _0.0.5 JQL search now takes a list of fields_
 *  _0.0.4 Added jql search_
 *  _0.0.3 Added APIs and Docco documentation_
