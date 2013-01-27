@@ -24,7 +24,8 @@ describe "Node Jira Tests", ->
             uri: makeUrl "issue/1"
             method: 'GET'
         @jira.findIssue 1, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request)
+            .toHaveBeenCalledWith(options, jasmine.any(Function))
 
         # Invalid issue number (different than unable to find??)
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
@@ -32,16 +33,13 @@ describe "Node Jira Tests", ->
 
         # Unable to find issue
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during findIssueStatus.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during findIssueStatus.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
             statusCode:200, '{"body":"none"}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual body:'none'
+        expect(@cb).toHaveBeenCalledWith(null, body: 'none')
 
     it "Gets the unresolved issue count", ->
         options =
@@ -49,7 +47,8 @@ describe "Node Jira Tests", ->
             method: 'GET'
 
         @jira.getUnresolvedIssueCount 1, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request)
+            .toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Version
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
@@ -57,16 +56,13 @@ describe "Node Jira Tests", ->
 
         # Unable to connect
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during findIssueStatus.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during findIssueStatus.')
         
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
             statusCode:200, '{"issuesUnresolvedCount":1}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual 1
+        expect(@cb).toHaveBeenCalledWith null, 1
 
     it "Gets the project from a key", ->
         options =
@@ -74,7 +70,8 @@ describe "Node Jira Tests", ->
             method: 'GET'
 
         @jira.getProject 'ABC', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request)
+            .toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Version
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
@@ -83,10 +80,7 @@ describe "Node Jira Tests", ->
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
             statusCode:200, '{"body":"none"}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual body:"none"
+        expect(@cb).toHaveBeenCalledWith null, body:"none"
 
     it "Finds a Rapid View", ->
         options =
@@ -95,15 +89,16 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.findRapidView 'ABC', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request)
+            .toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid URL 
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
         expect(@cb).toHaveBeenCalledWith 'Invalid URL'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during rapidView search.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during rapidView search.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
@@ -111,10 +106,7 @@ describe "Node Jira Tests", ->
             body:
                 views: [name: 'ABC']
 
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual name: 'ABC'
+        expect(@cb).toHaveBeenCalledWith null, name: 'ABC'
 
     it "Gets the last sprint for a Rapid View", ->
         options =
@@ -123,15 +115,15 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.getLastSprintForRapidView 1, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid URL 
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
         expect(@cb).toHaveBeenCalledWith 'Invalid URL'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during sprints search.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during sprints search.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
@@ -139,10 +131,7 @@ describe "Node Jira Tests", ->
             body:
                 sprints: [name: 'ABC']
 
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual name: 'ABC'
+        expect(@cb).toHaveBeenCalledWith null, name: 'ABC'
         
     it "Adds an issue to a sprint", ->
         options =
@@ -153,15 +142,15 @@ describe "Node Jira Tests", ->
                 issueKeys: [2]
 
         @jira.addIssueToSprint 2, 1, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid URL 
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
         expect(@cb).toHaveBeenCalledWith 'Invalid URL'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA to add to sprint.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA to add to sprint.')
 
     it "Creates a Link Between two Issues", ->
         options =
@@ -171,20 +160,19 @@ describe "Node Jira Tests", ->
             body: 'test'
 
         @jira.issueLink 'test', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Project
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
         expect(@cb).toHaveBeenCalledWith 'Invalid project.'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during issueLink.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during issueLink.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
+        expect(@cb).toHaveBeenCalledWith null
 
     it "Gets versions for a project", ->
         options =
@@ -192,23 +180,20 @@ describe "Node Jira Tests", ->
             method: 'GET'
 
         @jira.getVersions 'ABC', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Project
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
         expect(@cb).toHaveBeenCalledWith 'Invalid project.'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during getVersions.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during getVersions.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
             statusCode:200, '{"body":"none"}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual body:'none'
+        expect(@cb).toHaveBeenCalledWith null, body:'none'
 
     it "Creates a version for a project", ->
         options =
@@ -218,7 +203,7 @@ describe "Node Jira Tests", ->
             body: 'ABC'
 
         @jira.createVersion 'ABC', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Project
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
@@ -226,21 +211,18 @@ describe "Node Jira Tests", ->
  currently authenticated user does not have permission to view it'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:403, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual 'The currently authenticated user does not have
- permission to edit the version'
+        expect(@cb).toHaveBeenCalledWith(
+            'The currently authenticated user does not have
+ permission to edit the version')
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during createVersion.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during createVersion.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
             statusCode:201, '{"body":"none"}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual '{"body":"none"}'
+        expect(@cb).toHaveBeenCalledWith null, '{"body":"none"}'
 
     it "Passes a search query to Jira, default fields", ->
         fields = ["summary", "status", "assignee", "description"]
@@ -254,23 +236,20 @@ describe "Node Jira Tests", ->
                 fields: fields
 
         @jira.searchJira 'aJQLstring', null, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Project
         @jira.request.mostRecentCall.args[1] null, statusCode:400, null
         expect(@cb).toHaveBeenCalledWith 'Problem with the JQL query'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Unable to connect to JIRA during search.'
+        expect(@cb).toHaveBeenCalledWith(
+            '401: Unable to connect to JIRA during search.')
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null,
             statusCode:200, '{"body":"none"}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual '{"body":"none"}'
+        expect(@cb).toHaveBeenCalledWith null, '{"body":"none"}'
 
     it "Passes a search query to Jira, non-default fields", ->
         fields = ["assignee", "description", "test"]
@@ -284,7 +263,7 @@ describe "Node Jira Tests", ->
                 fields: fields
 
         @jira.searchJira 'aJQLstring', fields, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
     it "Gets a specified User's OPEN Issues", ->
         spyOn @jira, 'searchJira'
@@ -292,20 +271,16 @@ describe "Node Jira Tests", ->
  Reopened)"
         
         @jira.getUsersIssues 'test', true, @cb
-        expect(@jira.searchJira.mostRecentCall.args[0])
-            .toEqual expected
-        expect(@jira.searchJira.mostRecentCall.args[1])
-            .toEqual null
+        expect(@jira.searchJira).toHaveBeenCalledWith expected, null,
+            jasmine.any(Function)
 
     it "Gets ALL a specified User's Issues", ->
         spyOn @jira, 'searchJira'
         expected = "assignee = test"
         
         @jira.getUsersIssues 'test', false, @cb
-        expect(@jira.searchJira.mostRecentCall.args[0])
-            .toEqual expected
-        expect(@jira.searchJira.mostRecentCall.args[1])
-            .toEqual null
+        expect(@jira.searchJira).toHaveBeenCalledWith expected, null,
+            jasmine.any(Function)
 
     it "Deletes an Issue", ->
         options =
@@ -314,18 +289,14 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.deleteIssue 1, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while deleting'
+        expect(@cb).toHaveBeenCalledWith '401: Error while deleting'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:204
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual 'Success'
+        expect(@cb).toHaveBeenCalledWith null, 'Success'
 
     it "Updates an Issue", ->
         options =
@@ -335,18 +306,14 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.updateIssue 1, 'updateGoesHere', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while updating'
+        expect(@cb).toHaveBeenCalledWith '401: Error while updating'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual 'Success'
+        expect(@cb).toHaveBeenCalledWith null, 'Success'
 
     it "Lists Transitions", ->
         options =
@@ -355,23 +322,18 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.listTransitions 1, @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:404, null
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual 'Issue not found'
+        expect(@cb).toHaveBeenCalledWith 'Issue not found'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while updating'
+        expect(@cb).toHaveBeenCalledWith '401: Error while updating'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200,
             transitions:"someTransitions"
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual "someTransitions"
+        expect(@cb).toHaveBeenCalledWith null, "someTransitions"
 
     it "Transitions an issue", ->
         options =
@@ -381,18 +343,14 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.transitionIssue 1, 'someTransition', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while updating'
+        expect(@cb).toHaveBeenCalledWith '401: Error while updating'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:204
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual "Success"
+        expect(@cb).toHaveBeenCalledWith null, "Success"
 
     it "Lists Projects", ->
         options =
@@ -401,22 +359,17 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.listProjects @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while updating'
+        expect(@cb).toHaveBeenCalledWith '401: Error while updating'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:500
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '500: Error while retrieving list.'
+        expect(@cb).toHaveBeenCalledWith '500: Error while retrieving list.'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200, "body"
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual "body"
+        expect(@cb).toHaveBeenCalledWith null, "body"
 
     it "Adds a worklog to a project", ->
         options =
@@ -426,27 +379,21 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.addWorklog 1, 'aWorklog', @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:400,
             '{"body:"none"}'
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual 'Invalid Fields: "{\\"body:\\"none\\"}"'
+        expect(@cb).toHaveBeenCalledWith 'Invalid Fields: "{\\"body:\\"none\\"}"'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:403
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual 'Insufficient Permissions'
+        expect(@cb).toHaveBeenCalledWith 'Insufficient Permissions'
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while updating'
+        expect(@cb).toHaveBeenCalledWith '401: Error while updating'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:201
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual "Success"
+        expect(@cb).toHaveBeenCalledWith null, "Success"
 
     it "Lists Issue Types", ->
         options =
@@ -455,15 +402,11 @@ describe "Node Jira Tests", ->
             json: true
 
         @jira.listIssueTypes @cb
-        expect(@jira.request.mostRecentCall.args[0]).toEqual options
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual '401: Error while retreiving issue types'
+        expect(@cb).toHaveBeenCalledWith '401: Error while retreiving issue types'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200, "body"
-        expect(@cb.mostRecentCall.args[0])
-            .toEqual null
-        expect(@cb.mostRecentCall.args[1])
-            .toEqual "body"
+        expect(@cb).toHaveBeenCalledWith null, "body"

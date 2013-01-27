@@ -24,6 +24,9 @@
   "dependencies": {
     "request": ">=2.2.0"
   },
+  "scripts": {
+    "test": "grunt test"
+  },
   "devDependencies": {
     "grunt": "~0.3.17",
     "grunt-bump": "0.0.1",
