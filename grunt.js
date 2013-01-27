@@ -55,6 +55,7 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', 'lint jasmine_node docco');
   grunt.registerTask('prepare', 'default bump');
+  grunt.registerTask('test', 'jasmine_node');
 
   grunt.loadNpmTasks('grunt-jasmine-node');
   grunt.loadNpmTasks('grunt-docco');
