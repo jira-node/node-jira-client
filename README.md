@@ -1,6 +1,6 @@
 # JavaScript JIRA API for node.js #
 
-[![Build Status](https://travis-ci.org/tebriel/node-jira.png?branch=master)](undefined)
+[![Build Status](https://travis-ci.org/tebriel/node-jira.png?branch=master)](https://travis-ci.org/tebriel/node-jira)
 
 A node.js module, which provides an object oriented wrapper for the JIRA REST API.
 
