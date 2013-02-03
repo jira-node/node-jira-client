@@ -60,6 +60,8 @@ Currently there is no explicit login call necessary as each API call uses Basic 
   *  Get a users issues (open or all)
   *  List issue types
   *  Search using jql
+    *  Set Max Results
+    *  Set Start-At parameter for results
   *  Add a worklog
 *  Transitions
   *  List
@@ -72,6 +74,8 @@ Currently there is no explicit login call necessary as each API call uses Basic 
 
 ## Changelog ##
 
+*  _0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,
+   switching to semantic versioning._
 *  _0.1.0 Using Basic Auth instead of cookies, all calls unit tested, URI
    creation refactored_
 *  _0.0.6 Now linting, preparing to refactor_

@@ -523,11 +523,14 @@ later, easier</p>             </td>             <td class="code">               
 
 <ul>
 <li>searchString: jira query string</li>
-<li>fields: optional array of desired fields, defaults when null: 
-<ul><li>"summary"</li>
+<li>optional: object containing any of the following properties
+<ul><li>startAt: optional index number (default 0)</li>
+<li>maxResults: optional max results number (default 50)</li>
+<li>fields: optional array of desired fields, defaults when null:</li>
+<li>"summary"</li>
 <li>"status"</li>
 <li>"assignee"</li>
-<li>"description" </li></ul></li>
+<li>"description"</li></ul></li>
 <li>callback: for when it's done</li>
 </ul>
 
@@ -538,22 +541,23 @@ later, easier</p>             </td>             <td class="code">               
 <li>issues: array of issues for the user</li>
 </ul>
 
-<p><a href="http://docs.atlassian.com/jira/REST/latest/#id296043">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">fields</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-
-        
-        <span class="k">if</span> <span class="p">(</span><span class="nx">fields</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;assignee&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">];</span>
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id333082">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">optional</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>backwards compatibility</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">optional</span> <span class="o">=</span> <span class="nx">optional</span> <span class="o">||</span> <span class="p">{};</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">optional</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">optional</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">fields</span><span class="o">:</span> <span class="nx">optional</span> <span class="p">};</span>
         <span class="p">}</span>
+
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
-                <span class="nx">jql</span><span class="o">:</span><span class="nx">searchString</span><span class="p">,</span>
-                <span class="nx">startAt</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-                <span class="nx">fields</span><span class="o">:</span> <span class="nx">fields</span> 
+                <span class="nx">jql</span><span class="o">:</span> <span class="nx">searchString</span><span class="p">,</span>
+                <span class="nx">startAt</span><span class="o">:</span> <span class="nx">optional</span><span class="p">.</span><span class="nx">startAt</span> <span class="o">||</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="nx">maxResults</span><span class="o">:</span> <span class="nx">optional</span><span class="p">.</span><span class="nx">maxResults</span> <span class="o">||</span> <span class="mi">50</span><span class="p">,</span>
+                <span class="nx">fields</span><span class="o">:</span> <span class="nx">optional</span><span class="p">.</span><span class="nx">fields</span> <span class="o">||</span> <span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;assignee&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
             <span class="p">}</span>
         <span class="p">};</span>
+
         <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">400</span><span class="p">)</span> <span class="p">{</span>
                 <span class="nx">callback</span><span class="p">(</span><span class="s1">&#39;Problem with the JQL query&#39;</span><span class="p">);</span>
@@ -568,7 +572,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h2>Get issues related to a user</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Get issues related to a user</h2>
 
 <h3>Takes</h3>
 
@@ -589,8 +593,8 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">jql</span> <span class="o">=</span> <span class="s2">&quot;assignee = &quot;</span> <span class="o">+</span> <span class="nx">username</span><span class="p">;</span>
         <span class="kd">var</span> <span class="nx">openText</span> <span class="o">=</span> <span class="s1">&#39; AND status in (Open, &quot;In Progress&quot;, Reopened)&#39;</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">open</span><span class="p">)</span> <span class="p">{</span> <span class="nx">jql</span> <span class="o">+=</span> <span class="nx">openText</span><span class="p">;</span> <span class="p">}</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span><span class="p">(</span><span class="nx">jql</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
+        <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span><span class="p">(</span><span class="nx">jql</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">callback</span><span class="p">);</span>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -627,7 +631,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>Delete issue to Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>Delete issue to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -658,7 +662,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while deleting&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>Update issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Update issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -690,7 +694,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="p">}</span>
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>List Transitions</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>List Transitions</h2>
 
 <h3>Takes</h3>
 
@@ -762,7 +766,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -795,7 +799,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
 
 <h3>Takes</h3>
 
@@ -842,7 +846,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
 
 <h3>Takes</h3>
 
@@ -909,7 +913,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="p">}</span>
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>List all Issue Types</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>List all Issue Types</h2>
 
 <h3>Takes</h3>
 
