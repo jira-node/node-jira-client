@@ -224,7 +224,7 @@ describe "Node Jira Tests", ->
             statusCode:201, '{"body":"none"}'
         expect(@cb).toHaveBeenCalledWith null, '{"body":"none"}'
 
-    it "Passes a search query to Jira, default fields", ->
+    it "Passes a search query to Jira, default options", ->
         fields = ["summary", "status", "assignee", "description"]
         options =
             uri: makeUrl "search"
@@ -233,9 +233,10 @@ describe "Node Jira Tests", ->
             body:
                 jql: 'aJQLstring'
                 startAt: 0
+                maxResults: 50
                 fields: fields
 
-        @jira.searchJira 'aJQLstring', null, @cb
+        @jira.searchJira 'aJQLstring', {}, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         # Invalid Project
@@ -251,7 +252,7 @@ describe "Node Jira Tests", ->
             statusCode:200, '{"body":"none"}'
         expect(@cb).toHaveBeenCalledWith null, '{"body":"none"}'
 
-    it "Passes a search query to Jira, non-default fields", ->
+    it "Passes a search query to Jira, non-default options", ->
         fields = ["assignee", "description", "test"]
         options =
             uri: makeUrl "search"
@@ -259,10 +260,11 @@ describe "Node Jira Tests", ->
             json: true
             body:
                 jql: 'aJQLstring'
-                startAt: 0
+                startAt: 200
+                maxResults: 100
                 fields: fields
 
-        @jira.searchJira 'aJQLstring', fields, @cb
+        @jira.searchJira 'aJQLstring', { maxResults: 100, fields: fields, startAt: 200 }, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
     it "Gets a specified User's OPEN Issues", ->
@@ -271,7 +273,7 @@ describe "Node Jira Tests", ->
  Reopened)"
         
         @jira.getUsersIssues 'test', true, @cb
-        expect(@jira.searchJira).toHaveBeenCalledWith expected, null,
+        expect(@jira.searchJira).toHaveBeenCalledWith expected, {},
             jasmine.any(Function)
 
     it "Gets ALL a specified User's Issues", ->
@@ -279,7 +281,7 @@ describe "Node Jira Tests", ->
         expected = "assignee = test"
         
         @jira.getUsersIssues 'test', false, @cb
-        expect(@jira.searchJira).toHaveBeenCalledWith expected, null,
+        expect(@jira.searchJira).toHaveBeenCalledWith expected, {},
             jasmine.any(Function)
 
     it "Deletes an Issue", ->
