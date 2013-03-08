@@ -276,7 +276,19 @@ describe "Node Jira Tests", ->
         expect(@jira.searchJira).toHaveBeenCalledWith expected, {},
             jasmine.any(Function)
 
-    it "Gets ALL a specified User's Issues", ->
+    it "Gets the sprint issues and information", ->
+        options =
+            uri: makeUrl("rapid/charts/sprintreport?rapidViewId=1&sprintId=1", true)
+            method: 'GET'
+            json: true
+
+        @jira.getSprintIssues 1, 1, @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:404, null
+        expect(@cb).toHaveBeenCalledWith 'Invalid URL'
+
+     it "Gets ALL a specified User's Issues", ->
         spyOn @jira, 'searchJira'
         expected = "assignee = test"
         
