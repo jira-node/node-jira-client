@@ -1,6 +1,6 @@
 {
   "name": "jira",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Wrapper for the JIRA API",
   "author": "Steven Surowiec <steven.surowiec@gmail.com>",
   "contributors": [
@@ -31,7 +31,7 @@
     "grunt": "~0.3.17",
     "grunt-bump": "0.0.1",
     "grunt-docco": "~0.1.2",
-    "grunt-jasmine-node": "0.0.6",
+    "grunt-jasmine-node": ">=0.0.6",
     "coffee-script": "~1.4.0"
   }
 }

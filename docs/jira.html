@@ -1,5 +1,7 @@
 <!DOCTYPE html>  <html> <head>   <title>jira.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               jira.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <h1>JavaScript JIRA API for node.js</h1>
 
+<p><a href="https://travis-ci.org/steves/node-jira"><img src="https://travis-ci.org/steves/node-jira.png?branch=master" alt="Build Status" title="" /></a></p>
+
 <p>A node.js module, which provides an object oriented wrapper for the JIRA REST API.</p>
 
 <p>This library is built to support version <code>2.0.alpha1</code> of the JIRA REST API.
@@ -37,8 +39,7 @@ jira.findIssue(issueNumber, function(error, issue) {
 });
 </code></pre>
 
-<p>Currently there is no explicit login call necessary as each API call uses
-Basic Authentication to authenticate. </p>
+<p>Currently there is no explicit login call necessary as each API call uses Basic Authentication to authenticate. </p>
 
 <h2>Implemented APIs</h2>
 
@@ -51,8 +52,10 @@ Basic Authentication to authenticate. </p>
 <ul><li>Pulling versions</li>
 <li>Adding a new version</li>
 <li>Pulling unresolved issues count for a specific version</li></ul></li>
-<li>Find a Rapid View based on project name</li>
-<li>Get the latest Green Hopper sprint for a Rapid View</li>
+<li>Rapid Views
+<ul><li>Find based on project name</li>
+<li>Get the latest Green Hopper sprint</li>
+<li>Gets attached issues</li></ul></li>
 <li>Issues
 <ul><li>Add a new issue</li>
 <li>Update an issue</li>
@@ -63,6 +66,8 @@ Basic Authentication to authenticate. </p>
 <li>Get a users issues (open or all)</li>
 <li>List issue types</li>
 <li>Search using jql</li>
+<li>Set Max Results</li>
+<li>Set Start-At parameter for results</li>
 <li>Add a worklog</li></ul></li>
 <li>Transitions
 <ul><li>List</li></ul></li>
@@ -79,6 +84,9 @@ Basic Authentication to authenticate. </p>
 <h2>Changelog</h2>
 
 <ul>
+<li><em>0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks <a href="https://github.com/donbonifacio">donbonifacio</a>)</em></li>
+<li><em>0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,
+switching to semantic versioning.</em></li>
 <li><em>0.1.0 Using Basic Auth instead of cookies, all calls unit tested, URI
 creation refactored</em></li>
 <li><em>0.0.6 Now linting, preparing to refactor</em></li>
@@ -323,7 +331,55 @@ later, easier</p>             </td>             <td class="code">               
             <span class="k">return</span><span class="p">;</span>
           <span class="p">}</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Add an issue to the project's current sprint</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Get the issues for a rapidView / sprint</h2>
+
+<h3>Takes</h3>
+
+<ul>
+<li>rapidViewId: the id for the rapid view</li>
+<li>sprintId: the id for the sprint</li>
+<li>callback: for when it's done</li>
+</ul>
+
+<h3>Returns</h3>
+
+<ul>
+<li>error: string with the error</li>
+<li>results: the object with the issues and additional sprint information</li>
+</ul>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="cm">/**</span>
+<span class="cm">     * Returns sprint and issues information</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param rapidView ID</span>
+<span class="cm">     * @param sprint ID</span>
+<span class="cm">     * @param callback</span>
+<span class="cm">     */</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">getSprintIssues</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">getSprintIssues</span><span class="p">(</span><span class="nx">rapidViewId</span><span class="p">,</span> <span class="nx">sprintId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/rapid/charts/sprintreport?rapidViewId=&#39;</span> <span class="o">+</span> <span class="nx">rapidViewId</span> <span class="o">+</span> <span class="s1">&#39;&amp;sprintId=&#39;</span> <span class="o">+</span> <span class="nx">sprintId</span><span class="p">,</span> <span class="s1">&#39;rest/greenhopper/&#39;</span><span class="p">),</span>
+        <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+        <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
+      <span class="p">};</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">404</span> <span class="p">)</span> <span class="p">{</span>
+          <span class="nx">callback</span><span class="p">(</span><span class="s1">&#39;Invalid URL&#39;</span><span class="p">);</span>
+          <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span><span class="p">(</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">!==</span> <span class="mi">200</span> <span class="p">)</span> <span class="p">{</span>
+          <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Unable to connect to JIRA during sprints search&#39;</span><span class="p">);</span>
+          <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">body</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="nx">callback</span><span class="p">(</span><span class="s1">&#39;No body&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h2>Add an issue to the project's current sprint</h2>
 
 <h3>Takes</h3>
 
@@ -370,7 +426,7 @@ later, easier</p>             </td>             <td class="code">               
           <span class="p">}</span>
 
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h2>Create an issue link between two issues</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h2>Create an issue link between two issues</h2>
 
 <h3>Takes</h3>
 
@@ -427,7 +483,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h2>Get Versions for a project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h2>Get Versions for a project</h2>
 
 <h3>Takes</h3>
 
@@ -464,7 +520,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h2>Create a version</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h2>Create a version</h2>
 
 <h3>Takes</h3>
 
@@ -517,7 +573,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h2>Pass a search query to Jira</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h2>Pass a search query to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -541,7 +597,7 @@ later, easier</p>             </td>             <td class="code">               
 <li>issues: array of issues for the user</li>
 </ul>
 
-<p><a href="http://docs.atlassian.com/jira/REST/latest/#id333082">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">optional</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <p>backwards compatibility</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">optional</span> <span class="o">=</span> <span class="nx">optional</span> <span class="o">||</span> <span class="p">{};</span>
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id333082">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">optional</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>backwards compatibility</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">optional</span> <span class="o">=</span> <span class="nx">optional</span> <span class="o">||</span> <span class="p">{};</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">optional</span><span class="p">))</span> <span class="p">{</span>
             <span class="nx">optional</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">fields</span><span class="o">:</span> <span class="nx">optional</span> <span class="p">};</span>
         <span class="p">}</span>
@@ -572,7 +628,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Get issues related to a user</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>Get issues related to a user</h2>
 
 <h3>Takes</h3>
 
@@ -594,7 +650,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">openText</span> <span class="o">=</span> <span class="s1">&#39; AND status in (Open, &quot;In Progress&quot;, Reopened)&#39;</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">open</span><span class="p">)</span> <span class="p">{</span> <span class="nx">jql</span> <span class="o">+=</span> <span class="nx">openText</span><span class="p">;</span> <span class="p">}</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span><span class="p">(</span><span class="nx">jql</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">callback</span><span class="p">);</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -631,7 +687,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>Delete issue to Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Delete issue to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -662,7 +718,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while deleting&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Update issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Update issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -694,7 +750,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="p">}</span>
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>List Transitions</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>List Transitions</h2>
 
 <h3>Takes</h3>
 
@@ -766,7 +822,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -799,7 +855,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
 
 <h3>Takes</h3>
 
@@ -846,7 +902,7 @@ later, easier</p>             </td>             <td class="code">               
 
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
 
 <h3>Takes</h3>
 
@@ -913,7 +969,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="p">}</span>
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>List all Issue Types</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>List all Issue Types</h2>
 
 <h3>Takes</h3>
 

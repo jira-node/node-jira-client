@@ -48,8 +48,10 @@ Currently there is no explicit login call necessary as each API call uses Basic 
   *  Pulling versions
   *  Adding a new version
   *  Pulling unresolved issues count for a specific version
-*  Find a Rapid View based on project name
-*  Get the latest Green Hopper sprint for a Rapid View
+*  Rapid Views
+  *  Find based on project name
+  *  Get the latest Green Hopper sprint
+  *  Gets attached issues
 *  Issues
   *  Add a new issue
   *  Update an issue
@@ -74,6 +76,8 @@ Currently there is no explicit login call necessary as each API call uses Basic 
 
 ## Changelog ##
 
+
+*  _0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks [donbonifacio](https://github.com/donbonifacio))_
 *  _0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,
    switching to semantic versioning._
 *  _0.1.0 Using Basic Auth instead of cookies, all calls unit tested, URI
