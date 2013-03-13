@@ -1,6 +1,6 @@
 {
   "name": "jira",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Wrapper for the JIRA API",
   "author": "Steven Surowiec <steven.surowiec@gmail.com>",
   "contributors": [
@@ -22,7 +22,7 @@
     }
   ],
   "dependencies": {
-    "request": ">=2.2.0"
+    "request": "<2.16.0"
   },
   "scripts": {
     "test": "grunt test"

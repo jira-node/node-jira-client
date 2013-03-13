@@ -77,6 +77,7 @@ Currently there is no explicit login call necessary as each API call uses Basic 
 ## Changelog ##
 
 
+*  _0.3.1 [Request](https://github.com/mikeal/request) is broken, setting max request package at 2.15.0_
 *  _0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks [donbonifacio](https://github.com/donbonifacio))_
 *  _0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,
    switching to semantic versioning._
