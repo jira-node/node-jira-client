@@ -407,6 +407,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
           <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/sprint/&#39;</span> <span class="o">+</span> <span class="nx">sprintId</span> <span class="o">+</span> <span class="s1">&#39;/issues/add&#39;</span><span class="p">,</span> <span class="s1">&#39;rest/greenhopper/&#39;</span><span class="p">),</span>
           <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
+          <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
           <span class="nx">json</span><span class="o">:</span><span class="kc">true</span><span class="p">,</span>
           <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
             <span class="nx">issueKeys</span><span class="o">:</span> <span class="p">[</span><span class="nx">issueId</span><span class="p">]</span>
@@ -466,6 +467,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issueLink&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">link</span>
         <span class="p">};</span>
@@ -551,6 +553,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/version&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">version</span>
         <span class="p">};</span>
@@ -606,6 +609,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">body</span><span class="o">:</span> <span class="p">{</span>
                 <span class="nx">jql</span><span class="o">:</span> <span class="nx">searchString</span><span class="p">,</span>
                 <span class="nx">startAt</span><span class="o">:</span> <span class="nx">optional</span><span class="p">.</span><span class="nx">startAt</span> <span class="o">||</span> <span class="mi">0</span><span class="p">,</span>
@@ -670,6 +674,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">issue</span>
         <span class="p">};</span>
@@ -707,6 +712,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
         <span class="p">};</span>
 
@@ -740,6 +746,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span><span class="p">),</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">issueUpdate</span><span class="p">,</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
         <span class="p">};</span>
 
@@ -844,6 +851,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span> <span class="o">+</span> <span class="s1">&#39;/transitions&#39;</span><span class="p">),</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">issueTransition</span><span class="p">,</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
         <span class="p">};</span>
 
@@ -951,6 +959,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueId</span> <span class="o">+</span> <span class="s1">&#39;/worklog&#39;</span><span class="p">),</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">worklog</span><span class="p">,</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+            <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
         <span class="p">};</span>
 

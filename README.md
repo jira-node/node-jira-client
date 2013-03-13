@@ -72,11 +72,11 @@ Currently there is no explicit login call necessary as each API call uses Basic 
 
 *  Refactor currently implemented APIs to be more Object Oriented
 *  Refactor to make use of built-in node.js events and classes
-*  Auto-redirect between `http` and `https` following headers
 
 ## Changelog ##
 
 
+*  _0.4.0 Now auto-redirecting between http and https (for both GET and POST)_
 *  _0.3.1 [Request](https://github.com/mikeal/request) is broken, setting max request package at 2.15.0_
 *  _0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks [donbonifacio](https://github.com/donbonifacio))_
 *  _0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,

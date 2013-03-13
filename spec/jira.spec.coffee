@@ -138,6 +138,7 @@ describe "Node Jira Tests", ->
             uri: makeUrl("sprint/1/issues/add", true)
             method: 'PUT'
             json: true
+            followAllRedirects: true
             body:
                 issueKeys: [2]
 
@@ -158,6 +159,7 @@ describe "Node Jira Tests", ->
             method: 'POST'
             json: true
             body: 'test'
+            followAllRedirects: true
 
         @jira.issueLink 'test', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -201,6 +203,7 @@ describe "Node Jira Tests", ->
             method: 'POST'
             json: true
             body: 'ABC'
+            followAllRedirects: true
 
         @jira.createVersion 'ABC', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -230,6 +233,7 @@ describe "Node Jira Tests", ->
             uri: makeUrl "search"
             method: 'POST'
             json: true
+            followAllRedirects: true
             body:
                 jql: 'aJQLstring'
                 startAt: 0
@@ -258,6 +262,7 @@ describe "Node Jira Tests", ->
             uri: makeUrl "search"
             method: 'POST'
             json: true
+            followAllRedirects: true
             body:
                 jql: 'aJQLstring'
                 startAt: 200
@@ -301,6 +306,7 @@ describe "Node Jira Tests", ->
             uri: makeUrl "issue/1"
             method: 'DELETE'
             json: true
+            followAllRedirects: true
 
         @jira.deleteIssue 1, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -318,6 +324,7 @@ describe "Node Jira Tests", ->
             body: 'updateGoesHere'
             method: 'PUT'
             json: true
+            followAllRedirects: true
 
         @jira.updateIssue 1, 'updateGoesHere', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -354,6 +361,7 @@ describe "Node Jira Tests", ->
             uri: makeUrl "issue/1/transitions"
             body: 'someTransition'
             method: 'POST'
+            followAllRedirects: true
             json: true
 
         @jira.transitionIssue 1, 'someTransition', @cb
@@ -390,6 +398,7 @@ describe "Node Jira Tests", ->
             uri: makeUrl "issue/1/worklog"
             body: 'aWorklog'
             method: 'POST'
+            followAllRedirects: true
             json: true
 
         @jira.addWorklog 1, 'aWorklog', @cb
