@@ -76,6 +76,7 @@ Currently there is no explicit login call necessary as each API call uses Basic 
 ## Changelog ##
 
 
+*  _0.4.1 Now handing errors in the request callback (thanks [mrbrookman](https://github.com/mrbrookman))_
 *  _0.4.0 Now auto-redirecting between http and https (for both GET and POST)_
 *  _0.3.1 [Request](https://github.com/mikeal/request) is broken, setting max request package at 2.15.0_
 *  _0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks [donbonifacio](https://github.com/donbonifacio))_
