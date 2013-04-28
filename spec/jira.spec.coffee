@@ -428,7 +428,7 @@ describe "Node Jira Tests", ->
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
 
         @jira.request.mostRecentCall.args[1] null, statusCode:401
-        expect(@cb).toHaveBeenCalledWith '401: Error while retreiving issue types'
+        expect(@cb).toHaveBeenCalledWith '401: Error while retrieving issue types'
 
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200, "body"
