@@ -1,6 +1,6 @@
 {
   "name": "jira",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Wrapper for the JIRA API",
   "author": "Steven Surowiec <steven.surowiec@gmail.com>",
   "contributors": [

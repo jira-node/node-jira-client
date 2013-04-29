@@ -41,6 +41,18 @@ jira.findIssue(issueNumber, function(error, issue) {
 
 <p>Currently there is no explicit login call necessary as each API call uses Basic Authentication to authenticate. </p>
 
+<h2>Options</h2>
+
+<p>JiraApi options:
+*  <code>protocol&lt;string&gt;</code>: Typically 'http:' or 'https:'
+*  <code>host&lt;string&gt;</code>: The hostname for your jira server
+*  <code>port&lt;int&gt;</code>: The port your jira server is listening on (probably <code>80</code> or <code>443</code>)
+*  <code>user&lt;string&gt;</code>: The username to log in with
+*  <code>password&lt;string&gt;</code>: Keep it secret, keep it safe
+*  <code>Jira API Version&lt;string&gt;</code>: Known to work with <code>2</code> and <code>2.0.alpha1</code>
+*  <code>verbose&lt;bool&gt;</code>: Log some info to the console, usually for debugging
+*  <code>strictSSL&lt;bool&gt;</code>: Set to false if you have self-signed certs or something non-trustworthy</p>
+
 <h2>Implemented APIs</h2>
 
 <ul>
@@ -78,12 +90,15 @@ jira.findIssue(issueNumber, function(error, issue) {
 <ul>
 <li>Refactor currently implemented APIs to be more Object Oriented</li>
 <li>Refactor to make use of built-in node.js events and classes</li>
-<li>Auto-redirect between <code>http</code> and <code>https</code> following headers</li>
 </ul>
 
 <h2>Changelog</h2>
 
 <ul>
+<li><em>0.5.0 Last param is now for strict SSL checking, defaults to true</em></li>
+<li><em>0.4.1 Now handing errors in the request callback (thanks <a href="https://github.com/mrbrookman">mrbrookman</a>)</em></li>
+<li><em>0.4.0 Now auto-redirecting between http and https (for both GET and POST)</em></li>
+<li><em>0.3.1 <a href="https://github.com/mikeal/request">Request</a> is broken, setting max request package at 2.15.0</em></li>
 <li><em>0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks <a href="https://github.com/donbonifacio">donbonifacio</a>)</em></li>
 <li><em>0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,
 switching to semantic versioning.</em></li>
@@ -98,14 +113,18 @@ creation refactored</em></li>
     <span class="nx">logger</span> <span class="o">=</span> <span class="nx">console</span><span class="p">;</span>
 
 
-<span class="kd">var</span> <span class="nx">JiraApi</span> <span class="o">=</span> <span class="nx">exports</span><span class="p">.</span><span class="nx">JiraApi</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">protocol</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">apiVersion</span><span class="p">,</span> <span class="nx">verbose</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">var</span> <span class="nx">JiraApi</span> <span class="o">=</span> <span class="nx">exports</span><span class="p">.</span><span class="nx">JiraApi</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">protocol</span><span class="p">,</span> <span class="nx">host</span><span class="p">,</span> <span class="nx">port</span><span class="p">,</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">password</span><span class="p">,</span> <span class="nx">apiVersion</span><span class="p">,</span> <span class="nx">verbose</span><span class="p">,</span> <span class="nx">strictSSL</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">=</span> <span class="nx">protocol</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">host</span> <span class="o">=</span> <span class="nx">host</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">port</span> <span class="o">=</span> <span class="nx">port</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">username</span> <span class="o">=</span> <span class="nx">username</span><span class="p">;</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">password</span> <span class="o">=</span> <span class="nx">password</span><span class="p">;</span>
-    <span class="k">this</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">=</span> <span class="nx">apiVersion</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>This is so we can fake during unit tests</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">verbose</span> <span class="o">!==</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span> <span class="nx">logger</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">log</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{}</span> <span class="p">};</span> <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This is the same almost every time, refactored to make changing it
+    <span class="k">this</span><span class="p">.</span><span class="nx">apiVersion</span> <span class="o">=</span> <span class="nx">apiVersion</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Default strictSSL to true (previous behavior) but now allow it to be
+modified</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">if</span> <span class="p">(</span><span class="nx">strictSSL</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">strictSSL</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span> <span class="o">=</span> <span class="nx">strictSSL</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This is so we can fake during unit tests</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">verbose</span> <span class="o">!==</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span> <span class="nx">logger</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">log</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{}</span> <span class="p">};</span> <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>This is the same almost every time, refactored to make changing it
 later, easier</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">pathname</span><span class="p">,</span> <span class="nx">altBase</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">basePath</span> <span class="o">=</span> <span class="s1">&#39;rest/api/&#39;</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">altBase</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
@@ -125,7 +144,7 @@ later, easier</p>             </td>             <td class="code">               
 
 <span class="p">};</span>
 
-<span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <h2>Find an issue in jira</h2>
+<span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Find an issue in jira</h2>
 
 <h3>Takes</h3>
 
@@ -144,6 +163,7 @@ later, easier</p>             </td>             <td class="code">               
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id290709">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">findIssue</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueNumber</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNumber</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
         <span class="p">};</span>
@@ -168,7 +188,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">));</span>
 
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Get the unresolved issue count</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Get the unresolved issue count</h2>
 
 <h3>Takes</h3>
 
@@ -187,6 +207,7 @@ later, easier</p>             </td>             <td class="code">               
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id288524">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    
     <span class="k">this</span><span class="p">.</span><span class="nx">getUnresolvedIssueCount</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">version</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/version/&#39;</span> <span class="o">+</span> <span class="nx">version</span> <span class="o">+</span> <span class="s1">&#39;/unresolvedIssueCount&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
         <span class="p">};</span>
@@ -212,7 +233,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">.</span><span class="nx">issuesUnresolvedCount</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <h2>Get the Project by project key</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Get the Project by project key</h2>
 
 <h3>Takes</h3>
 
@@ -231,6 +252,7 @@ later, easier</p>             </td>             <td class="code">               
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id289232">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">getProject</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">project</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/project/&#39;</span> <span class="o">+</span> <span class="nx">project</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
         <span class="p">};</span>
@@ -256,7 +278,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Find the Rapid View for a specified project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h2>Find the Rapid View for a specified project</h2>
 
 <h3>Takes</h3>
 
@@ -280,6 +302,7 @@ later, easier</p>             </td>             <td class="code">               
     <span class="k">this</span><span class="p">.</span><span class="nx">findRapidView</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">projectName</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
           <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/rapidviews/list&#39;</span><span class="p">,</span> <span class="s1">&#39;rest/greenhopper/&#39;</span><span class="p">),</span>
           <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
           <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
@@ -313,7 +336,7 @@ later, easier</p>             </td>             <td class="code">               
           <span class="p">}</span>
           
       <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h2>Get a list of Sprints belonging to a Rapid View</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Get a list of Sprints belonging to a Rapid View</h2>
 
 <h3>Takes</h3>
 
@@ -336,6 +359,7 @@ later, easier</p>             </td>             <td class="code">               
     <span class="k">this</span><span class="p">.</span><span class="nx">getLastSprintForRapidView</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">rapidViewId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
           <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/sprints/&#39;</span> <span class="o">+</span> <span class="nx">rapidViewId</span><span class="p">,</span> <span class="s1">&#39;rest/greenhopper/&#39;</span><span class="p">),</span>
           <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
           <span class="nx">json</span><span class="o">:</span><span class="kc">true</span>
@@ -365,7 +389,7 @@ later, easier</p>             </td>             <td class="code">               
           <span class="p">}</span>
           
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h2>Get the issues for a rapidView / sprint</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h2>Get the issues for a rapidView / sprint</h2>
 
 <h3>Takes</h3>
 
@@ -390,6 +414,7 @@ later, easier</p>             </td>             <td class="code">               
     <span class="k">this</span><span class="p">.</span><span class="nx">getSprintIssues</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">getSprintIssues</span><span class="p">(</span><span class="nx">rapidViewId</span><span class="p">,</span> <span class="nx">sprintId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
       <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
         <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/rapid/charts/sprintreport?rapidViewId=&#39;</span> <span class="o">+</span> <span class="nx">rapidViewId</span> <span class="o">+</span> <span class="s1">&#39;&amp;sprintId=&#39;</span> <span class="o">+</span> <span class="nx">sprintId</span><span class="p">,</span> <span class="s1">&#39;rest/greenhopper/&#39;</span><span class="p">),</span>
         <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
         <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
@@ -420,7 +445,7 @@ later, easier</p>             </td>             <td class="code">               
         
       <span class="p">});</span>
 
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h2>Add an issue to the project's current sprint</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h2>Add an issue to the project's current sprint</h2>
 
 <h3>Takes</h3>
 
@@ -446,6 +471,7 @@ later, easier</p>             </td>             <td class="code">               
     <span class="k">this</span><span class="p">.</span><span class="nx">addIssueToSprint</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueId</span><span class="p">,</span> <span class="nx">sprintId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
           <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/sprint/&#39;</span> <span class="o">+</span> <span class="nx">sprintId</span> <span class="o">+</span> <span class="s1">&#39;/issues/add&#39;</span><span class="p">,</span> <span class="s1">&#39;rest/greenhopper/&#39;</span><span class="p">),</span>
           <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
           <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -475,7 +501,7 @@ later, easier</p>             </td>             <td class="code">               
           <span class="p">}</span>
 
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h2>Create an issue link between two issues</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h2>Create an issue link between two issues</h2>
 
 <h3>Takes</h3>
 
@@ -513,6 +539,7 @@ later, easier</p>             </td>             <td class="code">               
     <span class="k">this</span><span class="p">.</span><span class="nx">issueLink</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">link</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issueLink&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
             <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -540,7 +567,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h2>Get Versions for a project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h2>Get Versions for a project</h2>
 
 <h3>Takes</h3>
 
@@ -559,6 +586,7 @@ later, easier</p>             </td>             <td class="code">               
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id289653">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">getVersions</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">project</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/project/&#39;</span> <span class="o">+</span> <span class="nx">project</span> <span class="o">+</span> <span class="s1">&#39;/versions&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
         <span class="p">};</span>
@@ -584,7 +612,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h2>Create a version</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h2>Create a version</h2>
 
 <h3>Takes</h3>
 
@@ -613,6 +641,7 @@ later, easier</p>             </td>             <td class="code">               
     <span class="k">this</span><span class="p">.</span><span class="nx">createVersion</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">version</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/version&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
             <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -645,7 +674,7 @@ later, easier</p>             </td>             <td class="code">               
             
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h2>Pass a search query to Jira</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h2>Pass a search query to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -669,12 +698,13 @@ later, easier</p>             </td>             <td class="code">               
 <li>issues: array of issues for the user</li>
 </ul>
 
-<p><a href="http://docs.atlassian.com/jira/REST/latest/#id333082">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">optional</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <p>backwards compatibility</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">optional</span> <span class="o">=</span> <span class="nx">optional</span> <span class="o">||</span> <span class="p">{};</span>
+<p><a href="http://docs.atlassian.com/jira/REST/latest/#id333082">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">searchString</span><span class="p">,</span> <span class="nx">optional</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span></pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <p>backwards compatibility</p>             </td>             <td class="code">               <div class="highlight"><pre>        <span class="nx">optional</span> <span class="o">=</span> <span class="nx">optional</span> <span class="o">||</span> <span class="p">{};</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">optional</span><span class="p">))</span> <span class="p">{</span>
             <span class="nx">optional</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">fields</span><span class="o">:</span> <span class="nx">optional</span> <span class="p">};</span>
         <span class="p">}</span>
 
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -708,7 +738,7 @@ later, easier</p>             </td>             <td class="code">               
             
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h2>Get issues related to a user</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>Get issues related to a user</h2>
 
 <h3>Takes</h3>
 
@@ -730,7 +760,7 @@ later, easier</p>             </td>             <td class="code">               
         <span class="kd">var</span> <span class="nx">openText</span> <span class="o">=</span> <span class="s1">&#39; AND status in (Open, &quot;In Progress&quot;, Reopened)&#39;</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">open</span><span class="p">)</span> <span class="p">{</span> <span class="nx">jql</span> <span class="o">+=</span> <span class="nx">openText</span><span class="p">;</span> <span class="p">}</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">searchJira</span><span class="p">(</span><span class="nx">jql</span><span class="p">,</span> <span class="p">{},</span> <span class="nx">callback</span><span class="p">);</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Add issue to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -748,6 +778,7 @@ later, easier</p>             </td>             <td class="code">               
 
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id290028">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">addNewIssue</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issue</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
             <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -775,7 +806,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h2>Delete issue to Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Delete issue to Jira</h2>
 
 <h3>Takes</h3>
 
@@ -793,6 +824,7 @@ later, easier</p>             </td>             <td class="code">               
 
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id290791">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">deleteIssue</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueNum</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span>
             <span class="nx">followAllRedirects</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
@@ -814,7 +846,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while deleting&#39;</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h2>Update issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>Update issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -833,6 +865,7 @@ later, easier</p>             </td>             <td class="code">               
 
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id290878">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">updateIssue</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueNum</span><span class="p">,</span> <span class="nx">issueUpdate</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span><span class="p">),</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">issueUpdate</span><span class="p">,</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
@@ -855,7 +888,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h2>List Transitions</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>List Transitions</h2>
 
 <h3>Takes</h3>
 
@@ -910,6 +943,7 @@ later, easier</p>             </td>             <td class="code">               
 <span class="cm">     */</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">listTransitions</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueId</span> <span class="o">+</span> <span class="s1">&#39;/transitions&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
@@ -934,7 +968,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>Transition issue in Jira</h2>
 
 <h3>Takes</h3>
 
@@ -953,6 +987,7 @@ later, easier</p>             </td>             <td class="code">               
 
 <p><a href="http://docs.atlassian.com/jira/REST/latest/#id290489">Jira Doc</a></p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="k">this</span><span class="p">.</span><span class="nx">transitionIssue</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueNum</span><span class="p">,</span> <span class="nx">issueTransition</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueNum</span> <span class="o">+</span> <span class="s1">&#39;/transitions&#39;</span><span class="p">),</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">issueTransition</span><span class="p">,</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
@@ -976,7 +1011,7 @@ later, easier</p>             </td>             <td class="code">               
             
         <span class="p">});</span>
     <span class="p">};</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>List all Viewable Projects</h2>
 
 <h3>Takes</h3>
 
@@ -1006,6 +1041,7 @@ later, easier</p>             </td>             <td class="code">               
 <span class="cm">     */</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">listProjects</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/project&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>
@@ -1030,7 +1066,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>Add a worklog to a project</h2>
 
 <h3>Takes</h3>
 
@@ -1076,6 +1112,7 @@ later, easier</p>             </td>             <td class="code">               
 <span class="cm">     */</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">addWorklog</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">issueId</span><span class="p">,</span> <span class="nx">worklog</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issue/&#39;</span> <span class="o">+</span> <span class="nx">issueId</span> <span class="o">+</span> <span class="s1">&#39;/worklog&#39;</span><span class="p">),</span>
             <span class="nx">body</span><span class="o">:</span> <span class="nx">worklog</span><span class="p">,</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
@@ -1106,7 +1143,7 @@ later, easier</p>             </td>             <td class="code">               
             <span class="nx">callback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">+</span> <span class="s1">&#39;: Error while updating&#39;</span><span class="p">);</span>
             
         <span class="p">});</span>
-    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>List all Issue Types</h2>
+    <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <h2>List all Issue Types</h2>
 
 <h3>Takes</h3>
 
@@ -1134,6 +1171,7 @@ later, easier</p>             </td>             <td class="code">               
 <span class="cm">     */</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">listIssueTypes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
         <span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">rejectUnauthorized</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">strictSSL</span><span class="p">,</span>
             <span class="nx">uri</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">makeUri</span><span class="p">(</span><span class="s1">&#39;/issuetype&#39;</span><span class="p">),</span>
             <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
             <span class="nx">json</span><span class="o">:</span> <span class="kc">true</span>

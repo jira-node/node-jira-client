@@ -38,6 +38,18 @@ Find the status of an issue.
 
 Currently there is no explicit login call necessary as each API call uses Basic Authentication to authenticate. 
 
+## Options ##
+
+JiraApi options:
+*  `protocol<string>`: Typically 'http:' or 'https:'
+*  `host<string>`: The hostname for your jira server
+*  `port<int>`: The port your jira server is listening on (probably `80` or `443`)
+*  `user<string>`: The username to log in with
+*  `password<string>`: Keep it secret, keep it safe
+*  `Jira API Version<string>`: Known to work with `2` and `2.0.alpha1`
+*  `verbose<bool>`: Log some info to the console, usually for debugging
+*  `strictSSL<bool>`: Set to false if you have self-signed certs or something non-trustworthy
+
 ## Implemented APIs ##
 
 *  Authentication
@@ -76,6 +88,7 @@ Currently there is no explicit login call necessary as each API call uses Basic 
 ## Changelog ##
 
 
+*  _0.5.0 Last param is now for strict SSL checking, defaults to true_
 *  _0.4.1 Now handing errors in the request callback (thanks [mrbrookman](https://github.com/mrbrookman))_
 *  _0.4.0 Now auto-redirecting between http and https (for both GET and POST)_
 *  _0.3.1 [Request](https://github.com/mikeal/request) is broken, setting max request package at 2.15.0_
