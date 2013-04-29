@@ -7,7 +7,7 @@ describe "Node Jira Tests", ->
         base = 'rest/api/2/'
         base = 'rest/greenhopper/2/' if altBase?
         url.format
-                protocol: 'http'
+                protocol: 'http:'
                 hostname: 'localhost'
                 auth: 'test:test'
                 port: 80
@@ -19,8 +19,23 @@ describe "Node Jira Tests", ->
         spyOn @jira, 'request'
         @cb = jasmine.createSpy 'callback'
 
+    it "Sets strictSSL to false when passed in", ->
+        expected = false
+        jira = new nodeJira.JiraApi 'http', 'localhost', 80, 'test', 'test', 2, false, expected
+        expect(jira.strictSSL).toEqual(expected)
+
+    it "Sets strictSSL to true when passed in", ->
+        expected = true
+        jira = new nodeJira.JiraApi 'http', 'localhost', 80, 'test', 'test', 2, false, expected
+        expect(jira.strictSSL).toEqual(expected)
+
+    it "Sets strictSSL to true when not passed in", ->
+        expected = true
+        expect(@jira.strictSSL).toEqual(expected)
+
     it "Finds an issue", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issue/1"
             method: 'GET'
         @jira.findIssue 1, @cb
@@ -43,6 +58,7 @@ describe "Node Jira Tests", ->
 
     it "Gets the unresolved issue count", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "version/1/unresolvedIssueCount"
             method: 'GET'
 
@@ -66,6 +82,7 @@ describe "Node Jira Tests", ->
 
     it "Gets the project from a key", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "project/ABC"
             method: 'GET'
 
@@ -84,6 +101,7 @@ describe "Node Jira Tests", ->
 
     it "Finds a Rapid View", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl("rapidviews/list", true)
             method: 'GET'
             json: true
@@ -110,6 +128,7 @@ describe "Node Jira Tests", ->
 
     it "Gets the last sprint for a Rapid View", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl("sprints/1", true)
             method: 'GET'
             json: true
@@ -135,6 +154,7 @@ describe "Node Jira Tests", ->
         
     it "Adds an issue to a sprint", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl("sprint/1/issues/add", true)
             method: 'PUT'
             json: true
@@ -155,6 +175,7 @@ describe "Node Jira Tests", ->
 
     it "Creates a Link Between two Issues", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issueLink"
             method: 'POST'
             json: true
@@ -178,6 +199,7 @@ describe "Node Jira Tests", ->
 
     it "Gets versions for a project", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "project/ABC/versions"
             method: 'GET'
 
@@ -199,6 +221,7 @@ describe "Node Jira Tests", ->
 
     it "Creates a version for a project", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "version"
             method: 'POST'
             json: true
@@ -230,6 +253,7 @@ describe "Node Jira Tests", ->
     it "Passes a search query to Jira, default options", ->
         fields = ["summary", "status", "assignee", "description"]
         options =
+            rejectUnauthorized: true
             uri: makeUrl "search"
             method: 'POST'
             json: true
@@ -259,6 +283,7 @@ describe "Node Jira Tests", ->
     it "Passes a search query to Jira, non-default options", ->
         fields = ["assignee", "description", "test"]
         options =
+            rejectUnauthorized: true
             uri: makeUrl "search"
             method: 'POST'
             json: true
@@ -283,6 +308,7 @@ describe "Node Jira Tests", ->
 
     it "Gets the sprint issues and information", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl("rapid/charts/sprintreport?rapidViewId=1&sprintId=1", true)
             method: 'GET'
             json: true
@@ -303,6 +329,7 @@ describe "Node Jira Tests", ->
 
     it "Deletes an Issue", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issue/1"
             method: 'DELETE'
             json: true
@@ -320,6 +347,7 @@ describe "Node Jira Tests", ->
 
     it "Updates an Issue", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issue/1"
             body: 'updateGoesHere'
             method: 'PUT'
@@ -338,6 +366,7 @@ describe "Node Jira Tests", ->
 
     it "Lists Transitions", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issue/1/transitions"
             method: 'GET'
             json: true
@@ -358,6 +387,7 @@ describe "Node Jira Tests", ->
 
     it "Transitions an issue", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issue/1/transitions"
             body: 'someTransition'
             method: 'POST'
@@ -376,6 +406,7 @@ describe "Node Jira Tests", ->
 
     it "Lists Projects", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "project"
             method: 'GET'
             json: true
@@ -395,6 +426,7 @@ describe "Node Jira Tests", ->
 
     it "Adds a worklog to a project", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issue/1/worklog"
             body: 'aWorklog'
             method: 'POST'
@@ -420,6 +452,7 @@ describe "Node Jira Tests", ->
 
     it "Lists Issue Types", ->
         options =
+            rejectUnauthorized: true
             uri: makeUrl "issuetype"
             method: 'GET'
             json: true
