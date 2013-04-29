@@ -33,7 +33,7 @@ Find the status of an issue.
 
     var jira = new JiraApi('https', config.host, config.port, config.user, config.password, '2.0.alpha1');
     jira.findIssue(issueNumber, function(error, issue) {
-        console.log('Status: ' + issue.fields.status.value.name);
+        console.log('Status: ' + issue.fields.status.name);
     });
 
 Currently there is no explicit login call necessary as each API call uses Basic Authentication to authenticate. 
