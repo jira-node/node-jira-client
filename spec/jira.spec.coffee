@@ -424,6 +424,28 @@ describe "Node Jira Tests", ->
         @jira.request.mostRecentCall.args[1] null, statusCode:200, "body"
         expect(@cb).toHaveBeenCalledWith null, "body"
 
+    it "Adds a comment to an issue", ->
+        options =
+            rejectUnauthorized: true
+            uri: makeUrl "issue/1/comment"
+            body: {
+                'body': 'aComment'
+            }
+            method: 'POST'
+            followAllRedirects: true
+            json: true
+
+        @jira.addComment 1, 'aComment', @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:400,
+            '{"body:"none"}'
+        expect(@cb).toHaveBeenCalledWith 'Invalid Fields: "{\\"body:\\"none\\"}"'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null, statusCode:201
+        expect(@cb).toHaveBeenCalledWith null, "Success"
+
     it "Adds a worklog to a project", ->
         options =
             rejectUnauthorized: true
