@@ -364,6 +364,24 @@ describe "Node Jira Tests", ->
         @jira.request.mostRecentCall.args[1] null, statusCode:200
         expect(@cb).toHaveBeenCalledWith null, 'Success'
 
+    it "Assigns an Issue", ->
+        options =
+            rejectUnauthorized: true
+            uri: makeUrl "issue/1/assignee"
+            json: {name: 'newAssignee'}
+            method: 'PUT'
+            followAllRedirects: true
+
+        @jira.assign 1, 'newAssignee', @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:400
+        expect(@cb).toHaveBeenCalledWith '400: Error while assigning'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null, statusCode:204
+        expect(@cb).toHaveBeenCalledWith null, 'Success'
+
     it "Lists Transitions", ->
         options =
             rejectUnauthorized: true
