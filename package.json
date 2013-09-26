@@ -22,7 +22,8 @@
     }
   ],
   "dependencies": {
-    "request": "<2.16.0"
+    "request": "<2.16.0",
+    "form-data": "0.0.10"
   },
   "scripts": {
     "test": "grunt test"
