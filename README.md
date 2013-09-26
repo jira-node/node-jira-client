@@ -92,6 +92,8 @@ JiraApi options:
 ## Changelog ##
 
 
+*  _0.7.1 Check if body variable is undef (thanks to
+        [AlexCline](https://github.com/AlexCline))_
 *  _0.7.0 Adds list priorities, list fields, and project components (thanks to
         [eduardolundgren](https://github.com/eduardolundgren))_
 *  _0.6.0 Comment API implemented (thanks to [StevenMcD](https://github.com/StevenMcD))_
