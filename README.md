@@ -83,6 +83,8 @@ JiraApi options:
   *  Add a comment
 *  Transitions
   *  List
+*  Users
+  *  Search
 
 ## TODO ##
 
@@ -93,6 +95,8 @@ JiraApi options:
 
 
 
+*  _0.8.0 Ability to search users (thanks to
+        [eduardolundgren](https://github.com/eduardolundgren))_
 *  _0.7.2 Allows HTTP Code 204 on issue update edit (thanks to
         [eduardolundgren](https://github.com/eduardolundgren))_
 *  _0.7.1 Check if body variable is undef (thanks to
