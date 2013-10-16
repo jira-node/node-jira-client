@@ -367,7 +367,7 @@ describe "Node Jira Tests", ->
     it "Lists Transitions", ->
         options =
             rejectUnauthorized: true
-            uri: makeUrl "issue/1/transitions"
+            uri: makeUrl "issue/1/transitions?expand=transitions.fields"
             method: 'GET'
             json: true
 
