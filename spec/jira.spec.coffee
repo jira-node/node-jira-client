@@ -6,12 +6,13 @@ describe "Node Jira Tests", ->
     makeUrl = (path, altBase) ->
         base = 'rest/api/2/'
         base = 'rest/greenhopper/2/' if altBase?
-        url.format
+        decodeURIComponent(
+            url.format
                 protocol: 'http:'
                 hostname: 'localhost'
                 auth: 'test:test'
                 port: 80
-                pathname: "#{base}#{path}"
+                pathname: "#{base}#{path}")
 
 
     beforeEach ->
