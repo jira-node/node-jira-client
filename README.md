@@ -95,6 +95,8 @@ JiraApi options:
 
 
 
+*  _0.8.2 Fix URL Format Issues (thanks to
+        [eduardolundgren](https://github.com/eduardolundgren))_
 *  _0.8.1 Expanding the transitions options (thanks to
         [eduardolundgren](https://github.com/eduardolundgren))_
 *  _0.8.0 Ability to search users (thanks to
