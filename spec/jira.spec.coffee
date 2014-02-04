@@ -130,7 +130,7 @@ describe "Node Jira Tests", ->
     it "Gets the last sprint for a Rapid View", ->
         options =
             rejectUnauthorized: true
-            uri: makeUrl("sprints/1", true)
+            uri: makeUrl("sprintquery/1", true)
             method: 'GET'
             json: true
 
