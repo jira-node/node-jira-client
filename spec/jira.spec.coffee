@@ -10,7 +10,6 @@ describe "Node Jira Tests", ->
             url.format
                 protocol: 'http:'
                 hostname: 'localhost'
-                auth: 'test:test'
                 port: 80
                 pathname: "#{base}#{path}")
 
@@ -39,6 +38,9 @@ describe "Node Jira Tests", ->
             rejectUnauthorized: true
             uri: makeUrl "issue/1"
             method: 'GET'
+            auth:
+              user: 'test'
+              pass: 'test'
         @jira.findIssue 1, @cb
         expect(@jira.request)
             .toHaveBeenCalledWith(options, jasmine.any(Function))
@@ -62,6 +64,9 @@ describe "Node Jira Tests", ->
             rejectUnauthorized: true
             uri: makeUrl "version/1/unresolvedIssueCount"
             method: 'GET'
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.getUnresolvedIssueCount 1, @cb
         expect(@jira.request)
@@ -86,6 +91,9 @@ describe "Node Jira Tests", ->
             rejectUnauthorized: true
             uri: makeUrl "project/ABC"
             method: 'GET'
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.getProject 'ABC', @cb
         expect(@jira.request)
@@ -106,6 +114,9 @@ describe "Node Jira Tests", ->
             uri: makeUrl("rapidviews/list", true)
             method: 'GET'
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.findRapidView 'ABC', @cb
         expect(@jira.request)
@@ -133,6 +144,9 @@ describe "Node Jira Tests", ->
             uri: makeUrl("sprints/1", true)
             method: 'GET'
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.getLastSprintForRapidView 1, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -162,6 +176,9 @@ describe "Node Jira Tests", ->
             followAllRedirects: true
             body:
                 issueKeys: [2]
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.addIssueToSprint 2, 1, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -182,6 +199,9 @@ describe "Node Jira Tests", ->
             json: true
             body: 'test'
             followAllRedirects: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.issueLink 'test', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -203,6 +223,9 @@ describe "Node Jira Tests", ->
             rejectUnauthorized: true
             uri: makeUrl "project/ABC/versions"
             method: 'GET'
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.getVersions 'ABC', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -228,6 +251,9 @@ describe "Node Jira Tests", ->
             json: true
             body: 'ABC'
             followAllRedirects: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.createVersion 'ABC', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -264,6 +290,9 @@ describe "Node Jira Tests", ->
                 startAt: 0
                 maxResults: 50
                 fields: fields
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.searchJira 'aJQLstring', {}, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -294,6 +323,9 @@ describe "Node Jira Tests", ->
                 startAt: 200
                 maxResults: 100
                 fields: fields
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.searchJira 'aJQLstring', { maxResults: 100, fields: fields, startAt: 200 }, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -313,6 +345,9 @@ describe "Node Jira Tests", ->
             uri: makeUrl("rapid/charts/sprintreport?rapidViewId=1&sprintId=1", true)
             method: 'GET'
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.getSprintIssues 1, 1, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -335,6 +370,9 @@ describe "Node Jira Tests", ->
             method: 'DELETE'
             json: true
             followAllRedirects: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.deleteIssue 1, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -354,6 +392,9 @@ describe "Node Jira Tests", ->
             method: 'PUT'
             json: true
             followAllRedirects: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.updateIssue 1, 'updateGoesHere', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -371,6 +412,9 @@ describe "Node Jira Tests", ->
             uri: makeUrl "issue/1/transitions?expand=transitions.fields"
             method: 'GET'
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.listTransitions 1, @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -394,6 +438,9 @@ describe "Node Jira Tests", ->
             method: 'POST'
             followAllRedirects: true
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.transitionIssue 1, 'someTransition', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -411,6 +458,9 @@ describe "Node Jira Tests", ->
             uri: makeUrl "project"
             method: 'GET'
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.listProjects @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -435,6 +485,9 @@ describe "Node Jira Tests", ->
             method: 'POST'
             followAllRedirects: true
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.addComment 1, 'aComment', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -455,6 +508,9 @@ describe "Node Jira Tests", ->
             method: 'POST'
             followAllRedirects: true
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.addWorklog 1, 'aWorklog', @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
@@ -479,6 +535,9 @@ describe "Node Jira Tests", ->
             uri: makeUrl "issuetype"
             method: 'GET'
             json: true
+            auth:
+              user: 'test'
+              pass: 'test'
 
         @jira.listIssueTypes @cb
         expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
