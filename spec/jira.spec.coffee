@@ -548,3 +548,23 @@ describe "Node Jira Tests", ->
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200, "body"
         expect(@cb).toHaveBeenCalledWith null, "body"
+
+    it "Retrieves a Rapid View Backlog", ->
+        options =
+            rejectUnauthorized: true
+            uri: makeUrl("xboard/plan/backlog/data?rapidViewId=123", true)
+            method: 'GET'
+            json: true
+            auth:
+              user: 'test'
+              pass: 'test'
+
+        @jira.getBacklogForRapidView 123, @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:500
+        expect(@cb).toHaveBeenCalledWith '500: Error while retrieving backlog'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null, statusCode:200, body: issues: ['test']
+        expect(@cb).toHaveBeenCalledWith null, issues: ['test']
