@@ -1,6 +1,7 @@
 url         = require 'url'
 
-nodeJira    = require '../lib/jira'
+rewire = require 'rewire'
+nodeJira    = rewire '../lib/jira'
 
 describe "Node Jira Tests", ->
     makeUrl = (path, altBase) ->
@@ -15,9 +16,37 @@ describe "Node Jira Tests", ->
 
 
     beforeEach ->
+        OAuth = nodeJira.__get__ "OAuth"
+        OAuth.OAuth.prototype = jasmine.createSpyObj 'OAuth', ['getOAuthRequestToken', '_encodeData']
+        nodeJira.__set__ "OAuth", OAuth
+
         @jira = new nodeJira.JiraApi 'http', 'localhost', 80, 'test', 'test', 2
         spyOn @jira, 'request'
         @cb = jasmine.createSpy 'callback'
+
+    it "Sets basic auth if oauth is not passed in", ->
+        options =
+            auth =
+              user: 'test'
+              pass: 'test'
+        @jira.doRequest options, @cb
+        expect(@jira.request)
+            .toHaveBeenCalledWith(options, jasmine.any(Function))
+
+    it "Sets OAuth oauth for the requests if oauth is passed in", ->
+        options = 
+            oauth = 
+              consumer_key: 'ck'
+              consumer_secret: 'cs'
+              access_token: 'ac'
+              access_token_secret: 'acs'
+        # oauth = new OAuth.OAuth(null, null, oauth.consumer_key, oauth.consumer_secret, null, null, "RSA-SHA1")
+        @jira = new nodeJira.JiraApi 'http', 'localhost', 80, 'test', 'test', 2, false, false, options.oauth
+        spyOn @jira, 'request'
+
+        @jira.doRequest options, @cb
+        expect(@jira.request)
+            .toHaveBeenCalledWith(options, jasmine.any(Function))
 
     it "Sets strictSSL to false when passed in", ->
         expected = false

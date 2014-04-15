@@ -22,7 +22,8 @@
     }
   ],
   "dependencies": {
-    "request": "<2.16.0"
+    "request": "<2.16.0",
+    "oauth": "^0.9.11"
   },
   "scripts": {
     "test": "grunt test"
@@ -33,6 +34,7 @@
     "grunt-docco": "^0.3.3",
     "grunt-jasmine-node": "^0.2.1",
     "coffee-script": "^1.7.1",
-    "grunt-jslint": "^1.1.8"
+    "grunt-jslint": "^1.1.8",
+    "rewire": "^2.0.0"
   }
 }
