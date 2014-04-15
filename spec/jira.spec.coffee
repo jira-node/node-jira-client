@@ -529,6 +529,35 @@ describe "Node Jira Tests", ->
         @jira.request.mostRecentCall.args[1] null, statusCode:201
         expect(@cb).toHaveBeenCalledWith null, "Success"
 
+    it "Adds a worklog to a project with remaining time set", ->
+        options =
+            rejectUnauthorized: true
+            uri: makeUrl "issue/1/worklog?adjustEstimate=new&newEstimate=1h"
+            body: 'aWorklog'
+            method: 'POST'
+            followAllRedirects: true
+            json: true
+            auth:
+              user: 'test'
+              pass: 'test'
+
+        @jira.addWorklog 1, 'aWorklog', '1h', @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:400,
+            '{"body:"none"}'
+        expect(@cb).toHaveBeenCalledWith 'Invalid Fields: "{\\"body:\\"none\\"}"'
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:403
+        expect(@cb).toHaveBeenCalledWith 'Insufficient Permissions'
+
+        @jira.request.mostRecentCall.args[1] null, statusCode:401
+        expect(@cb).toHaveBeenCalledWith '401: Error while updating'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null, statusCode:201
+        expect(@cb).toHaveBeenCalledWith null, "Success"
+
     it "Lists Issue Types", ->
         options =
             rejectUnauthorized: true
