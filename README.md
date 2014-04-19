@@ -21,7 +21,7 @@ or
 
   Install via git clone:
 
-    $ git clone git://git://github.com/steves/node-jira.git
+    $ git clone git://github.com/steves/node-jira.git
     $ cd node-jira
     $ npm install
 
