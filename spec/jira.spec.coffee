@@ -368,6 +368,15 @@ describe "Node Jira Tests", ->
         expect(@jira.searchJira).toHaveBeenCalledWith expected, {},
             jasmine.any(Function)
 
+    it "Properly Escapes @'s in Usernames", ->
+        spyOn @jira, 'searchJira'
+        expected = "assignee = email\\u0040example.com AND status in (Open, \"In Progress\",
+ Reopened)"
+
+        @jira.getUsersIssues 'email@example.com', true, @cb
+        expect(@jira.searchJira).toHaveBeenCalledWith expected, {},
+            jasmine.any(Function)
+
     it "Gets the sprint issues and information", ->
         options =
             rejectUnauthorized: true
