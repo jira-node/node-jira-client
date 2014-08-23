@@ -25,18 +25,53 @@ or
     $ cd node-jira
     $ npm install
 
-## Example ##
+## Examples ##
 
-Find the status of an issue.
+### Create the JIRA client ###
 
     JiraApi = require('jira').JiraApi;
-
+    
     var jira = new JiraApi('https', config.host, config.port, config.user, config.password, '2.0.alpha1');
+
+### Find the status of an issue ###
+
     jira.findIssue(issueNumber, function(error, issue) {
         console.log('Status: ' + issue.fields.status.name);
     });
 
+
 Currently there is no explicit login call necessary as each API call uses Basic Authentication to authenticate. 
+
+### Get an issue remote links ###
+
+Returns an array of remote links data.
+
+    jira.getRemoteLinks(issueKey, function(err, links) {
+        if (!err) {
+            console.log(issueKey + ' has ' + links.length + ' web links');
+        }
+    });
+
+### Create a remote link on an issue ###
+
+Returns an array of remote links data.
+    
+    // create a web link to a GitHub issue
+    var linkData = {
+        "object": {
+            "url" : "https://github.com/steves/node-jira/issues/1",
+            "title": "Add getVersions and createVersion functions",
+            "icon" : {
+                "url16x16": "https://github.com/favicon.ico"
+            }
+        }
+    };
+    
+    jira.createRemoteLink(issueKey, linkData, function (err, link) {
+        
+    });
+
+More information can be found by checking [JIRA Developer documentation](https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+for+Remote+Issue+Links#JIRARESTAPIforRemoteIssueLinks-CreatingLinks).
 
 ## Options ##
 
@@ -84,6 +119,9 @@ JiraApi options:
   *  Add a worklog
   *  Add new estimate for worklog
   *  Add a comment
+  *  Remote links (aka Web Links)
+    * Create a remote link on an issue
+    * Get all remote links of an issue
 *  Transitions
   *  List
 *  Users
