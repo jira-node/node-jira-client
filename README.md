@@ -97,7 +97,7 @@ JiraApi options:
 ## Changelog ##
 
 
-* _0.9.1 Smaller fixes and features added_
+* _0.9.2 Smaller fixes and features added_
   * proper doRequest usage (thanks to [ndamnjanovic](https://github.com/ndamnjanovic))
   * Support for @ in usernames (thanks to [ryanplasma](https://github.com/ryanplasma))
   * Handling empty responses in getIssue
