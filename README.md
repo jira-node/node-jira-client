@@ -97,7 +97,10 @@ JiraApi options:
 ## Changelog ##
 
 
-
+* _0.9.1 Smaller fixes and features added
+  * updateVersion method
+  * Support for @ in usernames
+  * Handling empty responses in getIssue
 *  _0.9.0 Add OAuth Support and New Estimates on addWorklog (thanks to
    [nagyv](https://github.com/nagyv))_
 *  _0.8.2 Fix URL Format Issues (thanks to

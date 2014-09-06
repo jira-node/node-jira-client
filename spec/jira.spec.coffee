@@ -466,7 +466,7 @@ describe "Node Jira Tests", ->
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200,
             transitions:"someTransitions"
-        expect(@cb).toHaveBeenCalledWith null, "someTransitions"
+        expect(@cb).toHaveBeenCalledWith null, {transitions:"someTransitions"}
 
     it "Transitions an issue", ->
         options =
