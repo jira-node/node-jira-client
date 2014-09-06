@@ -97,12 +97,11 @@ JiraApi options:
 ## Changelog ##
 
 
-* _0.9.1 Smaller fixes and features added
-  * updateVersion method
-  * Support for @ in usernames
+* _0.9.1 Smaller fixes and features added_
+  * proper doRequest usage (thanks to [ndamnjanovic](https://github.com/ndamnjanovic))
+  * Support for @ in usernames (thanks to [ryanplasma](https://github.com/ryanplasma))
   * Handling empty responses in getIssue
-*  _0.9.0 Add OAuth Support and New Estimates on addWorklog (thanks to
-   [nagyv](https://github.com/nagyv))_
+*  _0.9.0 Add OAuth Support and New Estimates on addWorklog (thanks to [nagyv](https://github.com/nagyv))_
 *  _0.8.2 Fix URL Format Issues (thanks to
         [eduardolundgren](https://github.com/eduardolundgren))_
 *  _0.8.1 Expanding the transitions options (thanks to
