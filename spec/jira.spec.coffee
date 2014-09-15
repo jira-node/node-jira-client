@@ -635,3 +635,58 @@ describe "Node Jira Tests", ->
         # Successful Request
         @jira.request.mostRecentCall.args[1] null, statusCode:200, body: issues: ['test']
         expect(@cb).toHaveBeenCalledWith null, issues: ['test']
+
+    it "Finds the remote links of an issue", ->
+        options =
+          rejectUnauthorized: true
+          uri: makeUrl "issue/1/remotelink"
+          method: 'GET'
+          json: true
+          auth:
+            user: 'test'
+            pass: 'test'
+        @jira.getRemoteLinks 1, @cb
+        expect(@jira.request)
+        .toHaveBeenCalledWith(options, jasmine.any(Function))
+
+        # Invalid issue number (different than unable to find??)
+        @jira.request.mostRecentCall.args[1] null, statusCode:404, null
+        expect(@cb).toHaveBeenCalledWith 'Invalid issue number.'
+
+        # Unable to find issue
+        @jira.request.mostRecentCall.args[1] null, statusCode:401, null
+        expect(@cb).toHaveBeenCalledWith(
+          '401: Unable to connect to JIRA during request.')
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null,
+          statusCode:200, body:"none"
+        expect(@cb).toHaveBeenCalledWith(null, 'none')
+
+    it "Creates a remote link", ->
+        options =
+          rejectUnauthorized: true
+          uri: makeUrl "issue/1/remotelink"
+          method: 'POST'
+          json: true
+          body: 'test'
+          auth:
+            user: 'test'
+            pass: 'test'
+
+        @jira.createRemoteLink 1, 'test', @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        # Invalid Issue
+        @jira.request.mostRecentCall.args[1] null, statusCode:404, null
+        expect(@cb).toHaveBeenCalledWith 'Cannot create remote link. Invalid issue.'
+
+        response =
+          statusCode:400
+          body:
+            errors:
+              title: 'test'
+        @jira.request.mostRecentCall.args[1] null, response
+        expect(@cb).toHaveBeenCalledWith(
+          'Cannot create remote link. test')
+
