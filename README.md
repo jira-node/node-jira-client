@@ -84,6 +84,8 @@ JiraApi options:
 *  `Jira API Version<string>`: Known to work with `2` and `2.0.alpha1`
 *  `verbose<bool>`: Log some info to the console, usually for debugging
 *  `strictSSL<bool>`: Set to false if you have self-signed certs or something non-trustworthy
+*  `oauth`: A dictionary of `consumer_key`, `consumer_secret`, `access_token` and `access_token_secret` to be used for OAuth authentication.
+*  `base<string>`: A base slug if your JIRA instance is not at the root of `host`
 
 ## Implemented APIs ##
 
