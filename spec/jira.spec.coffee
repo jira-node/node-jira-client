@@ -538,6 +538,28 @@ describe "Node Jira Tests", ->
         @jira.request.mostRecentCall.args[1] null, statusCode:201
         expect(@cb).toHaveBeenCalledWith null, "Success"
 
+    it "Adds a watcher to an issue", ->
+        options =
+            rejectUnauthorized: true
+            uri: makeUrl "issue/1/watchers"
+            body: JSON.stringify "testuser"
+            method: 'POST'
+            followAllRedirects: true
+            json: true
+            auth:
+                user: 'test'
+                pass: 'test'
+
+        @jira.addWatcher 1, "testuser", @cb
+        expect(@jira.request).toHaveBeenCalledWith options, jasmine.any(Function)
+
+        @jira.request.mostRecentCall.args[1] null, statusCode: 400
+        expect(@cb).toHaveBeenCalledWith '400: Unable to connect to JIRA to add user as watcher.'
+
+        # Successful Request
+        @jira.request.mostRecentCall.args[1] null, statusCode: 204
+        expect(@cb).toHaveBeenCalledWith
+
     it "Adds a worklog to a project", ->
         options =
             rejectUnauthorized: true

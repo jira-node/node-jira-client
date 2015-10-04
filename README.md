@@ -107,6 +107,7 @@ JiraApi options:
 *  Issues
   *  Add a new issue
   *  Update an issue
+  *  Add watcher to an issue
   *  Transition an issue
   *  Pulling an issue
   *  Issue linking
