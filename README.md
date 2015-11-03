@@ -118,6 +118,7 @@ JiraApi options:
     *  Set Max Results
     *  Set Start-At parameter for results
   *  Add a worklog
+  *  Delete a worklog
   *  Add new estimate for worklog
   *  Add a comment
   *  Remote links (aka Web Links)
