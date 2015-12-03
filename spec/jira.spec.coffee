@@ -307,7 +307,6 @@ describe "Node Jira Tests", ->
         expect(@cb).toHaveBeenCalledWith null, '{"body":"none"}'
 
     it "Passes a search query to Jira, default options", ->
-        fields = ["summary", "status", "assignee", "description"]
         options =
             rejectUnauthorized: true
             uri: makeUrl "search"
@@ -318,7 +317,8 @@ describe "Node Jira Tests", ->
                 jql: 'aJQLstring'
                 startAt: 0
                 maxResults: 50
-                fields: fields
+                fields: ["summary", "status", "assignee", "description"]
+                expand: ["schema", "names"]
             auth:
               user: 'test'
               pass: 'test'
@@ -352,6 +352,7 @@ describe "Node Jira Tests", ->
                 startAt: 200
                 maxResults: 100
                 fields: fields
+                expand: ["schema", "names"]
             auth:
               user: 'test'
               pass: 'test'
