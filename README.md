@@ -1,6 +1,6 @@
 # JavaScript JIRA API for node.js #
 
-[![Build Status](https://travis-ci.org/steves/node-jira.png?branch=master)](https://travis-ci.org/steves/node-jira)
+[![Build Status](https://travis-ci.org/node-jira/node-jira-client.png?branch=master)](https://travis-ci.org/node-jira/node-jira-client)
 
 A node.js module, which provides an object oriented wrapper for the JIRA REST API.
 
@@ -21,8 +21,8 @@ or
 
   Install via git clone:
 
-    $ git clone git://github.com/steves/node-jira.git
-    $ cd node-jira
+    $ git clone git://github.com/node-jira/node-jira-client.git
+    $ cd node-jira-client
     $ npm install
 
 ## Examples ##
@@ -59,7 +59,7 @@ Returns an array of remote links data.
     // create a web link to a GitHub issue
     var linkData = {
         "object": {
-            "url" : "https://github.com/steves/node-jira/issues/1",
+            "url" : "https://github.com/node-jira/node-jira-client/issues/1",
             "title": "Add getVersions and createVersion functions",
             "icon" : {
                 "url16x16": "https://github.com/favicon.ico"
