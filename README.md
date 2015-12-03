@@ -1,6 +1,6 @@
 # JavaScript JIRA API for node.js #
 
-[![Build Status](https://travis-ci.org/node-jira/node-jira-client.png?branch=master)](https://travis-ci.org/node-jira/node-jira-client)
+[![Build Status](https://travis-ci.org/jira-node/node-jira-client.png?branch=master)](https://travis-ci.org/node-jira/node-jira-client)
 
 A node.js module, which provides an object oriented wrapper for the JIRA REST API.
 
@@ -15,7 +15,7 @@ JIRA REST API documentation can be found [here](http://docs.atlassian.com/jira/R
 
   Install with the node package manager [npm](http://npmjs.org):
 
-    $ npm install jira
+    $ npm install jira-client
 
 or
 
@@ -29,7 +29,7 @@ or
 
 ### Create the JIRA client ###
 
-    JiraApi = require('jira').JiraApi;
+    JiraApi = require('jira-client').JiraApi;
     
     var jira = new JiraApi('https', config.host, config.port, config.user, config.password, '2.0.alpha1');
 
