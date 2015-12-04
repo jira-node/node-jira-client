@@ -25,7 +25,7 @@
     }
   ],
   "dependencies": {
-    "request": "<2.16.0"
+    "request-promise": "^1.0.2"
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
