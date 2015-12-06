@@ -1,39 +1,33 @@
 import request from 'request-promise';
 import url from 'url';
 
-export default function JiraApi(options) {
-  this.protocol = options.protocol;
-  this.host = options.host;
-  this.port = options.port;
-  this.username = options.username;
-  this.password = options.password;
-  this.apiVersion = options.apiVersion;
-  this.base = options.base;
-  // Default strictSSL to true (previous behavior) but now allow it to be
-  // modified
-  this.strictSSL = options.strictSSL || true;
-    // This is so we can fake during unit tests
-  this.request = options.request || request;
-  // This is the same almost every time, refactored to make changing it
-  // later, easier
-  this.makeUri = (pathname, altBase, altApiVersion) => {
-    let basePath = (options.altbase) ? options.altbase : 'rest/api/';
-    if (this.base) {
-      basePath = this.base + '/' + basePath;
-    }
+export default class JiraApi {
+  constructor(options) {
+    this.protocol = options.protocol;
+    this.host = options.host;
+    this.port = options.port;
+    this.username = options.username;
+    this.password = options.password;
+    this.apiVersion = options.apiVersion;
+    this.base = options.base;
+    this.strictSSL = options.strictSSL || true;
+      // This is so we can fake during unit tests
+    this.request = options.request || request;
+  }
 
-    const apiVersion = (options.altApiVersion) ? options.altApiVersion : this.apiVersion;
+  makeUri(pathname) {
+    const basePath = `${this.base || ''}/rest/api/`;
 
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${basePath}${apiVersion}${pathname}`
+      pathname: `${basePath}${this.apiVersion}${pathname}`
     });
     return decodeURIComponent(uri);
-  };
+  }
 
-  this.doRequest = (requestOptions) => {
+  doRequest(requestOptions) {
     if (this.username && this.password) {
       requestOptions.auth = {
         'user': this.username,
@@ -49,7 +43,7 @@ export default function JiraApi(options) {
 
         return response;
       });
-  };
+  }
 
   // ## Find an issue in jira ##
   // ### Takes ###
@@ -57,23 +51,15 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  issue: an object of the issue
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
-
-  this.findIssue = (issueNumber) => {
+  findIssue(issueNumber) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issue/' + issueNumber),
+      uri: this.makeUri(`/issue/${issueNumber}`),
       method: 'GET'
     };
 
-    return this.doRequest(requestOptions)
-      .then(htmlResponse => {
-        if (!htmlResponse) {
-          throw new Error('JIRA Rest API Response was undefined during findIssue request.');
-        }
-
-        return htmlResponse;
-      });
-  };
+    return this.doRequest(requestOptions);
+  }
 
   // ## Get the unresolved issue count ##
   // ### Takes ###
@@ -81,17 +67,16 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  count: count of unresolved issues for requested version
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288524)
-
-  this.getUnresolvedIssueCount = (version) => {
+  getUnresolvedIssueCount(version) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/version/' + version + '/unresolvedIssueCount'),
+      uri: this.makeUri(`/version/${version}/unresolvedIssueCount`),
       method: 'GET'
     };
 
     return this.doRequest(requestOptions)
       .then(response => response.issuesUnresolvedCount);
-  };
+  }
 
   // ## Get the Project by project key ##
   // ### Takes ###
@@ -100,25 +85,25 @@ export default function JiraApi(options) {
   // *  project: the json object representing the entire project
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289232)
 
-  this.getProject = (project) => {
+  getProject(project) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/project/' + project),
+      uri: this.makeUri(`/project/${project}`),
       method: 'GET'
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Find the Rapid View for a specified project ##
   // ### Takes ###
   // *  projectName: name for the project
   // ### Returns ###
   // *  rapidView: rapid view matching the projectName
-  this.findRapidView = (projectName) => {
+  findRapidView(projectName) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/rapidviews/list', 'rest/greenhopper/'),
+      uri: this.makeUri('/rapidviews/list'),
       method: 'GET',
       json: true
     };
@@ -128,17 +113,17 @@ export default function JiraApi(options) {
         const rapidViewResult = response.views.filter(x => x.name.toLowerCase() === projectName.toLowerCase());
         return rapidViewResult[0];
       });
-  };
+  }
 
   // ## Get a list of Sprints belonging to a Rapid View ##
   // ### Takes ###
   // *  rapidViewId: the id for the rapid view
   // ### Returns ###
   // *  sprints: the ?array? of sprints
-  this.getLastSprintForRapidView = (rapidViewId) => {
+  getLastSprintForRapidView(rapidViewId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/sprintquery/' + rapidViewId, 'rest/greenhopper/'),
+      uri: this.makeUri(`/sprintquery/${rapidViewId}`),
       method: 'GET',
       json:true
     };
@@ -147,7 +132,7 @@ export default function JiraApi(options) {
       .then(response => {
         return response.sprints.pop();
       });
-  };
+  }
 
   // ## Get the issues for a rapidView / sprint##
   // ### Takes ###
@@ -155,25 +140,25 @@ export default function JiraApi(options) {
   // *  sprintId: the id for the sprint
   // ### Returns ###
   // *  results: the object with the issues and additional sprint information
-  this.getSprintIssues = function getSprintIssues(rapidViewId, sprintId) {
+  getSprintIssues(rapidViewId, sprintId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/rapid/charts/sprintreport?rapidViewId=' + rapidViewId + '&sprintId=' + sprintId, 'rest/greenhopper/'),
+      uri: this.makeUri(`/rapid/charts/sprintreport?rapidViewId=${rapidViewId}&sprintId=${sprintId}`),
       method: 'GET',
       json: true
     };
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Add an issue to the project's current sprint ##
   // ### Takes ###
   // *  issueId: the id of the existing issue
   // *  sprintId: the id of the sprint to add it to
   // ### Returns ###
-  this.addIssueToSprint = (issueId, sprintId) => {
+  addIssueToSprint(issueId, sprintId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/sprint/' + sprintId + '/issues/add', 'rest/greenhopper/'),
+      uri: this.makeUri(`/sprint/${sprintId}/issues/add`),
       method: 'PUT',
       followAllRedirects: true,
       json:true,
@@ -183,7 +168,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Create an issue link between two issues ##
   // ### Takes ###
@@ -205,7 +190,7 @@ export default function JiraApi(options) {
    *   }
    * }
    */
-  this.issueLink = (link) => {
+  issueLink(link) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/issueLink'),
@@ -216,36 +201,36 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   /**
    * Retrieves the remote links associated with the given issue.
    */
-  this.getRemoteLinks = function getRemoteLinks(issueNumber) {
+  getRemoteLinks(issueNumber) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issue/' + issueNumber + '/remotelink'),
+      uri: this.makeUri(`/issue/${issueNumber}/remotelink`),
       method: 'GET',
       json: true
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   /**
    * Retrieves the remote links associated with the given issue.
    */
-  this.createRemoteLink = function createRemoteLink(issueNumber, remoteLink) {
+  createRemoteLink(issueNumber, remoteLink) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issue/' + issueNumber + '/remotelink'),
+      uri: this.makeUri(`/issue/${issueNumber}/remotelink`),
       method: 'POST',
       json: true,
       body: remoteLink
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Get Versions for a project ##
   // ### Takes ###
@@ -253,15 +238,15 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  versions: array of the versions for a product
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289653)
-  this.getVersions = (project) => {
+  getVersions(project) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/project/' + project + '/versions'),
+      uri: this.makeUri(`/project/${project}/versions`),
       method: 'GET'
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Create a version ##
   // ### Takes ###
@@ -280,7 +265,7 @@ export default function JiraApi(options) {
    *    "project": "PXA"
    * }
    */
-  this.createVersion = (version) => {
+  createVersion(version) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/version'),
@@ -290,7 +275,7 @@ export default function JiraApi(options) {
       body: version
     };
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Update a version ##
   // ### Takes ###
@@ -309,7 +294,7 @@ export default function JiraApi(options) {
    *    "project": "PXA"
    * }
    */
-  this.updateVersion = (version) => {
+  updateVersion(version) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/version/${version.id}`),
@@ -320,7 +305,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Pass a search query to Jira ##
   // ### Takes ###
@@ -336,7 +321,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  issues: array of issues for the user
   // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e4424)
-  this.searchJira = (searchString, optional) => {
+  searchJira(searchString, optional) {
     const theOptional = optional || {};
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -351,7 +336,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Search user on Jira ##
   // ### Takes ###
@@ -363,7 +348,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  users: array of users for the user
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
-  this.searchUsers = ({username, startAt, maxResults, includeActive, includeInactive}) => {
+  searchUsers({username, startAt, maxResults, includeActive, includeInactive}) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/user/search?username=${username}&startAt=${startAt || 0}&maxResults=${maxResults || 50}
@@ -374,7 +359,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Get all users in group on Jira ##
   // ### Takes ###
@@ -383,7 +368,7 @@ export default function JiraApi(options) {
   // maxResults: The maximum number of users to return (defaults to 50).
   // ### Returns ###
   // *  users: array of users for the user
-  this.getUsersInGroup = (groupName, startAt, maxResults) => {
+  getUsersInGroup(groupName, startAt, maxResults) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/group?groupname=${groupName}&expand=users[${startAt || 0}:${maxResults || 50}]`),
@@ -393,7 +378,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Get issues related to a user ##
   // ### Takes ###
@@ -402,9 +387,9 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  issues: array of issues for the user
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id296043)
-  this.getUsersIssues = (username, open) => {
+  getUsersIssues(username, open) {
     return this.searchJira(`assignee = ${username.replace('@', '\\u0040')} AND status in (Open, 'In Progress', Reopened) ${open}`, {});
-  };
+  }
 
   // ## Add issue to Jira ##
   // ### Takes ###
@@ -412,7 +397,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  Rest API response
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
-  this.addNewIssue = (issue) => {
+  addNewIssue(issue) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/issue'),
@@ -423,7 +408,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Add a user as a watcher on an issue ##
   // ### Takes ###
@@ -433,10 +418,10 @@ export default function JiraApi(options) {
   /**
    * Adds a given user as a watcher to the given issue
    */
-  this.addWatcher = (issueKey, username) => {
+  addWatcher(issueKey, username) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issue/' + issueKey + '/watchers'),
+      uri: this.makeUri(`/issue/${issueKey}/watchers`),
       method: 'POST',
       followAllRedirects: true,
       json: true,
@@ -444,7 +429,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Delete issue from Jira ##
   // ### Takes ###
@@ -452,7 +437,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success object
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
-  this.deleteIssue = (issueNum) => {
+  deleteIssue(issueNum) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueNum}`),
@@ -462,7 +447,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Update issue in Jira ##
   // ### Takes ###
@@ -470,7 +455,7 @@ export default function JiraApi(options) {
   // *  issueUpdate: update Object
   // ### Returns ###
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290878)
-  this.updateIssue = (issueNum, issueUpdate) => {
+  updateIssue(issueNum, issueUpdate) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueNum}`),
@@ -481,7 +466,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List Components ##
   // ### Takes ###
@@ -512,7 +497,7 @@ export default function JiraApi(options) {
    *     "isAssigneeTypeValid": true
    * }]
    */
-  this.listComponents = (project) => {
+  listComponents(project) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/project/${project}/components`),
@@ -521,7 +506,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Add component to Jira ##
   // ### Takes ###
@@ -529,7 +514,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success object
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
-  this.addNewComponent = (component) => {
+  addNewComponent(component) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/component'),
@@ -540,7 +525,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Delete component to Jira ##
   // ### Takes ###
@@ -548,7 +533,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success object
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
-  this.deleteComponent = (componentNum) => {
+  deleteComponent(componentNum) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/component/${componentNum}`),
@@ -558,13 +543,13 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List listFields ##
   // ### Returns ###
   // *  array of priorities
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
-  this.listFields = () => {
+  listFields() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/field'),
@@ -573,14 +558,14 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List listPriorities ##
   // ### Takes ###
   // ### Returns ###
   // *  array of priorities
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
-  this.listPriorities = () => {
+  listPriorities() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/priority'),
@@ -589,7 +574,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List Transitions ##
   // ### Takes ###
@@ -634,7 +619,7 @@ export default function JiraApi(options) {
    *      }
    *  ]}
    */
-  this.listTransitions = (issueId) => {
+  listTransitions(issueId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueId}/transitions?expand=transitions.fields`),
@@ -643,7 +628,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Transition issue in Jira ##
   // ### Takes ###
@@ -652,7 +637,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success string
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
-  this.transitionIssue = (issueNum, issueTransition) => {
+  transitionIssue(issueNum, issueTransition) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueNum}/transitions`),
@@ -663,7 +648,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List all Viewable Projects ##
   // ### Takes ###
@@ -683,7 +668,7 @@ export default function JiraApi(options) {
    *      }
    * }
    */
-  this.listProjects = () => {
+  listProjects() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/project'),
@@ -692,7 +677,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Add a comment to an issue ##
   // ### Takes ###
@@ -701,7 +686,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success string
   // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
-  this.addComment = (issueId, comment) => {
+  addComment(issueId, comment) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueId}/comment`),
@@ -714,7 +699,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Add a worklog to a project ##
   // ### Takes ###
@@ -750,7 +735,7 @@ export default function JiraApi(options) {
    *      "id": "100028"
    *  }
    */
-  this.addWorklog = (issueId, worklog, newEstimate) => {
+  addWorklog(issueId, worklog, newEstimate) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueId}/worklog${(newEstimate) ? '?adjustEstimate=new&newEstimate=' + newEstimate : ''}`),
@@ -761,7 +746,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Delete worklog from issue ##
   // ### Takes ###
@@ -770,7 +755,7 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success object
   // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e1673)
-  this.deleteWorklog = (issueId, worklogId) => {
+  deleteWorklog(issueId, worklogId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/issue/${issueId}/worklog/${worklogId}`),
@@ -780,7 +765,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List all Issue Types ##
   // ### Takes ###
@@ -798,7 +783,7 @@ export default function JiraApi(options) {
    *  "subtask": false
    * }
    */
-  this.listIssueTypes = () => {
+  listIssueTypes() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri('/issuetype'),
@@ -807,7 +792,7 @@ export default function JiraApi(options) {
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Register a webhook ##
   // ### Takes ###
@@ -830,17 +815,17 @@ export default function JiraApi(options) {
    *   lastUpdated: 1383247225784
    * }
    */
-  this.registerWebhook = (webhook) => {
+  registerWebhook(webhook) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/webhook', 'rest/webhooks/', '1.0'),
+      uri: this.makeUri('/webhook'),
       method: 'POST',
       json: true,
       body: webhook
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## List all registered webhooks ##
   // ### Takes ###
@@ -862,16 +847,16 @@ export default function JiraApi(options) {
    *   lastUpdated: 1383247225784
    * }
    */
-  this.listWebhooks = () => {
+  listWebhooks() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/webhook', 'rest/webhooks/', '1.0'),
+      uri: this.makeUri('/webhook'),
       method: 'GET',
       json: true
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Get a webhook by its ID ##
   // ### Takes ###
@@ -879,16 +864,16 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  webhook object
   // [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
-  this.getWebhook = (webhookID) => {
+  getWebhook(webhookID) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/webhook/' + webhookID, 'rest/webhooks/', '1.0'),
+      uri: this.makeUri(`/webhook/${webhookID}`),
       method: 'GET',
       json: true
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Delete a registered webhook ##
   // ### Takes ###
@@ -896,16 +881,16 @@ export default function JiraApi(options) {
   // ### Returns ###
   // *  success string
   // [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
-  this.deleteWebhook = (webhookID) => {
+  deleteWebhook(webhookID) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/webhook/' + webhookID, 'rest/webhooks/', '1.0'),
+      uri: this.makeUri(`/webhook/${webhookID}`),
       method: 'DELETE',
       json: true
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Describe the currently authenticated user ##
   // ### Takes ###
@@ -926,16 +911,16 @@ export default function JiraApi(options) {
    *   }
    * }
    */
-  this.getCurrentUser = () => {
+  getCurrentUser() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/session', 'rest/auth/', '1'),
+      uri: this.makeUri('/session'),
       method: 'GET',
       json: true
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 
   // ## Retrieve the backlog of a certain Rapid View ##
   // ### Takes ###
@@ -1000,14 +985,14 @@ export default function JiraApi(options) {
    *      }
    *  }
    */
-  this.getBacklogForRapidView = (rapidViewId) => {
+  getBacklogForRapidView(rapidViewId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/xboard/plan/backlog/data?rapidViewId=' + rapidViewId, 'rest/greenhopper/'),
+      uri: this.makeUri(`/xboard/plan/backlog/data?rapidViewId=${rapidViewId}`),
       method: 'GET',
       json: true
     };
 
     return this.doRequest(requestOptions);
-  };
+  }
 }
