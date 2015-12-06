@@ -3,7 +3,12 @@
     "exchange-solutions/base"
   ],
   "env": {
+    "mocha": "mocha",
     "node": true
+  },
+  "globals": {
+    "assert": true,
+    "expect": true
   },
   "parser": "babel-eslint",
   "rules": {

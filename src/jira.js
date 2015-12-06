@@ -1,6 +1,20 @@
 import request from 'request-promise';
 import url from 'url';
 
+/**
+ * Wrapper for the JIRA Rest Api
+ * @constructor
+ * @param {object} options - All other parameters to this function are fields on this object.
+ * @param {string} protocol - What protocol to use to connect to jira? Ex: http|https
+ * @param {string} host - What host is this tool connecting to for the jira instance? Ex: jira.somehost.com
+ * @param {string} port - What port is this tool connecting to jira with? Ex: 8080, 3000, etc
+ * @param {string} username - [Optional] Specify a username for this tool to authenticate all requests with.
+ * @param {string} password - [Optional] Specify a password for this tool to authenticate all requests with.
+ * @param {string} apiVersion - What version of the jira rest api is the instance the tool is connecting to?
+ * @param {string} base - [Optional] What other url parts exist, if any, before the rest/api/ section?
+ * @param {boolean} strictSSL - Does this tool require each request to be authenticated?  Defaults to true.
+ * @param {function} request - [Optional] - What method does this tool use to make its requests?  Defaults to request from request-promise
+ */
 export default class JiraApi {
   constructor(options) {
     this.protocol = options.protocol;
@@ -9,24 +23,30 @@ export default class JiraApi {
     this.username = options.username;
     this.password = options.password;
     this.apiVersion = options.apiVersion;
-    this.base = options.base;
+    this.base = options.base || '';
     this.strictSSL = options.strictSSL || true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
   }
 
-  makeUri(pathname) {
-    const basePath = `${this.base || ''}/rest/api/`;
-
+  /**
+   * Creates a URI object for a given pathName
+   * @param {string} pathName - The url after the /rest/api/version
+   */
+  makeUri(pathName) {
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${basePath}${this.apiVersion}${pathname}`
+      pathname: `${this.base}/rest/api/${this.apiVersion}${pathName}`
     });
     return decodeURIComponent(uri);
   }
 
+  /**
+   * Does a request based on the requestOptions object
+   * @param {object} requestOptions - fields on this object get posted as a request header for requests to jira
+   */
   doRequest(requestOptions) {
     if (this.username && this.password) {
       requestOptions.auth = {
@@ -34,6 +54,7 @@ export default class JiraApi {
         'pass': this.password
       };
     }
+
     return this.request(requestOptions)
       .then(response => { return JSON.parse(response.body); })
       .then(response => {
@@ -45,11 +66,10 @@ export default class JiraApi {
       });
   }
 
-  // ## Find an issue in jira ##
-  // ### Takes ###
-  // *  issueNumber: the issueNumber to find
-  // ### Returns ###
-  // *  issue: an object of the issue
+  /**
+   * Find an issue in jira
+   * @param {string} issueNumber - The issue number to search for including the project key
+   */
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
   findIssue(issueNumber) {
     const requestOptions = {
@@ -61,11 +81,10 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Get the unresolved issue count ##
-  // ### Takes ###
-  // *  version: version of your product that you want issues against
-  // ### Returns ###
-  // *  count: count of unresolved issues for requested version
+  /**
+   * Get the unresolved issue count
+   * @param {string} version - the version of your product you want to find the unresolved issues of.
+   */
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288524)
   getUnresolvedIssueCount(version) {
     const requestOptions = {
@@ -351,8 +370,7 @@ export default class JiraApi {
   searchUsers({username, startAt, maxResults, includeActive, includeInactive}) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/user/search?username=${username}&startAt=${startAt || 0}&maxResults=${maxResults || 50}
-                        &includeActive=${includeActive || true}&includeInactive=${includeInactive || false}`),
+      uri: this.makeUri(`/user/search?username=${username}&startAt=${startAt || 0}&maxResults=${maxResults || 50}&includeActive=${includeActive || true}&includeInactive=${includeInactive || false}`),
       method: 'GET',
       json: true,
       followAllRedirects: true

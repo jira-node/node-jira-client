@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 
-chai.should();
+global.should = chai.should();
 chai.use(chaiAsPromised);
 
 global.expect = chai.expect;
