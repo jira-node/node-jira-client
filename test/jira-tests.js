@@ -1,18 +1,24 @@
 import JiraApi from '../src/jira.js';
 
+function getOptions(options) {
+  const actualOptions = options || {};
+  return {
+    protocol: actualOptions.protocol || 'http',
+    host: actualOptions.host || 'jira.somehost.com',
+    port: actualOptions.port || '8080',
+    username: actualOptions.username || 'someusername',
+    password: actualOptions.password || 'somepassword',
+    apiVersion: actualOptions.apiVersion || '2.0',
+    base: actualOptions.base || '',
+    strictSSL: actualOptions.strictSSL || true,
+    request: actualOptions.request
+  };
+}
+
 describe('Jira API Tests', () => {
   describe('Constructor Tests', () => {
     it('Constructor functions properly', () => {
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
-        username: 'someusername',
-        password: 'somepassword',
-        apiVersion: '2.0',
-        base: '',
-        strictSSL: true
-      });
+      const jira = new JiraApi(getOptions());
 
       expect(jira.protocol).to.eql('http');
       expect(jira.host).to.eql('jira.somehost.com');
@@ -25,15 +31,7 @@ describe('Jira API Tests', () => {
 
   describe('makeUri Tests', () => {
     it('makeUri functions properly in the average case', () => {
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
-        username: 'someusername',
-        password: 'somepassword',
-        apiVersion: '2.0',
-        strictSSL: true
-      });
+      const jira = new JiraApi(getOptions());
 
       expect(jira.makeUri('/somePathName'))
         .to.eql('http://jira.somehost.com:8080/rest/api/2.0/somePathName');
@@ -50,14 +48,11 @@ describe('Jira API Tests', () => {
       function dummyRequest(requestOptions) {
         return Promise.resolve(dummyObject);
       }
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
-        apiVersion: '2.0',
-        strictSSL: true,
-        request: dummyRequest
-      });
+      const jira = new JiraApi(
+        getOptions({
+          request: dummyRequest
+        })
+      );
 
       jira.doRequest({})
         .should.eventually.eql(JSON.parse(dummyObject.body))
@@ -70,16 +65,11 @@ describe('Jira API Tests', () => {
           body: JSON.stringify(requestOptions)
         });
       }
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
+      const jira = new JiraApi(getOptions({
         username: 'someusername',
         password: 'somepassword',
-        apiVersion: '2.0',
-        strictSSL: true,
         request: dummyRequest
-      });
+      }));
 
       jira.doRequest({})
         .then(resultObject => {
@@ -98,16 +88,11 @@ describe('Jira API Tests', () => {
       function dummyRequest(requestOptions) {
         return Promise.resolve(dummyObject);
       }
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
-        username: 'someusername',
-        password: 'somepassword',
-        apiVersion: '2.0',
-        strictSSL: true,
-        request: dummyRequest
-      });
+      const jira = new JiraApi(
+        getOptions({
+          request: dummyRequest
+        })
+      );
 
       jira.doRequest({})
         .should.eventually.be.rejectedWith('some error to throw')
@@ -126,16 +111,12 @@ describe('Jira API Tests', () => {
       function dummyRequest(requestOptions) {
         return Promise.resolve(dummyObject);
       }
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
-        username: 'someusername',
-        password: 'somepassword',
-        apiVersion: '2.0',
-        strictSSL: true,
-        request: dummyRequest
-      });
+
+      const jira = new JiraApi(
+        getOptions({
+          request: dummyRequest
+        })
+      );
 
       jira.doRequest({})
         .should.eventually.be.rejectedWith('some error to throw, another error')
@@ -153,19 +134,16 @@ describe('Jira API Tests', () => {
           });
         };
       }
-      const jira = new JiraApi({
-        protocol: 'http',
-        host: 'jira.somehost.com',
-        port: '8080',
-        username: 'someusername',
-        password: 'somepassword',
-        apiVersion: '2.0',
-        strictSSL: true,
-        request: dummyRequest
-      });
+
+      const jira = new JiraApi(
+        getOptions({
+          request: dummyRequest
+        })
+      );
 
       return jira[jiraApiMethodName].apply(jira, functionArguments)
         .then(resultObject => {
+          console.log(resultObject);
           return resultObject.uri;
         });
     }

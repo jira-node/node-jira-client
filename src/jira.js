@@ -5,19 +5,19 @@ import url from 'url';
  * Wrapper for the JIRA Rest Api
  * @constructor
  * @param {object} options - All other parameters to this function are fields on this object.
- * @param {string} protocol - What protocol to use to connect to jira? Ex: http|https
- * @param {string} host - What host is this tool connecting to for the jira instance? Ex: jira.somehost.com
- * @param {string} port - What port is this tool connecting to jira with? Ex: 8080, 3000, etc
- * @param {string} username - [Optional] Specify a username for this tool to authenticate all requests with.
- * @param {string} password - [Optional] Specify a password for this tool to authenticate all requests with.
- * @param {string} apiVersion - What version of the jira rest api is the instance the tool is connecting to?
- * @param {string} base - [Optional] What other url parts exist, if any, before the rest/api/ section?
- * @param {boolean} strictSSL - Does this tool require each request to be authenticated?  Defaults to true.
- * @param {function} request - [Optional] - What method does this tool use to make its requests?  Defaults to request from request-promise
+ * @param {string} [options.protocol=http] - What protocol to use to connect to jira? Ex: http|https
+ * @param {string} options.host - What host is this tool connecting to for the jira instance? Ex: jira.somehost.com
+ * @param {string} options.port - What port is this tool connecting to jira with? Ex: 8080, 3000, etc
+ * @param {string} [options.username] - Specify a username for this tool to authenticate all requests with.
+ * @param {string} [options.password] - Specify a password for this tool to authenticate all requests with.
+ * @param {string} options.apiVersion - What version of the jira rest api is the instance the tool is connecting to?
+ * @param {string} [options.base] - What other url parts exist, if any, before the rest/api/ section?
+ * @param {boolean} [options.strictSSL=true] - Does this tool require each request to be authenticated?  Defaults to true.
+ * @param {function} [options.request] - What method does this tool use to make its requests?  Defaults to request from request-promise
  */
 export default class JiraApi {
   constructor(options) {
-    this.protocol = options.protocol;
+    this.protocol = options.protocol || 'http';
     this.host = options.host;
     this.port = options.port;
     this.username = options.username;
@@ -97,11 +97,10 @@ export default class JiraApi {
       .then(response => response.issuesUnresolvedCount);
   }
 
-  // ## Get the Project by project key ##
-  // ### Takes ###
-  // *  project: key for the project
-  // ### Returns ###
-  // *  project: the json object representing the entire project
+  /**
+   * Get the Project by project key
+   * @param {string} project - key for the project
+   */
   // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289232)
 
   getProject(project) {
@@ -114,11 +113,9 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Find the Rapid View for a specified project ##
-  // ### Takes ###
-  // *  projectName: name for the project
-  // ### Returns ###
-  // *  rapidView: rapid view matching the projectName
+  /** Find the Rapid View for a specified project
+   *  @param {string} projectName - name for the project
+   */
   findRapidView(projectName) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -134,11 +131,9 @@ export default class JiraApi {
       });
   }
 
-  // ## Get a list of Sprints belonging to a Rapid View ##
-  // ### Takes ###
-  // *  rapidViewId: the id for the rapid view
-  // ### Returns ###
-  // *  sprints: the ?array? of sprints
+  /** Get a list of Sprints belonging to a Rapid View
+   *  @param {string} rapidViewId - the id for the rapid view
+   */
   getLastSprintForRapidView(rapidViewId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -153,27 +148,28 @@ export default class JiraApi {
       });
   }
 
-  // ## Get the issues for a rapidView / sprint##
-  // ### Takes ###
-  // *  rapidViewId: the id for the rapid view
-  // *  sprintId: the id for the sprint
-  // ### Returns ###
-  // *  results: the object with the issues and additional sprint information
+  /** Get the issues for a rapidView / sprint
+   *  @param {string} rapidViewId - the id for the rapid view
+   *  @param {string} sprintId - the id for the sprint
+   */
   getSprintIssues(rapidViewId, sprintId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/rapid/charts/sprintreport?rapidViewId=${rapidViewId}&sprintId=${sprintId}`),
+      uri: this.makeUri(`/rapid/charts/sprintreport`),
       method: 'GET',
-      json: true
+      json: true,
+      qs: {
+        rapidViewId,
+        sprintId
+      }
     };
     return this.doRequest(requestOptions);
   }
 
-  // ## Add an issue to the project's current sprint ##
-  // ### Takes ###
-  // *  issueId: the id of the existing issue
-  // *  sprintId: the id of the sprint to add it to
-  // ### Returns ###
+  /** Add an issue to the project's current sprint
+   *  @param {string} issueId - the id of the existing issue
+   *  @param {string} sprintId - the id of the sprint to add it to
+   */
   addIssueToSprint(issueId, sprintId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -189,25 +185,8 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Create an issue link between two issues ##
-  // ### Takes ###
-  // *  link: a link object
-  // ### Returns ###
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id296682)
-  /**
-   * Creates an issue link between two issues. Link should follow the below format:
-   * {
-   *   'linkType': 'Duplicate',
-   *   'fromIssueKey': 'HSP-1',
-   *   'toIssueKey': 'MKY-1',
-   *   'comment': {
-   *     'body': 'Linked related issue!',
-   *     'visibility': {
-   *       'type': 'GROUP',
-   *       'value': 'jira-users'
-   *     }
-   *   }
-   * }
+  /** Create an issue link between two issues
+   *  @param {object} link - a link object formatted how the Jira API specifies
    */
   issueLink(link) {
     const requestOptions = {
@@ -222,8 +201,8 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  /**
-   * Retrieves the remote links associated with the given issue.
+  /** Retrieves the remote links associated with the given issue.
+   *  @param {string} issueNumber - the issue number to find remote links for.
    */
   getRemoteLinks(issueNumber) {
     const requestOptions = {
