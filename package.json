@@ -26,12 +26,15 @@
   ],
   "dependencies": {
     "babel-runtime": "^6.3.13",
+    "jsdoc": "^3.4.0",
     "request-promise": "^1.0.2"
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
     "lint": "eslint ./",
-    "test": "npm run lint && mocha"
+    "test": "npm run lint && mocha",
+    "build-docs": "./node_modules/.bin/jsdoc ./lib/jira.js -d './docs/'",
+    "docs": "npm run build && npm run build-docs"
   },
   "devDependencies": {
     "babel-cli": "^6.2.0",

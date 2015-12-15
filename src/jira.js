@@ -2,20 +2,26 @@ import request from 'request-promise';
 import url from 'url';
 
 /**
+ * @name JiraApi
+ * @class
  * Wrapper for the JIRA Rest Api
- * @constructor
- * @param {object} options - All other parameters to this function are fields on this object.
- * @param {string} [options.protocol=http] - What protocol to use to connect to jira? Ex: http|https
- * @param {string} options.host - What host is this tool connecting to for the jira instance? Ex: jira.somehost.com
- * @param {string} options.port - What port is this tool connecting to jira with? Ex: 8080, 3000, etc
- * @param {string} [options.username] - Specify a username for this tool to authenticate all requests with.
- * @param {string} [options.password] - Specify a password for this tool to authenticate all requests with.
- * @param {string} options.apiVersion - What version of the jira rest api is the instance the tool is connecting to?
- * @param {string} [options.base] - What other url parts exist, if any, before the rest/api/ section?
- * @param {boolean} [options.strictSSL=true] - Does this tool require each request to be authenticated?  Defaults to true.
- * @param {function} [options.request] - What method does this tool use to make its requests?  Defaults to request from request-promise
+ * https://docs.atlassian.com/jira/REST/6.4.8/
  */
 export default class JiraApi {
+  /*
+   * @constructor
+   * @function
+   * @param {object} options - All other parameters to this function are fields on this object.
+   * @param {string} [options.protocol=http] - What protocol to use to connect to jira? Ex: http|https
+   * @param {string} options.host - What host is this tool connecting to for the jira instance? Ex: jira.somehost.com
+   * @param {string} options.port - What port is this tool connecting to jira with? Ex: 8080, 3000, etc
+   * @param {string} [options.username] - Specify a username for this tool to authenticate all requests with.
+   * @param {string} [options.password] - Specify a password for this tool to authenticate all requests with.
+   * @param {string} options.apiVersion - What version of the jira rest api is the instance the tool is connecting to?
+   * @param {string} [options.base] - What other url parts exist, if any, before the rest/api/ section?
+   * @param {boolean} [options.strictSSL=true] - Does this tool require each request to be authenticated?  Defaults to true.
+   * @param {function} [options.request] - What method does this tool use to make its requests?  Defaults to request from request-promise
+   */
   constructor(options) {
     this.protocol = options.protocol || 'http';
     this.host = options.host;
@@ -30,6 +36,8 @@ export default class JiraApi {
   }
 
   /**
+   * @name makeUri
+   * @function
    * Creates a URI object for a given pathName
    * @param {string} pathName - The url after the /rest/api/version
    */
@@ -44,6 +52,8 @@ export default class JiraApi {
   }
 
   /**
+   * @name doRequest
+   * @function
    * Does a request based on the requestOptions object
    * @param {object} requestOptions - fields on this object get posted as a request header for requests to jira
    */
@@ -67,10 +77,12 @@ export default class JiraApi {
   }
 
   /**
+   * @name findIssue
+   * @function
    * Find an issue in jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
    * @param {string} issueNumber - The issue number to search for including the project key
    */
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
   findIssue(issueNumber) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -82,10 +94,12 @@ export default class JiraApi {
   }
 
   /**
+   * @name getUnresolvedIssueCount
+   * @function
    * Get the unresolved issue count
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288524)
    * @param {string} version - the version of your product you want to find the unresolved issues of.
    */
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288524)
   getUnresolvedIssueCount(version) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -98,11 +112,12 @@ export default class JiraApi {
   }
 
   /**
+   * @name getProject
+   * @function
    * Get the Project by project key
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289232)
    * @param {string} project - key for the project
    */
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289232)
-
   getProject(project) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -114,7 +129,9 @@ export default class JiraApi {
   }
 
   /** Find the Rapid View for a specified project
-   *  @param {string} projectName - name for the project
+   * @name findRapidView
+   * @function
+   * @param {string} projectName - name for the project
    */
   findRapidView(projectName) {
     const requestOptions = {
@@ -132,7 +149,9 @@ export default class JiraApi {
   }
 
   /** Get a list of Sprints belonging to a Rapid View
-   *  @param {string} rapidViewId - the id for the rapid view
+   * @name getLastSprintForRapidView
+   * @function
+   * @param {string} rapidViewId - the id for the rapid view
    */
   getLastSprintForRapidView(rapidViewId) {
     const requestOptions = {
@@ -149,8 +168,10 @@ export default class JiraApi {
   }
 
   /** Get the issues for a rapidView / sprint
-   *  @param {string} rapidViewId - the id for the rapid view
-   *  @param {string} sprintId - the id for the sprint
+   * @name getSprintIssues
+   * @function
+   * @param {string} rapidViewId - the id for the rapid view
+   * @param {string} sprintId - the id for the sprint
    */
   getSprintIssues(rapidViewId, sprintId) {
     const requestOptions = {
@@ -167,8 +188,10 @@ export default class JiraApi {
   }
 
   /** Add an issue to the project's current sprint
-   *  @param {string} issueId - the id of the existing issue
-   *  @param {string} sprintId - the id of the sprint to add it to
+   * @name addIssueToSprint
+   * @function
+   * @param {string} issueId - the id of the existing issue
+   * @param {string} sprintId - the id of the sprint to add it to
    */
   addIssueToSprint(issueId, sprintId) {
     const requestOptions = {
@@ -186,7 +209,9 @@ export default class JiraApi {
   }
 
   /** Create an issue link between two issues
-   *  @param {object} link - a link object formatted how the Jira API specifies
+   * @name issueLink
+   * @function
+   * @param {object} link - a link object formatted how the Jira API specifies
    */
   issueLink(link) {
     const requestOptions = {
@@ -202,7 +227,9 @@ export default class JiraApi {
   }
 
   /** Retrieves the remote links associated with the given issue.
-   *  @param {string} issueNumber - the issue number to find remote links for.
+   * @name getRemoteLinks
+   * @function
+   * @param {string} issueNumber - the issue number to find remote links for.
    */
   getRemoteLinks(issueNumber) {
     const requestOptions = {
@@ -216,7 +243,11 @@ export default class JiraApi {
   }
 
   /**
-   * Retrieves the remote links associated with the given issue.
+   * @name createRemoteLink
+   * @function
+   * Creates a remote link associated with the given issue.
+   * @param {string} issueNumber - The issue number to create the remotelink under
+   * @param {object} remoteLink - the remotelink object as specified by the Jira API
    */
   createRemoteLink(issueNumber, remoteLink) {
     const requestOptions = {
@@ -230,12 +261,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Get Versions for a project ##
-  // ### Takes ###
-  // *  project: A project key
-  // ### Returns ###
-  // *  versions: array of the versions for a product
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289653)
+  /** Get Versions for a project
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289653)
+   * @name getVersions
+   * @function
+   * @param {string} project - A project key to get versions for
+   */
   getVersions(project) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -246,22 +277,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Create a version ##
-  // ### Takes ###
-  // *  version: an object of the new version
-  // ### Returns ###
-  // *  version: should be the same version you passed up
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288232)
-  //
-  /* {
-   *    "description": "An excellent version",
-   *    "name": "New Version 1",
-   *    "archived": false,
-   *    "released": true,
-   *    "releaseDate": "2010-07-05",
-   *    "userReleaseDate": "5/Jul/2010",
-   *    "project": "PXA"
-   * }
+  /** Create a version
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288232)
+   * @name createVersion
+   * @function
+   * @param {string} version - an object of the new version
    */
   createVersion(version) {
     const requestOptions = {
@@ -275,22 +295,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Update a version ##
-  // ### Takes ###
-  // *  version: an object of the new version
-  // ### Returns ###
-  // *  version: should be the same version you passed up
-  // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e510)
-  /* {
-   *    "id": The ID of the version being updated. Required.
-   *    "description": "An excellent version",
-   *    "name": "New Version 1",
-   *    "archived": false,
-   *    "released": true,
-   *    "releaseDate": "2010-07-05",
-   *    "userReleaseDate": "5/Jul/2010",
-   *    "project": "PXA"
-   * }
+  /** Update a version
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e510)
+   * @name updateVersion
+   * @function
+   * @param {string} version - an new object of the version to update
    */
   updateVersion(version) {
     const requestOptions = {
@@ -305,20 +314,16 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Pass a search query to Jira ##
-  // ### Takes ###
-  // *  searchString: jira query string
-  // *  optional: object containing any of the following properties
-  //   *  startAt: optional index number (default 0)
-  //   *  maxResults: optional max results number (default 50)
-  //   *  fields: optional array of desired fields, defaults when null:
-  //     *  "summary"
-  //     *  "status"
-  //     *  "assignee"
-  //     *  "description"
-  // ### Returns ###
-  // *  issues: array of issues for the user
-  // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e4424)
+  /** Pass a search query to Jira
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e4424)
+   * @name searchJira
+   * @function
+   * @param {string} searchString - jira query string in JQL
+   * @param {object} optional - object containing any of the following properties
+   * @param {integer} [optional.startAt=0]: optional starting index number
+   * @param {integer} [optional.maxResults=50]: optional ending index number
+   * @param {array} [optional.fields]: optional array of string names of desired fields
+   */
   searchJira(searchString, optional) {
     const theOptional = optional || {};
     const requestOptions = {
@@ -336,16 +341,16 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Search user on Jira ##
-  // ### Takes ###
-  // username: A query string used to search username, name or e-mail address
-  // startAt: The index of the first user to return (0-based)
-  // maxResults: The maximum number of users to return (defaults to 50).
-  // includeActive: If true, then active users are included in the results (default true)
-  // includeInactive: If true, then inactive users are included in the results (default false)
-  // ### Returns ###
-  // *  users: array of users for the user
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
+  /** Search user on Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
+   * @name searchUsers
+   * @function
+   * @param {string} username - A query string used to search username, name or e-mail address
+   * @param {integer} [startAt=0] - The index of the first user to return (0-based)
+   * @param {integer} [maxResults=50] - The maximum number of users to return
+   * @param {boolean} [includeActive=true] - If true, then active users are included in the results
+   * @param {boolean} [includeInactive=false] - If true, then inactive users are included in the results
+   */
   searchUsers({username, startAt, maxResults, includeActive, includeInactive}) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -365,13 +370,13 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Get all users in group on Jira ##
-  // ### Takes ###
-  // groupName: A query string used to search users in group
-  // startAt: The index of the first user to return (0-based)
-  // maxResults: The maximum number of users to return (defaults to 50).
-  // ### Returns ###
-  // *  users: array of users for the user
+  /** Get all users in group on Jira
+   * @name getUsersInGroup
+   * @function
+   * @param {string} groupName - A query string used to search users in group
+   * @param {integer} [startAt=0] - The index of the first user to return (0-based)
+   * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
+   */
   getUsersInGroup(groupName, startAt, maxResults) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -384,23 +389,23 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Get issues related to a user ##
-  // ### Takes ###
-  // *  user: username of user to search for
-  // *  open: `boolean` determines if only open issues should be returned
-  // ### Returns ###
-  // *  issues: array of issues for the user
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id296043)
+  /** Get issues related to a user
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id296043)
+   * @name getUsersIssues
+   * @function
+   * @param {string} user - username of user to search for
+   * @param {boolean} open - determines if only open issues should be returned
+   */
   getUsersIssues(username, open) {
     return this.searchJira(`assignee = ${username.replace('@', '\\u0040')} AND status in (Open, 'In Progress', Reopened) ${open}`, {});
   }
 
-  // ## Add issue to Jira ##
-  // ### Takes ###
-  // *  issue: Properly Formatted Issue
-  // ### Returns ###
-  // *  Rest API response
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
+  /** Add issue to Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
+   * @name addNewIssue
+   * @function
+   * @param {object} issue - Properly Formatted Issue object
+   */
   addNewIssue(issue) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -414,13 +419,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Add a user as a watcher on an issue ##
-  // ### Takes ###
-  // *  issueKey: the key of the existing issue
-  // *  username: the jira username to add as a watcher to the issue
-  // ### Returns ###
-  /**
-   * Adds a given user as a watcher to the given issue
+  /** Add a user as a watcher on an issue
+   * @name addWatcher
+   * @function
+   * @param {string} issueKey - the key of the existing issue
+   * @param {string} username - the jira username to add as a watcher to the issue
    */
   addWatcher(issueKey, username) {
     const requestOptions = {
@@ -435,12 +438,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Delete issue from Jira ##
-  // ### Takes ###
-  // *  issueId: the Id of the issue to delete
-  // ### Returns ###
-  // *  success object
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
+  /** Delete issue from Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
+   * @name deleteIssue
+   * @function
+   * @param {string} issueId - the Id of the issue to delete
+   */
   deleteIssue(issueNum) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -453,12 +456,13 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Update issue in Jira ##
-  // ### Takes ###
-  // *  issueId: the Id of the issue to delete
-  // *  issueUpdate: update Object
-  // ### Returns ###
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290878)
+  /** Update issue in Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290878)
+   * @name updateIssue
+   * @function
+   * @param {string} issueId - the Id of the issue to delete
+   * @param {object} issueUpdate - update Object as specified by the rest api
+   */
   updateIssue(issueNum, issueUpdate) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -472,34 +476,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List Components ##
-  // ### Takes ###
-  // *  project: key for the project
-  // ### Returns ###
-  // *  array of components
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
-  /*
-   * [{
-   *     "self": "http://localhostname:8090/jira/rest/api/2.0/component/1234",
-   *     "id": "1234",
-   *     "name": "name",
-   *     "description": "Description.",
-   *     "assigneeType": "PROJECT_DEFAULT",
-   *     "assignee": {
-   *         "self": "http://localhostname:8090/jira/rest/api/2.0/user?username=user@domain.com",
-   *         "name": "user@domain.com",
-   *         "displayName": "SE Support",
-   *         "active": true
-   *     },
-   *     "realAssigneeType": "PROJECT_DEFAULT",
-   *     "realAssignee": {
-   *         "self": "http://localhostname:8090/jira/rest/api/2.0/user?username=user@domain.com",
-   *         "name": "user@domain.com",
-   *         "displayName": "User name",
-   *         "active": true
-   *     },
-   *     "isAssigneeTypeValid": true
-   * }]
+  /** List Components
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+   * @name listComponents
+   * @function
+   * @param {string} project - key for the project
    */
   listComponents(project) {
     const requestOptions = {
@@ -512,12 +493,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Add component to Jira ##
-  // ### Takes ###
-  // *  issue: Properly Formatted Component
-  // ### Returns ###
-  // *  success object
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
+  /** Add component to Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
+   * @name addNewComponent
+   * @function
+   * @param {object} component - Properly Formatted Component
+   */
   addNewComponent(component) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -531,12 +512,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Delete component to Jira ##
-  // ### Takes ###
-  // *  componentId: the Id of the component to delete
-  // ### Returns ###
-  // *  success object
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
+  /** Delete component from Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
+   * @name deleteComponent
+   * @function
+   * @param {string} componentId - the Id of the component to delete
+   */
   deleteComponent(componentNum) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -549,10 +530,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List listFields ##
-  // ### Returns ###
-  // *  array of priorities
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+  /** List all fields custom and not that jira knows about.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+   * @name listFields
+   * @function
+   */
   listFields() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -564,11 +546,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List listPriorities ##
-  // ### Takes ###
-  // ### Returns ###
-  // *  array of priorities
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+  /** List all priorities jira knows about
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+   * @name listPriorities
+   * @function
+   */
   listPriorities() {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -580,48 +562,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List Transitions ##
-  // ### Takes ###
-  // *  issueId: get transitions available for the issue
-  // ### Returns ###
-  // *  error string
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
-  /*
-   *  {
-   *  "expand": "transitions",
-   *  "transitions": [
-   *      {
-   *          "id": "2",
-   *          "name": "Close Issue",
-   *          "to": {
-   *              "self": "http://localhostname:8090/jira/rest/api/2.0/status/10000",
-   *              "description": "The issue is currently being worked on.",
-   *              "iconUrl": "http://localhostname:8090/jira/images/icons/progress.gif",
-   *              "name": "In Progress",
-   *              "id": "10000"
-   *          },
-   *          "fields": {
-   *              "summary": {
-   *                  "required": false,
-   *                  "schema": {
-   *                      "type": "array",
-   *                      "items": "option",
-   *                      "custom": "com.atlassian.jira.plugin.system.customfieldtypes:multiselect",
-   *                      "customId": 10001
-   *                  },
-   *                  "name": "My Multi Select",
-   *                  "operations": [
-   *                      "set",
-   *                      "add"
-   *                  ],
-   *                  "allowedValues": [
-   *                      "red",
-   *                      "blue"
-   *                  ]
-   *              }
-   *          }
-   *      }
-   *  ]}
+  /** List Transitions for a specific issue that are available to the current user
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+   * @name listTransitions
+   * @function
+   * @param {string} issueId - get transitions available for the issue
    */
   listTransitions(issueId) {
     const requestOptions = {
@@ -637,13 +582,13 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Transition issue in Jira ##
-  // ### Takes ###
-  // *  issueId: the Id of the issue to delete
-  // *  issueTransition: transition Object
-  // ### Returns ###
-  // *  success string
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+  /** Transition issue in Jira
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
+   * @name transitionsIssue
+   * @function
+   * @param {string} issueId - the Id of the issue to delete
+   * @param {object} issueTransition - transition object from the jira rest API
+   */
   transitionIssue(issueNum, issueTransition) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -657,23 +602,10 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List all Viewable Projects ##
-  // ### Takes ###
-  // ### Returns ###
-  // *  array of projects
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289193)
-  /*
-   * Result items are in the format:
-   * {
-   *      "self": "http://www.example.com/jira/rest/api/2/project/ABC",
-   *      "id": "10001",
-   *      "key": "ABC",
-   *      "name": "Alphabetical",
-   *      "avatarUrls": {
-   *          "16x16": "http://www.example.com/jira/secure/projectavatar?size=small&pid=10001",
-   *          "48x48": "http://www.example.com/jira/secure/projectavatar?size=large&pid=10001"
-   *      }
-   * }
+  /** List all Viewable Projects
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289193)
+   * @name listProjects
+   * @function
    */
   listProjects() {
     const requestOptions = {
@@ -686,13 +618,13 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Add a comment to an issue ##
-  // ### Takes ###
-  // *  issueId: Issue to add a comment to
-  // *  comment: string containing comment
-  // ### Returns ###
-  // *  success string
-  // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
+  /** Add a comment to an issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
+   * @name addComment
+   * @function
+   * @param {string} issueId - Issue to add a comment to
+   * @param {string} comment - string containing comment
+   */
   addComment(issueId, comment) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -708,39 +640,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Add a worklog to a project ##
-  // ### Takes ###
-  // *  issueId: Issue to add a worklog to
-  // *  worklog: worklog object
-  // ### Returns ###
-  // *  success string
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id291617)
-  /*
-   * Worklog item is in the format:
-   *  {
-   *      "self": "http://www.example.com/jira/rest/api/2.0/issue/10010/worklog/10000",
-   *      "author": {
-   *          "self": "http://www.example.com/jira/rest/api/2.0/user?username=fred",
-   *          "name": "fred",
-   *          "displayName": "Fred F. User",
-   *          "active": false
-   *      },
-   *      "updateAuthor": {
-   *          "self": "http://www.example.com/jira/rest/api/2.0/user?username=fred",
-   *          "name": "fred",
-   *          "displayName": "Fred F. User",
-   *          "active": false
-   *      },
-   *      "comment": "I did some work here.",
-   *      "visibility": {
-   *          "type": "group",
-   *          "value": "jira-developers"
-   *      },
-   *      "started": "2012-11-22T04:19:46.736-0600",
-   *      "timeSpent": "3h 20m",
-   *      "timeSpentSeconds": 12000,
-   *      "id": "100028"
-   *  }
+  /** Add a worklog to a project
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id291617)
+   * @name addWorklog
+   * @function
+   * @param {string} issueId - Issue to add a worklog to
+   * @param {object} worklog - worklog object from the rest API
    */
   addWorklog(issueId, worklog, newEstimate) {
     const requestOptions = {
@@ -756,13 +661,13 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Delete worklog from issue ##
-  // ### Takes ###
-  // *  issueId: the Id of the issue to delete
-  // *  worklogId: the Id of the worklog in issue to delete
-  // ### Returns ###
-  // *  success object
-  // [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e1673)
+  /** Delete worklog from issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e1673)
+   * @name deleteWorklog
+   * @function
+   * @param {string} issueId - the Id of the issue to delete
+   * @param {string} worklogId - the Id of the worklog in issue to delete
+   */
   deleteWorklog(issueId, worklogId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -775,21 +680,10 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List all Issue Types ##
-  // ### Takes ###
-  // ### Returns ###
-  // *  array of types
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id295946)
-  /*
-   * Result items are in the format:
-   * {
-   *  "self": "http://localhostname:8090/jira/rest/api/2.0/issueType/3",
-   *  "id": "3",
-   *  "description": "A task that needs to be done.",
-   *  "iconUrl": "http://localhostname:8090/jira/images/icons/task.gif",
-   *  "name": "Task",
-   *  "subtask": false
-   * }
+  /** List all Issue Types jira knows about
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id295946)
+   * @name listIssueTypes
+   * @function
    */
   listIssueTypes() {
     const requestOptions = {
@@ -802,26 +696,11 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Register a webhook ##
-  // ### Takes ###
-  // *  webhook: properly formatted webhook
-  // ### Returns ###
-  // *  success object
-  // [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
-  /*
-   * Success object in the format:
-   * {
-   *   name: 'my first webhook via rest',
-   *   events: [],
-   *   url: 'http://www.example.com/webhooks',
-   *   filter: '',
-   *   excludeIssueDetails: false,
-   *   enabled: true,
-   *   self: 'http://localhost:8090/rest/webhooks/1.0/webhook/5',
-   *   lastUpdatedUser: 'user',
-   *   lastUpdatedDisplayName: 'User Name',
-   *   lastUpdated: 1383247225784
-   * }
+  /** Register a webhook
+   * [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
+   * @name registerWebhook
+   * @function
+   * @param {object} webhook - properly formatted webhook
    */
   registerWebhook(webhook) {
     const requestOptions = {
@@ -835,25 +714,10 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## List all registered webhooks ##
-  // ### Takes ###
-  // ### Returns ###
-  // *  array of webhook objects
-  // [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
-  /*
-   * Webhook object in the format:
-   * {
-   *   name: 'my first webhook via rest',
-   *   events: [],
-   *   url: 'http://www.example.com/webhooks',
-   *   filter: '',
-   *   excludeIssueDetails: false,
-   *   enabled: true,
-   *   self: 'http://localhost:8090/rest/webhooks/1.0/webhook/5',
-   *   lastUpdatedUser: 'user',
-   *   lastUpdatedDisplayName: 'User Name',
-   *   lastUpdated: 1383247225784
-   * }
+  /** List all registered webhooks
+   * [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
+   * @name listWebhooks
+   * @function
    */
   listWebhooks() {
     const requestOptions = {
@@ -866,12 +730,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Get a webhook by its ID ##
-  // ### Takes ###
-  // *  webhookID: id of webhook to get
-  // ### Returns ###
-  // *  webhook object
-  // [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
+  /** Get a webhook by its ID
+   * [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
+   * @name getWebhook
+   * @function
+   * @param {string} webhookID - id of webhook to get
+   */
   getWebhook(webhookID) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -883,12 +747,12 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Delete a registered webhook ##
-  // ### Takes ###
-  // *  webhookID: id of the webhook to delete
-  // ### Returns ###
-  // *  success string
-  // [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
+  /** Delete a registered webhook
+   * [Jira Doc](https://developer.atlassian.com/display/JIRADEV/JIRA+Webhooks+Overview)
+   * @name issueLink
+   * @function
+   * @param {string} webhookID - id of the webhook to delete
+   */
   deleteWebhook(webhookID) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
@@ -900,24 +764,10 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Describe the currently authenticated user ##
-  // ### Takes ###
-  // ### Returns ###
-  // *  user object
-  // [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id2e865)
-  /*
-   * User object in the format:
-   * {
-   *   self: 'http://localhost:8090/rest/api/latest/user?username=user',
-   *   name: 'user',
-   *   loginInfo:
-   *   {
-   *     failedLoginCount: 2,
-   *     loginCount: 114,
-   *     lastFailedLoginTime: '2013-10-29T13:33:26.702+0000',
-   *     previousLoginTime: '2013-10-31T20:30:51.924+0000'
-   *   }
-   * }
+  /** Describe the currently authenticated user
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id2e865)
+   * @name getCurrentUser
+   * @function
    */
   getCurrentUser() {
     const requestOptions = {
@@ -930,68 +780,10 @@ export default class JiraApi {
     return this.doRequest(requestOptions);
   }
 
-  // ## Retrieve the backlog of a certain Rapid View ##
-  // ### Takes ###
-  // *  rapidViewId: rapid view id
-  // ### Returns ###
-  // *  backlog object
-  /*
-   * Backlog item is in the format:
-   *  {
-   *      "sprintMarkersMigrated": true,
-   *      "issues": [
-   *          {
-   *              "id": 67890,
-   *              "key": "KEY-1234",
-   *              "summary": "Issue Summary",
-   *              ...
-   *          }
-   *      ],
-   *      "rankCustomFieldId": 12345,
-   *      "sprints": [
-   *          {
-   *              "id": 123,
-   *              "name": "Sprint Name",
-   *              "state": "FUTURE",
-   *              ...
-   *          }
-   *      ],
-   *      "supportsPages": true,
-   *      "projects": [
-   *          {
-   *              "id": 567,
-   *              "key": "KEY",
-   *              "name": "Project Name"
-   *          }
-   *      ],
-   *      "epicData": {
-   *          "epics": [
-   *              {
-   *                  "id": 9876,
-   *                  "key": "KEY-4554",
-   *                  "typeName": "Epic",
-   *                  ...
-   *              }
-   *          ],
-   *          "canEditEpics": true,
-   *          "supportsPages": true
-   *      },
-   *      "canManageSprints": true,
-   *      "maxIssuesExceeded": false,
-   *      "queryResultLimit": 2147483647,
-   *      "versionData": {
-   *          "versionsPerProject": {
-   *              "567": [
-   *                  {
-   *                      "id": 8282,
-   *                      "name": "Version Name",
-   *                      ...
-   *                  }
-   *              ]
-   *          },
-   *          "canCreateVersion": true
-   *      }
-   *  }
+  /** Retrieve the backlog of a certain Rapid View
+   * @name getBacklogForRapidView
+   * @function
+   * @param {string} rapidViewId: rapid view id
    */
   getBacklogForRapidView(rapidViewId) {
     const requestOptions = {
