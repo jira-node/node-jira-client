@@ -349,10 +349,17 @@ export default class JiraApi {
   searchUsers({username, startAt, maxResults, includeActive, includeInactive}) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/user/search?username=${username}&startAt=${startAt || 0}&maxResults=${maxResults || 50}&includeActive=${includeActive || true}&includeInactive=${includeInactive || false}`),
+      uri: this.makeUri(`/user/search`),
       method: 'GET',
       json: true,
-      followAllRedirects: true
+      followAllRedirects: true,
+      qs: {
+        username,
+        startAt: startAt || 0,
+        maxResults: maxResults || 50,
+        includeActive: includeActive || true,
+        includeInactive: includeInactive || false
+      }
     };
 
     return this.doRequest(requestOptions);
@@ -619,9 +626,12 @@ export default class JiraApi {
   listTransitions(issueId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueId}/transitions?expand=transitions.fields`),
+      uri: this.makeUri(`/issue/${issueId}/transitions`),
       method: 'GET',
-      json: true
+      json: true,
+      qs: {
+        expand: 'transitions.fields'
+      }
     };
 
     return this.doRequest(requestOptions);
@@ -735,11 +745,12 @@ export default class JiraApi {
   addWorklog(issueId, worklog, newEstimate) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueId}/worklog${(newEstimate) ? '?adjustEstimate=new&newEstimate=' + newEstimate : ''}`),
+      uri: this.makeUri(`/issue/${issueId}/worklog`),
       body: worklog,
       method: 'POST',
       followAllRedirects: true,
-      json: true
+      json: true,
+      qs: (newEstimate) ? {adjustEstimate: 'new', newEstimate} : null
     };
 
     return this.doRequest(requestOptions);
@@ -985,9 +996,12 @@ export default class JiraApi {
   getBacklogForRapidView(rapidViewId) {
     const requestOptions = {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/xboard/plan/backlog/data?rapidViewId=${rapidViewId}`),
+      uri: this.makeUri(`/xboard/plan/backlog/data`),
       method: 'GET',
-      json: true
+      json: true,
+      qs: {
+        rapidViewId
+      }
     };
 
     return this.doRequest(requestOptions);

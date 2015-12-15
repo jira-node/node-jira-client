@@ -143,7 +143,15 @@ describe('Jira API Tests', () => {
 
       return jira[jiraApiMethodName].apply(jira, functionArguments)
         .then(resultObject => {
-          console.log(resultObject);
+          // hack exposing the qs object as the query string in the URL so this is uniformly testable
+          if (resultObject.qs) {
+            const queryString = Object.keys(resultObject.qs).map((x) => {
+              return `${x}=${resultObject.qs[x]}`;
+            })
+            .join('&');
+            return `${resultObject.uri}?${queryString}`;
+          }
+
           return resultObject.uri;
         });
     }
