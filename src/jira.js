@@ -158,7 +158,7 @@ export default class JiraApi {
       rejectUnauthorized: this.strictSSL,
       uri: this.makeUri(`/sprintquery/${rapidViewId}`),
       method: 'GET',
-      json:true
+      json: true
     };
 
     return this.doRequest(requestOptions)
@@ -199,7 +199,7 @@ export default class JiraApi {
       uri: this.makeUri(`/sprint/${sprintId}/issues/add`),
       method: 'PUT',
       followAllRedirects: true,
-      json:true,
+      json: true,
       body: {
         issueKeys: [issueId]
       }
