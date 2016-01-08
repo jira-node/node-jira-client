@@ -36,6 +36,21 @@ export default class JiraApi {
   }
 
   /**
+   * @name makeRequestHeader
+   * @function
+   * Creates a requestOptions object based on the default template for one
+   * @param {object} otherOptions - an object containing fields and formatting how the
+   */
+  makeRequestHeader(uri, otherOptions = {}) {
+    return {
+      rejectUnauthorized: this.strictSSL,
+      uri: this.makeUri(uri),
+      method: otherOptions.method || 'GET',
+      ...otherOptions
+    };
+  }
+
+  /**
    * @name makeUri
    * @function
    * Creates a URI object for a given pathName
@@ -84,13 +99,7 @@ export default class JiraApi {
    * @param {string} issueNumber - The issue number to search for including the project key
    */
   findIssue(issueNumber) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueNumber}`),
-      method: 'GET'
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueNumber}`));
   }
 
   /**
@@ -101,13 +110,7 @@ export default class JiraApi {
    * @param {string} version - the version of your product you want to find the unresolved issues of.
    */
   getUnresolvedIssueCount(version) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/version/${version}/unresolvedIssueCount`),
-      method: 'GET'
-    };
-
-    return this.doRequest(requestOptions)
+    return this.doRequest(this.makeRequestHeader(`/version/${version}/unresolvedIssueCount`))
       .then(response => response.issuesUnresolvedCount);
   }
 
@@ -119,13 +122,7 @@ export default class JiraApi {
    * @param {string} project - key for the project
    */
   getProject(project) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/project/${project}`),
-      method: 'GET'
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/project/${project}`));
   }
 
   /** Find the Rapid View for a specified project
@@ -134,14 +131,7 @@ export default class JiraApi {
    * @param {string} projectName - name for the project
    */
   findRapidView(projectName) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/rapidviews/list'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions)
+    return this.doRequest(this.makeRequestHeader('/rapidviews/list', {json: true}))
       .then(response => {
         const rapidViewResult = response.views.filter(x => x.name.toLowerCase() === projectName.toLowerCase());
         return rapidViewResult[0];
@@ -154,14 +144,7 @@ export default class JiraApi {
    * @param {string} rapidViewId - the id for the rapid view
    */
   getLastSprintForRapidView(rapidViewId) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/sprintquery/${rapidViewId}`),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions)
+    return this.doRequest(this.makeRequestHeader(`/sprintquery/${rapidViewId}`, {json: true}))
       .then(response => {
         return response.sprints.pop();
       });
@@ -174,17 +157,13 @@ export default class JiraApi {
    * @param {string} sprintId - the id for the sprint
    */
   getSprintIssues(rapidViewId, sprintId) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/rapid/charts/sprintreport`),
-      method: 'GET',
+    return this.doRequest(this.makeRequestHeader(`/rapid/charts/sprintreport`, {
       json: true,
       qs: {
         rapidViewId,
         sprintId
       }
-    };
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Add an issue to the project's current sprint
@@ -194,18 +173,14 @@ export default class JiraApi {
    * @param {string} sprintId - the id of the sprint to add it to
    */
   addIssueToSprint(issueId, sprintId) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/sprint/${sprintId}/issues/add`),
+    return this.doRequest(this.makeRequestHeader(`/sprint/${sprintId}/issues/add`, {
       method: 'PUT',
       followAllRedirects: true,
       json: true,
       body: {
         issueKeys: [issueId]
       }
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Create an issue link between two issues
@@ -214,16 +189,12 @@ export default class JiraApi {
    * @param {object} link - a link object formatted how the Jira API specifies
    */
   issueLink(link) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issueLink'),
+    return this.doRequest(this.makeRequestHeader(`/issueLink`, {
       method: 'POST',
       followAllRedirects: true,
       json: true,
       body: link
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Retrieves the remote links associated with the given issue.
@@ -232,14 +203,7 @@ export default class JiraApi {
    * @param {string} issueNumber - the issue number to find remote links for.
    */
   getRemoteLinks(issueNumber) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueNumber}/remotelink`),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueNumber}/remotelink`, {json: true}));
   }
 
   /**
@@ -250,15 +214,11 @@ export default class JiraApi {
    * @param {object} remoteLink - the remotelink object as specified by the Jira API
    */
   createRemoteLink(issueNumber, remoteLink) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueNumber}/remotelink`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueNumber}/remotelink`, {
       method: 'POST',
       json: true,
       body: remoteLink
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Get Versions for a project
@@ -268,13 +228,7 @@ export default class JiraApi {
    * @param {string} project - A project key to get versions for
    */
   getVersions(project) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/project/${project}/versions`),
-      method: 'GET'
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/project/${project}/versions`));
   }
 
   /** Create a version
@@ -284,15 +238,12 @@ export default class JiraApi {
    * @param {string} version - an object of the new version
    */
   createVersion(version) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/version'),
+    return this.doRequest(this.makeRequestHeader(`/version`, {
       method: 'POST',
       followAllRedirects: true,
       json: true,
       body: version
-    };
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Update a version
@@ -302,16 +253,12 @@ export default class JiraApi {
    * @param {string} version - an new object of the version to update
    */
   updateVersion(version) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/version/${version.id}`),
+    return this.doRequest(this.makeRequestHeader(`/version/${version.id}`, {
       method: 'PUT',
       followAllRedirects: true,
       json: true,
       body: version
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Pass a search query to Jira
@@ -324,21 +271,16 @@ export default class JiraApi {
    * @param {integer} [optional.maxResults=50]: optional ending index number
    * @param {array} [optional.fields]: optional array of string names of desired fields
    */
-  searchJira(searchString, optional) {
-    const theOptional = optional || {};
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/search'),
+  searchJira(searchString, optional = {}) {
+    return this.doRequest(this.makeRequestHeader(`/search`, {
       method: 'POST',
       json: true,
       followAllRedirects: true,
       body: {
         jql: searchString,
-        ...theOptional
+        ...optional
       }
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Search user on Jira
@@ -352,10 +294,7 @@ export default class JiraApi {
    * @param {boolean} [includeInactive=false] - If true, then inactive users are included in the results
    */
   searchUsers({username, startAt, maxResults, includeActive, includeInactive}) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/user/search`),
-      method: 'GET',
+    return this.doRequest(this.makeRequestHeader(`/user/search`, {
       json: true,
       followAllRedirects: true,
       qs: {
@@ -365,9 +304,7 @@ export default class JiraApi {
         includeActive: includeActive || true,
         includeInactive: includeInactive || false
       }
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Get all users in group on Jira
@@ -377,16 +314,11 @@ export default class JiraApi {
    * @param {integer} [startAt=0] - The index of the first user to return (0-based)
    * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
    */
-  getUsersInGroup(groupName, startAt, maxResults) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/group?groupname=${groupName}&expand=users[${startAt || 0}:${maxResults || 50}]`),
-      method: 'GET',
+  getUsersInGroup(groupName, startAt = 0, maxResults = 50) {
+    return this.doRequest(this.makeRequestHeader(`/group?groupname=${groupName}&expand=users[${startAt}:${maxResults}]`, {
       json: true,
       followAllRedirects: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Get issues related to a user
@@ -407,16 +339,12 @@ export default class JiraApi {
    * @param {object} issue - Properly Formatted Issue object
    */
   addNewIssue(issue) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issue'),
+    return this.doRequest(this.makeRequestHeader(`/issue`, {
       method: 'POST',
       followAllRedirects: true,
       json: true,
       body: issue
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Add a user as a watcher on an issue
@@ -426,16 +354,12 @@ export default class JiraApi {
    * @param {string} username - the jira username to add as a watcher to the issue
    */
   addWatcher(issueKey, username) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueKey}/watchers`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueKey}/watchers`, {
       method: 'POST',
       followAllRedirects: true,
       json: true,
       body: JSON.stringify(username)
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Delete issue from Jira
@@ -445,15 +369,11 @@ export default class JiraApi {
    * @param {string} issueId - the Id of the issue to delete
    */
   deleteIssue(issueNum) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueNum}`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueNum}`, {
       method: 'DELETE',
       followAllRedirects: true,
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Update issue in Jira
@@ -464,16 +384,12 @@ export default class JiraApi {
    * @param {object} issueUpdate - update Object as specified by the rest api
    */
   updateIssue(issueNum, issueUpdate) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueNum}`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueNum}`, {
       body: issueUpdate,
       method: 'PUT',
       followAllRedirects: true,
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** List Components
@@ -483,14 +399,7 @@ export default class JiraApi {
    * @param {string} project - key for the project
    */
   listComponents(project) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/project/${project}/components`),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/project/${project}/components`, {json: true}));
   }
 
   /** Add component to Jira
@@ -500,16 +409,12 @@ export default class JiraApi {
    * @param {object} component - Properly Formatted Component
    */
   addNewComponent(component) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/component'),
+    return this.doRequest(this.makeRequestHeader(`/component`, {
       method: 'POST',
       followAllRedirects: true,
       json: true,
       body: component
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Delete component from Jira
@@ -519,15 +424,11 @@ export default class JiraApi {
    * @param {string} componentId - the Id of the component to delete
    */
   deleteComponent(componentNum) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/component/${componentNum}`),
+    return this.doRequest(this.makeRequestHeader(`/component/${componentNum}`, {
       method: 'DELETE',
       followAllRedirects: true,
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** List all fields custom and not that jira knows about.
@@ -536,14 +437,7 @@ export default class JiraApi {
    * @function
    */
   listFields() {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/field'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/field`, {json: true}));
   }
 
   /** List all priorities jira knows about
@@ -552,14 +446,7 @@ export default class JiraApi {
    * @function
    */
   listPriorities() {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/priority'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/priority`, {json: true}));
   }
 
   /** List Transitions for a specific issue that are available to the current user
@@ -569,17 +456,12 @@ export default class JiraApi {
    * @param {string} issueId - get transitions available for the issue
    */
   listTransitions(issueId) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueId}/transitions`),
-      method: 'GET',
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/transitions`, {
       json: true,
       qs: {
         expand: 'transitions.fields'
       }
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Transition issue in Jira
@@ -590,16 +472,12 @@ export default class JiraApi {
    * @param {object} issueTransition - transition object from the jira rest API
    */
   transitionIssue(issueNum, issueTransition) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueNum}/transitions`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueNum}/transitions`, {
       body: issueTransition,
       method: 'POST',
       followAllRedirects: true,
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** List all Viewable Projects
@@ -608,14 +486,7 @@ export default class JiraApi {
    * @function
    */
   listProjects() {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/project'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/project`, {json: true}));
   }
 
   /** Add a comment to an issue
@@ -626,18 +497,14 @@ export default class JiraApi {
    * @param {string} comment - string containing comment
    */
   addComment(issueId, comment) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueId}/comment`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/comment`, {
       body: {
         body: comment
       },
       method: 'POST',
       followAllRedirects: true,
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Add a worklog to a project
@@ -648,17 +515,13 @@ export default class JiraApi {
    * @param {object} worklog - worklog object from the rest API
    */
   addWorklog(issueId, worklog, newEstimate) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueId}/worklog`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/worklog`, {
       body: worklog,
       method: 'POST',
       followAllRedirects: true,
       json: true,
       qs: (newEstimate) ? {adjustEstimate: 'new', newEstimate} : null
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Delete worklog from issue
@@ -669,15 +532,11 @@ export default class JiraApi {
    * @param {string} worklogId - the Id of the worklog in issue to delete
    */
   deleteWorklog(issueId, worklogId) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/issue/${issueId}/worklog/${worklogId}`),
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/worklog/${worklogId}`, {
       method: 'DELETE',
       followAllRedirects: true,
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** List all Issue Types jira knows about
@@ -686,14 +545,7 @@ export default class JiraApi {
    * @function
    */
   listIssueTypes() {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/issuetype'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/issuetype`, {json: true}));
   }
 
   /** Register a webhook
@@ -703,15 +555,11 @@ export default class JiraApi {
    * @param {object} webhook - properly formatted webhook
    */
   registerWebhook(webhook) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/webhook'),
+    return this.doRequest(this.makeRequestHeader(`/webhook`, {
       method: 'POST',
       json: true,
       body: webhook
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** List all registered webhooks
@@ -720,14 +568,7 @@ export default class JiraApi {
    * @function
    */
   listWebhooks() {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/webhook'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/webhook`, {json: true}));
   }
 
   /** Get a webhook by its ID
@@ -737,14 +578,7 @@ export default class JiraApi {
    * @param {string} webhookID - id of webhook to get
    */
   getWebhook(webhookID) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/webhook/${webhookID}`),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/webhook/${webhookID}`, {json: true}));
   }
 
   /** Delete a registered webhook
@@ -754,14 +588,10 @@ export default class JiraApi {
    * @param {string} webhookID - id of the webhook to delete
    */
   deleteWebhook(webhookID) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/webhook/${webhookID}`),
+    return this.doRequest(this.makeRequestHeader(`/webhook/${webhookID}`, {
       method: 'DELETE',
       json: true
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 
   /** Describe the currently authenticated user
@@ -770,14 +600,7 @@ export default class JiraApi {
    * @function
    */
   getCurrentUser() {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri('/session'),
-      method: 'GET',
-      json: true
-    };
-
-    return this.doRequest(requestOptions);
+    return this.doRequest(this.makeRequestHeader(`/session`, {json: true}));
   }
 
   /** Retrieve the backlog of a certain Rapid View
@@ -786,16 +609,11 @@ export default class JiraApi {
    * @param {string} rapidViewId: rapid view id
    */
   getBacklogForRapidView(rapidViewId) {
-    const requestOptions = {
-      rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(`/xboard/plan/backlog/data`),
-      method: 'GET',
+    return this.doRequest(this.makeRequestHeader(`/xboard/plan/backlog/data`, {
       json: true,
       qs: {
         rapidViewId
       }
-    };
-
-    return this.doRequest(requestOptions);
+    }));
   }
 }

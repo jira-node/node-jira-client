@@ -29,6 +29,28 @@ describe('Jira API Tests', () => {
     });
   });
 
+  describe('makeRequestHeader Tests', () => {
+    it('makeRequestHeader functions properly in the average case', () => {
+      const jira = new JiraApi(getOptions());
+
+      expect(jira.makeRequestHeader('/somePathName')).to.eql({
+        method: 'GET',
+        rejectUnauthorized: true,
+        uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName'
+      });
+    });
+
+    it('makeRequestHeader functions properly with a different method', () => {
+      const jira = new JiraApi(getOptions());
+
+      expect(jira.makeRequestHeader('/somePathName', {method: 'POST'})).to.eql({
+        method: 'POST',
+        rejectUnauthorized: true,
+        uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName'
+      });
+    });
+  });
+
   describe('makeUri Tests', () => {
     it('makeUri functions properly in the average case', () => {
       const jira = new JiraApi(getOptions());
