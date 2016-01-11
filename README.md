@@ -135,39 +135,3 @@ JiraApi options:
 
 *  Refactor currently implemented APIs to be more Object Oriented
 *  Refactor to make use of built-in node.js events and classes
-
-## Changelog ##
-
-
-* _0.9.2 Smaller fixes and features added_
-  * proper doRequest usage (thanks to [ndamnjanovic](https://github.com/ndamnjanovic))
-  * Support for @ in usernames (thanks to [ryanplasma](https://github.com/ryanplasma))
-  * Handling empty responses in getIssue
-*  _0.9.0 Add OAuth Support and New Estimates on addWorklog (thanks to [nagyv](https://github.com/nagyv))_
-*  _0.8.2 Fix URL Format Issues (thanks to
-        [eduardolundgren](https://github.com/eduardolundgren))_
-*  _0.8.1 Expanding the transitions options (thanks to
-        [eduardolundgren](https://github.com/eduardolundgren))_
-*  _0.8.0 Ability to search users (thanks to
-        [eduardolundgren](https://github.com/eduardolundgren))_
-*  _0.7.2 Allows HTTP Code 204 on issue update edit (thanks to
-        [eduardolundgren](https://github.com/eduardolundgren))_
-*  _0.7.1 Check if body variable is undef (thanks to
-        [AlexCline](https://github.com/AlexCline))_
-*  _0.7.0 Adds list priorities, list fields, and project components (thanks to
-        [eduardolundgren](https://github.com/eduardolundgren))_
-*  _0.6.0 Comment API implemented (thanks to [StevenMcD](https://github.com/StevenMcD))_
-*  _0.5.0 Last param is now for strict SSL checking, defaults to true_
-*  _0.4.1 Now handing errors in the request callback (thanks [mrbrookman](https://github.com/mrbrookman))_
-*  _0.4.0 Now auto-redirecting between http and https (for both GET and POST)_
-*  _0.3.1 [Request](https://github.com/mikeal/request) is broken, setting max request package at 2.15.0_
-*  _0.3.0 Now Gets Issues for a Rapidview/Sprint (thanks [donbonifacio](https://github.com/donbonifacio))_
-*  _0.2.0 Now allowing startAt and MaxResults to be passed to searchJira,
-   switching to semantic versioning._
-*  _0.1.0 Using Basic Auth instead of cookies, all calls unit tested, URI
-   creation refactored_
-*  _0.0.6 Now linting, preparing to refactor_
-*  _0.0.5 JQL search now takes a list of fields_
-*  _0.0.4 Added jql search_
-*  _0.0.3 Added APIs and Docco documentation_
-*  _0.0.2 Initial version_
