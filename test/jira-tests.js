@@ -34,6 +34,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeRequestHeader('/somePathName')).to.eql({
+        json: true,
         method: 'GET',
         rejectUnauthorized: true,
         uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName'
@@ -44,6 +45,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeRequestHeader('/somePathName', {method: 'POST'})).to.eql({
+        json: true,
         method: 'POST',
         rejectUnauthorized: true,
         uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName'
@@ -63,9 +65,7 @@ describe('Jira API Tests', () => {
   describe('doRequest Tests', () => {
     it('doRequest functions properly in the average case', (done) => {
       const dummyObject = {
-        body: JSON.stringify({
-          someKey: 'someValue'
-        })
+        someKey: 'someValue'
       };
       function dummyRequest(requestOptions) {
         return Promise.resolve(dummyObject);
@@ -77,16 +77,15 @@ describe('Jira API Tests', () => {
       );
 
       jira.doRequest({})
-        .should.eventually.eql(JSON.parse(dummyObject.body))
+        .should.eventually.eql(dummyObject)
         .and.notify(done);
     });
 
     it('doRequest authenticates properly when specified', (done) => {
       function dummyRequest(requestOptions) {
-        return Promise.resolve({
-          body: JSON.stringify(requestOptions)
-        });
+        return Promise.resolve(requestOptions);
       }
+
       const jira = new JiraApi(getOptions({
         username: 'someusername',
         password: 'somepassword',
@@ -103,9 +102,7 @@ describe('Jira API Tests', () => {
 
     it('doRequest throws an error properly', (done) => {
       const dummyObject = {
-        body: JSON.stringify({
-          errorMessages: ['some error to throw']
-        })
+        errorMessages: ['some error to throw']
       };
       function dummyRequest(requestOptions) {
         return Promise.resolve(dummyObject);
@@ -123,12 +120,10 @@ describe('Jira API Tests', () => {
 
     it('doRequest throws a list of errors properly', (done) => {
       const dummyObject = {
-        body: JSON.stringify({
-          errorMessages: [
-            'some error to throw',
-            'another error'
-          ]
-        })
+        errorMessages: [
+          'some error to throw',
+          'another error'
+        ]
       };
       function dummyRequest(requestOptions) {
         return Promise.resolve(dummyObject);
@@ -151,9 +146,7 @@ describe('Jira API Tests', () => {
       let dummyRequest = dummyRequestMethod;
       if (!dummyRequest) {
         dummyRequest = (requestOptions) => {
-          return Promise.resolve({
-            body: JSON.stringify(requestOptions)
-          });
+          return Promise.resolve(requestOptions);
         };
       }
 
@@ -186,11 +179,7 @@ describe('Jira API Tests', () => {
 
     it('getUnresolvedIssueCount hits proper url', (done) => {
       function dummyRequest(requestOptions) {
-        return Promise.resolve({
-          body: JSON.stringify({
-            issuesUnresolvedCount: requestOptions
-          })
-        });
+        return Promise.resolve({issuesUnresolvedCount: requestOptions});
       }
 
       dummyURLCall('getUnresolvedIssueCount', ['someVersion'], dummyRequest)
@@ -207,12 +196,10 @@ describe('Jira API Tests', () => {
     it('findRapidView hits proper url', (done) => {
       function dummyRequest(requestOptions) {
         return Promise.resolve({
-          body: JSON.stringify({
-            views: [{
-              ...requestOptions,
-              name: 'theNameToLookFor'
-            }]
-          })
+          views: [{
+            ...requestOptions,
+            name: 'theNameToLookFor'
+          }]
         });
       }
 
@@ -224,9 +211,7 @@ describe('Jira API Tests', () => {
     it('getLastSprintForRapidView hits proper url', (done) => {
       function dummyRequest(requestOptions) {
         return Promise.resolve({
-          body: JSON.stringify({
-            sprints: [requestOptions]
-          })
+          sprints: [requestOptions]
         });
       }
 
