@@ -18,6 +18,12 @@
     "node": ">=4.2.2"
   },
   "main": "./lib/jira.js",
+  "files": [
+    "lib",
+    "docs",
+    "LICENSE.md",
+    "README.md"
+  ],
   "licenses": [
     {
       "type": "The MIT License",
@@ -26,15 +32,15 @@
   ],
   "dependencies": {
     "babel-runtime": "^6.3.13",
-    "jsdoc": "^3.4.0",
     "request-promise": "^1.0.2"
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
     "lint": "eslint ./",
     "test": "npm run lint && mocha",
-    "build-docs": "./node_modules/.bin/jsdoc ./lib/jira.js -d './docs/'",
-    "docs": "npm run build && npm run build-docs"
+    "build-docs": "rm -rf docs && jsdoc ./lib/jira.js -d './docs/'",
+    "docs": "npm run build && npm run build-docs",
+    "prepublish": "npm run docs"
   },
   "devDependencies": {
     "babel-cli": "^6.2.0",
@@ -49,6 +55,7 @@
     "eslint-config-airbnb": "^0.1.0",
     "eslint-config-exchange-solutions": "0.0.2",
     "eslint-plugin-mocha": "^1.0.0",
+    "jsdoc": "^3.4.0",
     "mocha": "^2.3.4"
   }
 }
