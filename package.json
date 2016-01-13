@@ -52,8 +52,7 @@
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
     "eslint": "^1.10.3",
-    "eslint-config-airbnb": "^0.1.0",
-    "eslint-config-exchange-solutions": "0.0.2",
+    "eslint-config-exchange-solutions": "^2.0.0",
     "eslint-plugin-mocha": "^1.0.0",
     "jsdoc": "^3.4.0",
     "mocha": "^2.3.4"

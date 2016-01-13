@@ -44,7 +44,7 @@ describe('Jira API Tests', () => {
     it('makeRequestHeader functions properly with a different method', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeRequestHeader('/somePathName', {method: 'POST'})).to.eql({
+      expect(jira.makeRequestHeader('/somePathName', { method: 'POST' })).to.eql({
         json: true,
         method: 'POST',
         rejectUnauthorized: true,
@@ -158,7 +158,8 @@ describe('Jira API Tests', () => {
 
       return jira[jiraApiMethodName].apply(jira, functionArguments)
         .then(resultObject => {
-          // hack exposing the qs object as the query string in the URL so this is uniformly testable
+          // hack exposing the qs object as the query string in the URL so this is
+          // uniformly testable
           if (resultObject.qs) {
             const queryString = Object.keys(resultObject.qs).map((x) => {
               return `${x}=${resultObject.qs[x]}`;
@@ -179,7 +180,7 @@ describe('Jira API Tests', () => {
 
     it('getUnresolvedIssueCount hits proper url', (done) => {
       function dummyRequest(requestOptions) {
-        return Promise.resolve({issuesUnresolvedCount: requestOptions});
+        return Promise.resolve({ issuesUnresolvedCount: requestOptions });
       }
 
       dummyURLCall('getUnresolvedIssueCount', ['someVersion'], dummyRequest)
@@ -263,7 +264,7 @@ describe('Jira API Tests', () => {
     });
 
     it('updateVersion hits proper url', (done) => {
-      dummyURLCall('updateVersion', [{id: 'someVersionId'}])
+      dummyURLCall('updateVersion', [{ id: 'someVersionId' }])
         .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId')
         .and.notify(done);
     });

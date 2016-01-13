@@ -12,15 +12,24 @@ export default class JiraApi {
    * @constructor
    * @function
    * @param {object} options - All other parameters to this function are fields on this object.
-   * @param {string} [options.protocol=http] - What protocol to use to connect to jira? Ex: http|https
-   * @param {string} options.host - What host is this tool connecting to for the jira instance? Ex: jira.somehost.com
-   * @param {string} options.port - What port is this tool connecting to jira with? Ex: 8080, 3000, etc
-   * @param {string} [options.username] - Specify a username for this tool to authenticate all requests with.
-   * @param {string} [options.password] - Specify a password for this tool to authenticate all requests with.
-   * @param {string} options.apiVersion - What version of the jira rest api is the instance the tool is connecting to?
-   * @param {string} [options.base] - What other url parts exist, if any, before the rest/api/ section?
-   * @param {boolean} [options.strictSSL=true] - Does this tool require each request to be authenticated?  Defaults to true.
-   * @param {function} [options.request] - What method does this tool use to make its requests?  Defaults to request from request-promise
+   * @param {string} [options.protocol=http] - What protocol to use to connect to
+   * jira? Ex: http|https
+   * @param {string} options.host - What host is this tool connecting to for the jira
+   * instance? Ex: jira.somehost.com
+   * @param {string} options.port - What port is this tool connecting to jira with?
+   * Ex: 8080, 3000, etc
+   * @param {string} [options.username] - Specify a username for this tool to authenticate all
+   * requests with.
+   * @param {string} [options.password] - Specify a password for this tool to authenticate all
+   * requests with.
+   * @param {string} options.apiVersion - What version of the jira rest api is the instance the
+   * tool is connecting to?
+   * @param {string} [options.base] - What other url parts exist, if any, before the rest/api/
+   * section?
+   * @param {boolean} [options.strictSSL=true] - Does this tool require each request to be
+   * authenticated?  Defaults to true.
+   * @param {function} [options.request] - What method does this tool use to make its requests?
+   * Defaults to request from request-promise
    */
   constructor(options) {
     this.protocol = options.protocol || 'http';
@@ -71,17 +80,22 @@ export default class JiraApi {
    * @name doRequest
    * @function
    * Does a request based on the requestOptions object
-   * @param {object} requestOptions - fields on this object get posted as a request header for requests to jira
+   * @param {object} requestOptions - fields on this object get posted as a request header for
+   * requests to jira
    */
   doRequest(requestOptions) {
+    let options = requestOptions;
     if (this.username && this.password) {
-      requestOptions.auth = {
-        'user': this.username,
-        'pass': this.password
+      options = {
+        auth: {
+          user: this.username,
+          pass: this.password
+        },
+        ...requestOptions
       };
     }
 
-    return this.request(requestOptions)
+    return this.request(options)
       .then(response => {
         if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
           throw new Error(response.errorMessages.join(', '));
@@ -107,7 +121,8 @@ export default class JiraApi {
    * @function
    * Get the unresolved issue count
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288524)
-   * @param {string} version - the version of your product you want to find the unresolved issues of.
+   * @param {string} version - the version of your product you want to find the unresolved
+   * issues of.
    */
   getUnresolvedIssueCount(version) {
     return this.doRequest(this.makeRequestHeader(`/version/${version}/unresolvedIssueCount`))
@@ -133,7 +148,8 @@ export default class JiraApi {
   findRapidView(projectName) {
     return this.doRequest(this.makeRequestHeader('/rapidviews/list'))
       .then(response => {
-        const rapidViewResult = response.views.filter(x => x.name.toLowerCase() === projectName.toLowerCase());
+        const rapidViewResult = response.views
+          .filter(x => x.name.toLowerCase() === projectName.toLowerCase());
         return rapidViewResult[0];
       });
   }
@@ -284,9 +300,10 @@ export default class JiraApi {
    * @param {integer} [startAt=0] - The index of the first user to return (0-based)
    * @param {integer} [maxResults=50] - The maximum number of users to return
    * @param {boolean} [includeActive=true] - If true, then active users are included in the results
-   * @param {boolean} [includeInactive=false] - If true, then inactive users are included in the results
+   * @param {boolean} [includeInactive=false] - If true, then inactive users
+   * are included in the results
    */
-  searchUsers({username, startAt, maxResults, includeActive, includeInactive}) {
+  searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
     return this.doRequest(this.makeRequestHeader(`/user/search`, {
       followAllRedirects: true,
       qs: {
@@ -307,9 +324,11 @@ export default class JiraApi {
    * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
    */
   getUsersInGroup(groupName, startAt = 0, maxResults = 50) {
-    return this.doRequest(this.makeRequestHeader(`/group?groupname=${groupName}&expand=users[${startAt}:${maxResults}]`, {
-      followAllRedirects: true
-    }));
+    return this.doRequest(
+      this.makeRequestHeader(
+        `/group?groupname=${groupName}&expand=users[${startAt}:${maxResults}]`, {
+          followAllRedirects: true
+        }));
   }
 
   /** Get issues related to a user
@@ -320,7 +339,9 @@ export default class JiraApi {
    * @param {boolean} open - determines if only open issues should be returned
    */
   getUsersIssues(username, open) {
-    return this.searchJira(`assignee = ${username.replace('@', '\\u0040')} AND status in (Open, 'In Progress', Reopened) ${open}`, {});
+    return this.searchJira(
+      `assignee = ${username.replace('@', '\\u0040')} ` +
+      `AND status in (Open, 'In Progress', Reopened) ${open}`, {});
   }
 
   /** Add issue to Jira
@@ -501,7 +522,7 @@ export default class JiraApi {
       body: worklog,
       method: 'POST',
       followAllRedirects: true,
-      qs: (newEstimate) ? {adjustEstimate: 'new', newEstimate} : null
+      qs: (newEstimate) ? { adjustEstimate: 'new', newEstimate } : null
     }));
   }
 
