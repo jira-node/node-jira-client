@@ -11,25 +11,7 @@ export default class JiraApi {
   /*
    * @constructor
    * @function
-   * @param {object} options - All other parameters to this function are fields on this object.
-   * @param {string} [options.protocol=http] - What protocol to use to connect to
-   * jira? Ex: http|https
-   * @param {string} options.host - What host is this tool connecting to for the jira
-   * instance? Ex: jira.somehost.com
-   * @param {string} options.port - What port is this tool connecting to jira with?
-   * Ex: 8080, 3000, etc
-   * @param {string} [options.username] - Specify a username for this tool to authenticate all
-   * requests with.
-   * @param {string} [options.password] - Specify a password for this tool to authenticate all
-   * requests with.
-   * @param {string} options.apiVersion - What version of the jira rest api is the instance the
-   * tool is connecting to?
-   * @param {string} [options.base] - What other url parts exist, if any, before the rest/api/
-   * section?
-   * @param {boolean} [options.strictSSL=true] - Does this tool require each request to be
-   * authenticated?  Defaults to true.
-   * @param {function} [options.request] - What method does this tool use to make its requests?
-   * Defaults to request from request-promise
+   * @param {JiraApiOptions} options
    */
   constructor(options) {
     this.protocol = options.protocol || 'http';
@@ -45,9 +27,33 @@ export default class JiraApi {
   }
 
   /**
+   * @typedef JiraApiOptions
+   * @type {object}
+   * @property {string} [protocol=http] - What protocol to use to connect to
+   * jira? Ex: http|https
+   * @property {string} host - What host is this tool connecting to for the jira
+   * instance? Ex: jira.somehost.com
+   * @property {string} port - What port is this tool connecting to jira with?
+   * Ex: 8080, 3000, etc
+   * @property {string} [username] - Specify a username for this tool to authenticate all
+   * requests with.
+   * @property {string} [password] - Specify a password for this tool to authenticate all
+   * requests with.
+   * @property {string} apiVersion - What version of the jira rest api is the instance the
+   * tool is connecting to?
+   * @property {string} [base] - What other url parts exist, if any, before the rest/api/
+   * section?
+   * @property {boolean} [strictSSL=true] - Does this tool require each request to be
+   * authenticated?  Defaults to true.
+   * @property {function} [request] - What method does this tool use to make its requests?
+   * Defaults to request from request-promise
+   */
+
+  /**
    * @name makeRequestHeader
    * @function
    * Creates a requestOptions object based on the default template for one
+   * @param {string} uri
    * @param {object} otherOptions - an object containing fields and formatting how the
    */
   makeRequestHeader(uri, otherOptions = {}) {
@@ -296,12 +302,7 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
    * @name searchUsers
    * @function
-   * @param {string} username - A query string used to search username, name or e-mail address
-   * @param {integer} [startAt=0] - The index of the first user to return (0-based)
-   * @param {integer} [maxResults=50] - The maximum number of users to return
-   * @param {boolean} [includeActive=true] - If true, then active users are included in the results
-   * @param {boolean} [includeInactive=false] - If true, then inactive users
-   * are included in the results
+   * @param {SearchUserOptions} options
    */
   searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
     return this.doRequest(this.makeRequestHeader(`/user/search`, {
@@ -315,6 +316,18 @@ export default class JiraApi {
       }
     }));
   }
+
+  /**
+   * @typedef SearchUserOptions
+   * @type {object}
+   * @property {string} username - A query string used to search username, name or e-mail address
+   * @property {integer} [startAt=0] - The index of the first user to return (0-based)
+   * @property {integer} [maxResults=50] - The maximum number of users to return
+   * @property {boolean} [includeActive=true] - If true, then active users are included
+   * in the results
+   * @property {boolean} [includeInactive=false] - If true, then inactive users
+   * are included in the results
+   */
 
   /** Get all users in group on Jira
    * @name getUsersInGroup
@@ -335,7 +348,7 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id296043)
    * @name getUsersIssues
    * @function
-   * @param {string} user - username of user to search for
+   * @param {string} username - username of user to search for
    * @param {boolean} open - determines if only open issues should be returned
    */
   getUsersIssues(username, open) {
@@ -378,8 +391,8 @@ export default class JiraApi {
    * @function
    * @param {string} issueId - the Id of the issue to delete
    */
-  deleteIssue(issueNum) {
-    return this.doRequest(this.makeRequestHeader(`/issue/${issueNum}`, {
+  deleteIssue(issueId) {
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}`, {
       method: 'DELETE',
       followAllRedirects: true
     }));
@@ -392,8 +405,8 @@ export default class JiraApi {
    * @param {string} issueId - the Id of the issue to delete
    * @param {object} issueUpdate - update Object as specified by the rest api
    */
-  updateIssue(issueNum, issueUpdate) {
-    return this.doRequest(this.makeRequestHeader(`/issue/${issueNum}`, {
+  updateIssue(issueId, issueUpdate) {
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}`, {
       body: issueUpdate,
       method: 'PUT',
       followAllRedirects: true
@@ -430,8 +443,8 @@ export default class JiraApi {
    * @function
    * @param {string} componentId - the Id of the component to delete
    */
-  deleteComponent(componentNum) {
-    return this.doRequest(this.makeRequestHeader(`/component/${componentNum}`, {
+  deleteComponent(componentId) {
+    return this.doRequest(this.makeRequestHeader(`/component/${componentId}`, {
       method: 'DELETE',
       followAllRedirects: true
     }));
@@ -476,8 +489,8 @@ export default class JiraApi {
    * @param {string} issueId - the Id of the issue to delete
    * @param {object} issueTransition - transition object from the jira rest API
    */
-  transitionIssue(issueNum, issueTransition) {
-    return this.doRequest(this.makeRequestHeader(`/issue/${issueNum}/transitions`, {
+  transitionIssue(issueId, issueTransition) {
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/transitions`, {
       body: issueTransition,
       method: 'POST',
       followAllRedirects: true
@@ -516,6 +529,7 @@ export default class JiraApi {
    * @function
    * @param {string} issueId - Issue to add a worklog to
    * @param {object} worklog - worklog object from the rest API
+   * @param {object} newEstimate - the new value for the remaining estimate field
    */
   addWorklog(issueId, worklog, newEstimate) {
     return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/worklog`, {
@@ -605,7 +619,7 @@ export default class JiraApi {
   /** Retrieve the backlog of a certain Rapid View
    * @name getBacklogForRapidView
    * @function
-   * @param {string} rapidViewId: rapid view id
+   * @param {string} rapidViewId - rapid view id
    */
   getBacklogForRapidView(rapidViewId) {
     return this.doRequest(this.makeRequestHeader(`/xboard/plan/backlog/data`, {
