@@ -36,11 +36,10 @@
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
+    "docs": "rm -rf docs && esdoc -c esdoc.json",
     "lint": "eslint ./",
-    "test": "npm run lint && mocha",
-    "build-docs": "rm -rf docs && jsdoc ./lib/jira.js -d './docs/'",
-    "docs": "npm run build && npm run build-docs",
-    "prepublish": "npm run docs"
+    "test": "npm run lint && mocha && npm run docs",
+    "prepublish": "npm run build && npm run docs"
   },
   "devDependencies": {
     "babel-cli": "^6.2.0",
@@ -51,10 +50,11 @@
     "babel-preset-stage-0": "^6.1.18",
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
+    "esdoc": "^0.4.3",
+    "esdoc-es7-plugin": "0.0.3",
     "eslint": "^1.10.3",
     "eslint-config-exchange-solutions": "^2.0.0",
     "eslint-plugin-mocha": "^1.0.0",
-    "jsdoc": "^3.4.0",
     "mocha": "^2.3.4"
   }
 }
