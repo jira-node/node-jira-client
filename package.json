@@ -61,7 +61,7 @@
   },
   "release-script": {
     "docsRepo": "git@github.com:jira-node/jira-node.github.io.git",
-    "docsRoot": "docs",
+    "docsRoot": "docs/",
     "tmpDocsRepo": "tmp-docs-repo"
   }
 }
