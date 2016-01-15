@@ -18,3 +18,5 @@ npm-debug.log
 
 .idea
 *.iml
+
+tmp-docs-repo
