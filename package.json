@@ -36,10 +36,11 @@
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
-    "docs": "rm -rf docs && esdoc -c esdoc.json",
+    "docs-build": "rm -rf docs && esdoc -c esdoc.json",
     "lint": "eslint ./",
-    "test": "npm run lint && mocha && npm run docs",
-    "prepublish": "npm run build && npm run docs"
+    "test": "npm run lint && mocha && npm run docs-build",
+    "prepublish": "npm run build && npm run docs-build",
+    "release": "release"
   },
   "devDependencies": {
     "babel-cli": "^6.2.0",
@@ -55,6 +56,11 @@
     "eslint": "^1.10.3",
     "eslint-config-exchange-solutions": "^2.0.0",
     "eslint-plugin-mocha": "^1.0.0",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "release-script": "^1.0.1"
+  },
+  "release-script": {
+    "docsRepo": "git@github.com:jira-node/jira-node.github.io.git",
+    "docsRoot": "docs"
   }
 }
