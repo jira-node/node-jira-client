@@ -432,5 +432,11 @@ describe('Jira API Tests', () => {
         .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/xboard/plan/backlog/data?rapidViewId=someRapidViewId')
         .and.notify(done);
     });
+
+    it('addAttachmentOnIssue hits proper url', (done) => {
+      dummyURLCall('addAttachmentOnIssue', ['someIssueId', {}])
+        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/attachments')
+        .and.notify(done);
+    });
   });
 });

@@ -628,4 +628,24 @@ export default class JiraApi {
       }
     }));
   }
+
+
+  /** Add attachment to a Issue
+   * @name addAttachmentOnIssue
+   * @function
+   * @param {string} issueId - issue id
+   * @param {object} readStream - readStream object from fs
+   */
+  addAttachmentOnIssue(issueId, readStream) {
+    return this.doRequest(this.makeRequestHeader('/issue/' + issueId + '/attachments', {
+      method: 'POST',
+      headers: {
+        'X-Atlassian-Token': 'nocheck'
+      },
+      formData: {
+        file: readStream
+      }
+    }));
+  }
+
 }
