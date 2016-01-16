@@ -16,10 +16,10 @@ export default class JiraApi {
   constructor(options) {
     this.protocol = options.protocol || 'http';
     this.host = options.host;
-    this.port = options.port;
+    this.port = options.port || 80;
     this.username = options.username;
     this.password = options.password;
-    this.apiVersion = options.apiVersion;
+    this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
     this.strictSSL = options.strictSSL || true;
       // This is so we can fake during unit tests
@@ -33,13 +33,13 @@ export default class JiraApi {
    * jira? Ex: http|https
    * @property {string} host - What host is this tool connecting to for the jira
    * instance? Ex: jira.somehost.com
-   * @property {string} port - What port is this tool connecting to jira with?
+   * @property {string} [port=80] - What port is this tool connecting to jira with?
    * Ex: 8080, 3000, etc
    * @property {string} [username] - Specify a username for this tool to authenticate all
    * requests with.
    * @property {string} [password] - Specify a password for this tool to authenticate all
    * requests with.
-   * @property {string} apiVersion - What version of the jira rest api is the instance the
+   * @property {string} [apiVersion=2] - What version of the jira rest api is the instance the
    * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
    * section?
