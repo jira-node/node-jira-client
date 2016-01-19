@@ -4,7 +4,7 @@ A node.js module, which provides an object oriented wrapper for the Jira Rest AP
 
 [![Documentation](https://img.shields.io/badge/Documentation--green.svg)](https://jira-node.github.io/)
 [![Jira Rest API](https://img.shields.io/badge/Jira%20Rest%20API--green.svg)](http://docs.atlassian.com/jira/REST/latest/)
-[![Build Status](https://img.shields.io/travis/jira-node/node-jira-client/master.svg)](https://travis-ci.org/node-jira/node-jira-client)
+[![Build Status](https://img.shields.io/travis/jira-node/node-jira-client/master.svg)](https://travis-ci.org/jira-node/node-jira-client)
 
 ## Installation ##
 
