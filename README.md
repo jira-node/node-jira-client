@@ -53,7 +53,7 @@ jira.findIssue(issueNumber)
 // ES6
 jira.findIssue(issueNumber)
   .then(issue => {
-    console.log('Status: ' + issue.fields.status.name);
+    console.log(`Status: ${issue.fields.status.name}`);
   })
   .catch(err => {
     console.error(err);
@@ -63,7 +63,7 @@ jira.findIssue(issueNumber)
 async function logIssueName() {
   try {
     const issue = await jira.findIssue(issueNumber);
-    console.log('Status: ' + issue.fields.status.name);
+    console.log(`Status: ${issue.fields.status.name}`);
   } catch (err) {
     console.error(err);
   }
