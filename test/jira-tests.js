@@ -23,9 +23,30 @@ describe('Jira API Tests', () => {
       expect(jira.protocol).to.eql('http');
       expect(jira.host).to.eql('jira.somehost.com');
       expect(jira.port).to.eql('8080');
-      expect(jira.username).to.eql('someusername');
-      expect(jira.password).to.eql('somepassword');
+      expect(jira.baseOptions.auth.user).to.eql('someusername');
+      expect(jira.baseOptions.auth.pass).to.eql('somepassword');
       expect(jira.apiVersion).to.eql('2.0');
+    });
+
+    it('Constructor with no auth credentials', () => {
+      const {
+        username,
+        password,
+        ...options
+      } = getOptions();
+
+      const jira = new JiraApi(options);
+
+      expect(jira.baseOptions.auth).to.be.undefined;
+    });
+
+    it('Constructor with timeout', () => {
+      const jira = new JiraApi({
+        timeout: 2,
+        ...getOptions()
+      });
+
+      expect(jira.baseOptions.timeout).to.equal(2);
     });
   });
 
@@ -86,16 +107,36 @@ describe('Jira API Tests', () => {
         return Promise.resolve(requestOptions);
       }
 
+      const username = 'someusername';
+      const password = 'somepassword';
+
       const jira = new JiraApi(getOptions({
-        username: 'someusername',
-        password: 'somepassword',
+        username,
+        password,
         request: dummyRequest
       }));
 
       jira.doRequest({})
         .then(resultObject => {
-          expect(resultObject.auth.user).to.eql(jira.username);
-          expect(resultObject.auth.pass).to.eql(jira.password);
+          expect(resultObject.auth.user).to.eql(username);
+          expect(resultObject.auth.pass).to.eql(password);
+        })
+        .should.notify(done);
+    });
+
+    it('doRequest times out with specified option', (done) => {
+      function dummyRequest(requestOptions) {
+        return Promise.resolve(requestOptions);
+      }
+
+      const jira = new JiraApi({
+        timeout: 2,
+        ...getOptions({ request: dummyRequest })
+      });
+
+      jira.doRequest({})
+        .then(resultObject => {
+          expect(resultObject.timeout).to.eql(2);
         })
         .should.notify(done);
     });
