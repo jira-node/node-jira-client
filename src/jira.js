@@ -104,20 +104,19 @@ export default class JiraApi {
    * @param {object} requestOptions - fields on this object get posted as a request header for
    * requests to jira
    */
-  doRequest(requestOptions) {
+  async doRequest(requestOptions) {
     const options = {
       ...this.baseOptions,
       ...requestOptions
     };
 
-    return this.request(options)
-      .then(response => {
-        if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
-          throw new Error(response.errorMessages.join(', '));
-        }
+    const response = await this.request(options);
 
-        return response;
-      });
+    if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
+      throw new Error(response.errorMessages.join(', '));
+    }
+
+    return response;
   }
 
   /**
@@ -139,9 +138,10 @@ export default class JiraApi {
    * @param {string} version - the version of your product you want to find the unresolved
    * issues of.
    */
-  getUnresolvedIssueCount(version) {
-    return this.doRequest(this.makeRequestHeader(`/version/${version}/unresolvedIssueCount`))
-      .then(response => response.issuesUnresolvedCount);
+  async getUnresolvedIssueCount(version) {
+    const requestHeaders = this.makeRequestHeader(`/version/${version}/unresolvedIssueCount`);
+    const response = await this.doRequest(requestHeaders);
+    return response.issuesUnresolvedCount;
   }
 
   /**
@@ -160,13 +160,13 @@ export default class JiraApi {
    * @function
    * @param {string} projectName - name for the project
    */
-  findRapidView(projectName) {
-    return this.doRequest(this.makeRequestHeader('/rapidviews/list'))
-      .then(response => {
-        const rapidViewResult = response.views
-          .filter(x => x.name.toLowerCase() === projectName.toLowerCase());
-        return rapidViewResult[0];
-      });
+  async findRapidView(projectName) {
+    const response = await this.doRequest(this.makeRequestHeader('/rapidviews/list'));
+
+    const rapidViewResult = response.views
+      .filter(x => x.name.toLowerCase() === projectName.toLowerCase());
+
+    return rapidViewResult[0];
   }
 
   /** Get a list of Sprints belonging to a Rapid View
@@ -174,11 +174,9 @@ export default class JiraApi {
    * @function
    * @param {string} rapidViewId - the id for the rapid view
    */
-  getLastSprintForRapidView(rapidViewId) {
-    return this.doRequest(this.makeRequestHeader(`/sprintquery/${rapidViewId}`))
-      .then(response => {
-        return response.sprints.pop();
-      });
+  async getLastSprintForRapidView(rapidViewId) {
+    const response = await this.doRequest(this.makeRequestHeader(`/sprintquery/${rapidViewId}`));
+    return response.sprints.pop();
   }
 
   /** Get the issues for a rapidView / sprint
@@ -637,7 +635,6 @@ export default class JiraApi {
       }
     }));
   }
-
 
   /** Add attachment to a Issue
    * @name addAttachmentOnIssue

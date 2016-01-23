@@ -84,12 +84,12 @@ describe('Jira API Tests', () => {
   });
 
   describe('doRequest Tests', () => {
-    it('doRequest functions properly in the average case', (done) => {
+    it('doRequest functions properly in the average case', async () => {
       const dummyObject = {
         someKey: 'someValue'
       };
-      function dummyRequest(requestOptions) {
-        return Promise.resolve(dummyObject);
+      async function dummyRequest(requestOptions) {
+        return dummyObject;
       }
       const jira = new JiraApi(
         getOptions({
@@ -97,14 +97,13 @@ describe('Jira API Tests', () => {
         })
       );
 
-      jira.doRequest({})
-        .should.eventually.eql(dummyObject)
-        .and.notify(done);
+      const response = await jira.doRequest({});
+      response.should.eql(dummyObject);
     });
 
-    it('doRequest authenticates properly when specified', (done) => {
-      function dummyRequest(requestOptions) {
-        return Promise.resolve(requestOptions);
+    it('doRequest authenticates properly when specified', async () => {
+      async function dummyRequest(requestOptions) {
+        return requestOptions;
       }
 
       const username = 'someusername';
@@ -116,17 +115,14 @@ describe('Jira API Tests', () => {
         request: dummyRequest
       }));
 
-      jira.doRequest({})
-        .then(resultObject => {
-          expect(resultObject.auth.user).to.eql(username);
-          expect(resultObject.auth.pass).to.eql(password);
-        })
-        .should.notify(done);
+      const result = await jira.doRequest({});
+      expect(result.auth.user).to.eql(username);
+      expect(result.auth.pass).to.eql(password);
     });
 
-    it('doRequest times out with specified option', (done) => {
-      function dummyRequest(requestOptions) {
-        return Promise.resolve(requestOptions);
+    it('doRequest times out with specified option', async () => {
+      async function dummyRequest(requestOptions) {
+        return requestOptions;
       }
 
       const jira = new JiraApi({
@@ -134,40 +130,37 @@ describe('Jira API Tests', () => {
         ...getOptions({ request: dummyRequest })
       });
 
-      jira.doRequest({})
-        .then(resultObject => {
-          expect(resultObject.timeout).to.eql(2);
-        })
-        .should.notify(done);
+      const result = await jira.doRequest({});
+      expect(result.timeout).to.eql(2);
     });
 
-    it('doRequest throws an error properly', (done) => {
+    it('doRequest throws an error properly', async () => {
       const dummyObject = {
         errorMessages: ['some error to throw']
       };
-      function dummyRequest(requestOptions) {
-        return Promise.resolve(dummyObject);
+      async function dummyRequest(requestOptions) {
+        return dummyObject;
       }
+
       const jira = new JiraApi(
         getOptions({
           request: dummyRequest
         })
       );
 
-      jira.doRequest({})
-        .should.eventually.be.rejectedWith('some error to throw')
-        .and.notify(done);
+      await jira.doRequest({})
+        .should.eventually.be.rejectedWith('some error to throw');
     });
 
-    it('doRequest throws a list of errors properly', (done) => {
+    it('doRequest throws a list of errors properly', async () => {
       const dummyObject = {
         errorMessages: [
           'some error to throw',
           'another error'
         ]
       };
-      function dummyRequest(requestOptions) {
-        return Promise.resolve(dummyObject);
+      async function dummyRequest(requestOptions) {
+        return dummyObject;
       }
 
       const jira = new JiraApi(
@@ -176,18 +169,17 @@ describe('Jira API Tests', () => {
         })
       );
 
-      jira.doRequest({})
-        .should.eventually.be.rejectedWith('some error to throw, another error')
-        .and.notify(done);
+      await jira.doRequest({})
+        .should.eventually.be.rejectedWith('some error to throw, another error');
     });
   });
 
   describe('Request Functions Tests', () => {
-    function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod) {
+    async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod) {
       let dummyRequest = dummyRequestMethod;
       if (!dummyRequest) {
-        dummyRequest = (requestOptions) => {
-          return Promise.resolve(requestOptions);
+        dummyRequest = async (requestOptions) => {
+          return requestOptions;
         };
       }
 
@@ -197,287 +189,258 @@ describe('Jira API Tests', () => {
         })
       );
 
-      return jira[jiraApiMethodName].apply(jira, functionArguments)
-        .then(resultObject => {
-          // hack exposing the qs object as the query string in the URL so this is
-          // uniformly testable
-          if (resultObject.qs) {
-            const queryString = Object.keys(resultObject.qs).map((x) => {
-              return `${x}=${resultObject.qs[x]}`;
-            })
-            .join('&');
-            return `${resultObject.uri}?${queryString}`;
-          }
+      const resultObject = await jira[jiraApiMethodName].apply(jira, functionArguments);
 
-          return resultObject.uri;
-        });
-    }
-
-    it('findIssue hits proper url', (done) => {
-      dummyURLCall('findIssue', ['PK-100'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100')
-        .and.notify(done);
-    });
-
-    it('getUnresolvedIssueCount hits proper url', (done) => {
-      function dummyRequest(requestOptions) {
-        return Promise.resolve({ issuesUnresolvedCount: requestOptions });
+      // hack exposing the qs object as the query string in the URL so this is
+      // uniformly testable
+      if (resultObject.qs) {
+        const queryString = Object.keys(resultObject.qs).map((x) => {
+          return `${x}=${resultObject.qs[x]}`;
+        })
+        .join('&');
+        return `${resultObject.uri}?${queryString}`;
       }
 
-      dummyURLCall('getUnresolvedIssueCount', ['someVersion'], dummyRequest)
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersion/unresolvedIssueCount')
-        .and.notify(done);
+      return resultObject.uri;
+    }
+
+    it('findIssue hits proper url', async () => {
+      const result = await dummyURLCall('findIssue', ['PK-100']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100');
     });
 
-    it('getProject hits proper url', (done) => {
-      dummyURLCall('getProject', ['someProject'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject')
-        .and.notify(done);
+    it('getUnresolvedIssueCount hits proper url', async () => {
+      async function dummyRequest(requestOptions) {
+        return { issuesUnresolvedCount: requestOptions };
+      }
+
+      const result = await dummyURLCall('getUnresolvedIssueCount', ['someVersion'], dummyRequest);
+      result.should
+        .eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersion/unresolvedIssueCount');
     });
 
-    it('findRapidView hits proper url', (done) => {
-      function dummyRequest(requestOptions) {
-        return Promise.resolve({
+    it('getProject hits proper url', async () => {
+      const result = await dummyURLCall('getProject', ['someProject']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject');
+    });
+
+    it('findRapidView hits proper url', async () => {
+      async function dummyRequest(requestOptions) {
+        return {
           views: [{
             ...requestOptions,
             name: 'theNameToLookFor'
           }]
-        });
+        };
       }
 
-      dummyURLCall('findRapidView', ['theNameToLookFor'], dummyRequest)
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/rapidviews/list')
-        .and.notify(done);
+      const result = await dummyURLCall('findRapidView', ['theNameToLookFor'], dummyRequest);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/rapidviews/list');
     });
 
-    it('getLastSprintForRapidView hits proper url', (done) => {
-      function dummyRequest(requestOptions) {
-        return Promise.resolve({
+    it('getLastSprintForRapidView hits proper url', async () => {
+      async function dummyRequest(requestOptions) {
+        return {
           sprints: [requestOptions]
-        });
+        };
       }
 
-      dummyURLCall('getLastSprintForRapidView', ['someRapidViewId'], dummyRequest)
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/sprintquery/someRapidViewId')
-        .and.notify(done);
+      const result = await dummyURLCall(
+        'getLastSprintForRapidView',
+        ['someRapidViewId'],
+        dummyRequest);
+
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/sprintquery/someRapidViewId');
     });
 
-    it('getSprintIssues hits proper url', (done) => {
-      dummyURLCall('getSprintIssues', ['someRapidView', 'someSprintId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId')
-        .and.notify(done);
+    it('getSprintIssues hits proper url', async () => {
+      const result = await dummyURLCall('getSprintIssues', ['someRapidView', 'someSprintId']);
+      result.should
+        .eql('http://jira.somehost.com:8080/rest/api/2.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
     });
 
-    it('addIssueToSprint hits proper url', (done) => {
-      dummyURLCall('addIssueToSprint', ['someIssueId', 'someSprintId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/sprint/someSprintId/issues/add')
-        .and.notify(done);
+    it('addIssueToSprint hits proper url', async () => {
+      const result = await dummyURLCall('addIssueToSprint', ['someIssueId', 'someSprintId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/sprint/someSprintId/issues/add');
     });
 
-    it('issueLink hits proper url', (done) => {
-      dummyURLCall('issueLink', ['somelink'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issueLink')
-        .and.notify(done);
+    it('issueLink hits proper url', async () => {
+      const result = await dummyURLCall('issueLink', ['somelink']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issueLink');
     });
 
-    it('getRemoteLinks hits proper url', (done) => {
-      dummyURLCall('getRemoteLinks', ['someIssueId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/remotelink')
-        .and.notify(done);
+    it('getRemoteLinks hits proper url', async () => {
+      const result = await dummyURLCall('getRemoteLinks', ['someIssueId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/remotelink');
     });
 
-    it('createRemoteLink hits proper url', (done) => {
-      dummyURLCall('createRemoteLink', ['issueNumber', 'someRemoteLink'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/issueNumber/remotelink')
-        .and.notify(done);
+    it('createRemoteLink hits proper url', async () => {
+      const result = await dummyURLCall('createRemoteLink', ['issueNumber', 'someRemoteLink']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/issueNumber/remotelink');
     });
 
-    it('getVersions hits proper url', (done) => {
-      dummyURLCall('getVersions', ['someProject'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject/versions')
-        .and.notify(done);
+    it('getVersions hits proper url', async () => {
+      const result = await dummyURLCall('getVersions', ['someProject']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject/versions');
     });
 
-    it('createVersion hits proper url', (done) => {
-      dummyURLCall('createVersion', ['someVersion'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/version')
-        .and.notify(done);
+    it('createVersion hits proper url', async () => {
+      const result = await dummyURLCall('createVersion', ['someVersion']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version');
     });
 
-    it('updateVersion hits proper url', (done) => {
-      dummyURLCall('updateVersion', [{ id: 'someVersionId' }])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId')
-        .and.notify(done);
+    it('updateVersion hits proper url', async () => {
+      const result = await dummyURLCall('updateVersion', [{ id: 'someVersionId' }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId');
     });
 
-    it('seachJira hits proper url', (done) => {
-      dummyURLCall('searchJira', ['someJQLhere', 'someOptionsObject'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/search')
-        .and.notify(done);
+    it('seachJira hits proper url', async () => {
+      const result = await dummyURLCall('searchJira', ['someJQLhere', 'someOptionsObject']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
     });
 
-    it('searchUsers hits proper url', (done) => {
-      dummyURLCall('searchUsers', [{
+    it('searchUsers hits proper url', async () => {
+      const result = await dummyURLCall('searchUsers', [{
         username: 'someUserName'
-      }])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/user/search?username=someUserName&startAt=0&maxResults=50&includeActive=true&includeInactive=false')
-        .and.notify(done);
+      }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/user/search?username=someUserName&startAt=0&maxResults=50&includeActive=true&includeInactive=false');
     });
 
-    it('getUsersInGroup hits proper url', (done) => {
-      dummyURLCall('getUsersInGroup', ['someGroupName'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/group?groupname=someGroupName&expand=users[0:50]')
-        .and.notify(done);
+    it('getUsersInGroup hits proper url', async () => {
+      const result = await dummyURLCall('getUsersInGroup', ['someGroupName']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/group?groupname=someGroupName&expand=users[0:50]');
     });
 
-    it('getUsersIssues hits proper url', (done) => {
-      dummyURLCall('getUsersIssues', ['someUsername', 'true'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/search')
-        .and.notify(done);
+    it('getUsersIssues hits proper url', async () => {
+      const result = await dummyURLCall('getUsersIssues', ['someUsername', 'true']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
     });
 
-    it('addNewIssue hits proper url', (done) => {
-      dummyURLCall('addNewIssue', ['someIssue'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue')
-        .and.notify(done);
+    it('addNewIssue hits proper url', async () => {
+      const result = await dummyURLCall('addNewIssue', ['someIssue']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue');
     });
 
-    it('getUsersIssues hits proper url', (done) => {
-      dummyURLCall('getUsersIssues', ['someUsername', 'true'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/search')
-        .and.notify(done);
+    it('getUsersIssues hits proper url', async () => {
+      const result = await dummyURLCall('getUsersIssues', ['someUsername', 'true']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
     });
 
-    it('addWatcher hits proper url', (done) => {
-      dummyURLCall('addWatcher', ['ZQ-9001'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/watchers')
-        .and.notify(done);
+    it('addWatcher hits proper url', async () => {
+      const result = await dummyURLCall('addWatcher', ['ZQ-9001']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/watchers');
     });
 
-    it('deleteIssue hits proper url', (done) => {
-      dummyURLCall('deleteIssue', ['FU-69'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/FU-69')
-        .and.notify(done);
+    it('deleteIssue hits proper url', async () => {
+      const result = await dummyURLCall('deleteIssue', ['FU-69']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/FU-69');
     });
 
-    it('updateIssue hits proper url', (done) => {
-      dummyURLCall('updateIssue', ['MI-6', 'someInfo'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/MI-6')
-        .and.notify(done);
+    it('updateIssue hits proper url', async () => {
+      const result = await dummyURLCall('updateIssue', ['MI-6', 'someInfo']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/MI-6');
     });
 
-    it('listComponents hits proper url', (done) => {
-      dummyURLCall('listComponents', ['ProjectName'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/project/ProjectName/components')
-        .and.notify(done);
+    it('listComponents hits proper url', async () => {
+      const result = await dummyURLCall('listComponents', ['ProjectName']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/ProjectName/components');
     });
 
-    it('addNewComponent hits proper url', (done) => {
-      dummyURLCall('addNewComponent', ['someComponent'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/component')
-        .and.notify(done);
+    it('addNewComponent hits proper url', async () => {
+      const result = await dummyURLCall('addNewComponent', ['someComponent']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component');
     });
 
-    it('deleteComponent hits proper url', (done) => {
-      dummyURLCall('deleteComponent', ['someComponentNumber'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber')
-        .and.notify(done);
+    it('deleteComponent hits proper url', async () => {
+      const result = await dummyURLCall('deleteComponent', ['someComponentNumber']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber');
     });
 
-    it('listFields hits proper url', (done) => {
-      dummyURLCall('listFields', [])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/field')
-        .and.notify(done);
+    it('listFields hits proper url', async () => {
+      const result = await dummyURLCall('listFields', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
     });
 
-    it('listPriorities hits proper url', (done) => {
-      dummyURLCall('listPriorities', [])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/priority')
-        .and.notify(done);
+    it('listPriorities hits proper url', async () => {
+      const result = await dummyURLCall('listPriorities', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/priority');
     });
 
-    it('listTransitions hits proper url', (done) => {
-      dummyURLCall('listTransitions', ['someIssueNumber'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/transitions?expand=transitions.fields')
-        .and.notify(done);
+    it('listTransitions hits proper url', async () => {
+      const result = await dummyURLCall('listTransitions', ['someIssueNumber']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/transitions?expand=transitions.fields');
     });
 
-    it('transitionIssue hits proper url', (done) => {
-      dummyURLCall('transitionIssue', ['someIssueNumber', 'someTransitionObject'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/transitions')
-        .and.notify(done);
+    it('transitionIssue hits proper url', async () => {
+      const result = await dummyURLCall('transitionIssue', [
+        'someIssueNumber',
+        'someTransitionObject'
+      ]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/transitions');
     });
 
-    it('listProjects hits proper url', (done) => {
-      dummyURLCall('listProjects', [])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/project')
-        .and.notify(done);
+    it('listProjects hits proper url', async () => {
+      const result = await dummyURLCall('listProjects', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project');
     });
 
-    it('addComment hits proper url', (done) => {
-      dummyURLCall('addComment', ['someIssueNumber', 'someComment'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment')
-        .and.notify(done);
+    it('addComment hits proper url', async () => {
+      const result = await dummyURLCall('addComment', ['someIssueNumber', 'someComment']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment');
     });
 
-    it('addWorklog hits proper url', (done) => {
-      dummyURLCall('addWorklog', ['someIssueNumber', 'someWorkLog', 'someNewEstimate'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?adjustEstimate=new&newEstimate=someNewEstimate')
-        .and.notify(done);
+    it('addWorklog hits proper url', async () => {
+      const result = await dummyURLCall('addWorklog', [
+        'someIssueNumber',
+        'someWorkLog',
+        'someNewEstimate'
+      ]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?adjustEstimate=new&newEstimate=someNewEstimate');
     });
 
-    it('deleteWorklog hits proper url', (done) => {
-      dummyURLCall('deleteWorklog', ['someIssueNumber', 'someWorklogId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId')
-        .and.notify(done);
+    it('deleteWorklog hits proper url', async () => {
+      const result = await dummyURLCall('deleteWorklog', ['someIssueNumber', 'someWorklogId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId');
     });
 
-    it('listIssueTypes hits proper url', (done) => {
-      dummyURLCall('listIssueTypes', [])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issuetype')
-        .and.notify(done);
+    it('listIssueTypes hits proper url', async () => {
+      const result = await dummyURLCall('listIssueTypes', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issuetype');
     });
 
-    it('registerWebhook hits proper url', (done) => {
-      dummyURLCall('registerWebhook', ['someWebhook'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook')
-        .and.notify(done);
+    it('registerWebhook hits proper url', async () => {
+      const result = await dummyURLCall('registerWebhook', ['someWebhook']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook');
     });
 
-    it('listWebhooks hits proper url', (done) => {
-      dummyURLCall('listWebhooks', [])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook')
-        .and.notify(done);
+    it('listWebhooks hits proper url', async () => {
+      const result = await dummyURLCall('listWebhooks', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook');
     });
 
-    it('getWebhook hits proper url', (done) => {
-      dummyURLCall('getWebhook', ['someWebhookId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook/someWebhookId')
-        .and.notify(done);
+    it('getWebhook hits proper url', async () => {
+      const result = await dummyURLCall('getWebhook', ['someWebhookId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook/someWebhookId');
     });
 
-    it('deleteWebhook hits proper url', (done) => {
-      dummyURLCall('deleteWebhook', ['someWebhookId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook/someWebhookId')
-        .and.notify(done);
+    it('deleteWebhook hits proper url', async () => {
+      const result = await dummyURLCall('deleteWebhook', ['someWebhookId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook/someWebhookId');
     });
 
-    it('getCurrentUser hits proper url', (done) => {
-      dummyURLCall('getCurrentUser', [])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/session')
-        .and.notify(done);
+    it('getCurrentUser hits proper url', async () => {
+      const result = await dummyURLCall('getCurrentUser', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/session');
     });
 
-    it('getBacklogForRapidView hits proper url', (done) => {
-      dummyURLCall('getBacklogForRapidView', ['someRapidViewId'])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/xboard/plan/backlog/data?rapidViewId=someRapidViewId')
-        .and.notify(done);
+    it('getBacklogForRapidView hits proper url', async () => {
+      const result = await dummyURLCall('getBacklogForRapidView', ['someRapidViewId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/xboard/plan/backlog/data?rapidViewId=someRapidViewId');
     });
 
-    it('addAttachmentOnIssue hits proper url', (done) => {
-      dummyURLCall('addAttachmentOnIssue', ['someIssueId', {}])
-        .should.eventually.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/attachments')
-        .and.notify(done);
+    it('addAttachmentOnIssue hits proper url', async () => {
+      const result = await dummyURLCall('addAttachmentOnIssue', ['someIssueId', {}]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/attachments');
     });
   });
 });
