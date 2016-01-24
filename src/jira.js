@@ -637,6 +637,7 @@ export default class JiraApi {
   }
 
   /** Add attachment to a Issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/issue/{issueIdOrKey}/attachments-addAttachment)
    * @name addAttachmentOnIssue
    * @function
    * @param {string} issueId - issue id
@@ -654,4 +655,12 @@ export default class JiraApi {
     }));
   }
 
+  /** Get list of possible statuses
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/status-getStatuses)
+   * @name listStatus
+   * @function
+   */
+  listStatus() {
+    return this.doRequest(this.makeRequestHeader(`/status`));
+  }
 }
