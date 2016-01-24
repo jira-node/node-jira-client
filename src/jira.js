@@ -69,17 +69,26 @@ export default class JiraApi {
    * @function
    * Creates a requestOptions object based on the default template for one
    * @param {string} uri
-   * @param {object} otherOptions - an object containing fields and formatting how the
+   * @param {object} [options] - an object containing fields and formatting how the
    */
-  makeRequestHeader(uri, otherOptions = {}) {
+  makeRequestHeader(pathname, options = {}) {
     return {
       rejectUnauthorized: this.strictSSL,
-      uri: this.makeUri(uri),
-      method: otherOptions.method || 'GET',
+      uri: this.makeUri({
+        pathname,
+        query: options.query
+      }),
+      method: options.method || 'GET',
       json: true,
-      ...otherOptions
+      ...options
     };
   }
+
+  /**
+   * @typedef makeRequestHeaderOptions
+   * @type {object}
+   * @property {string} [method] - HTTP Request Method. ie GET, POST, PUT, DELETE
+   */
 
   /**
    * @name makeUri
@@ -87,12 +96,13 @@ export default class JiraApi {
    * Creates a URI object for a given pathName
    * @param {string} pathName - The url after the /rest/api/version
    */
-  makeUri(pathName) {
+  makeUri({ pathname, query }) {
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/api/${this.apiVersion}${pathName}`
+      pathname: `${this.base}/rest/api/${this.apiVersion}${pathname}`,
+      query
     });
     return decodeURIComponent(uri);
   }
@@ -339,16 +349,20 @@ export default class JiraApi {
   /** Get all users in group on Jira
    * @name getUsersInGroup
    * @function
-   * @param {string} groupName - A query string used to search users in group
+   * @param {string} groupname - A query string used to search users in group
    * @param {integer} [startAt=0] - The index of the first user to return (0-based)
    * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
    */
-  getUsersInGroup(groupName, startAt = 0, maxResults = 50) {
+  getUsersInGroup(groupname, startAt = 0, maxResults = 50) {
     return this.doRequest(
-      this.makeRequestHeader(
-        `/group?groupname=${groupName}&expand=users[${startAt}:${maxResults}]`, {
-          followAllRedirects: true
-        }));
+      this.makeRequestHeader('/group', {
+        query: {
+          groupname,
+          expand: `users[${startAt}:${maxResults}]`
+        },
+        followAllRedirects: true
+      })
+    );
   }
 
   /** Get issues related to a user
