@@ -17,13 +17,23 @@ export default class JiraApi {
     this.protocol = options.protocol || 'http';
     this.host = options.host;
     this.port = options.port || 80;
-    this.username = options.username;
-    this.password = options.password;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
     this.strictSSL = options.strictSSL || true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
+    this.baseOptions = {};
+
+    if (options.username && options.password) {
+      this.baseOptions.auth = {
+        user: options.username,
+        pass: options.password
+      };
+    }
+
+    if (options.timeout) {
+      this.baseOptions.timeout = options.timeout;
+    }
   }
 
   /**
@@ -47,6 +57,11 @@ export default class JiraApi {
    * authenticated?  Defaults to true.
    * @property {function} [request] - What method does this tool use to make its requests?
    * Defaults to request from request-promise
+   * @property {number} [timeout] - Integer containing the number of milliseconds to wait for a
+   * server to send response headers (and start the response body) before aborting the request. Note
+   * that if the underlying TCP connection cannot be established, the OS-wide TCP connection timeout
+   * will overrule the timeout option ([the default in Linux can be anywhere from 20-120 *
+   * seconds](http://www.sekuda.com/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout)).
    */
 
   /**
@@ -90,16 +105,10 @@ export default class JiraApi {
    * requests to jira
    */
   doRequest(requestOptions) {
-    let options = requestOptions;
-    if (this.username && this.password) {
-      options = {
-        auth: {
-          user: this.username,
-          pass: this.password
-        },
-        ...requestOptions
-      };
-    }
+    const options = {
+      ...this.baseOptions,
+      ...requestOptions
+    };
 
     return this.request(options)
       .then(response => {
