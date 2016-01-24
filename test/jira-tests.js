@@ -442,5 +442,10 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('addAttachmentOnIssue', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/attachments');
     });
+
+    it('addAttachmentOnIssue hits proper url', async () => {
+      const result = await dummyURLCall('listStatus');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/status');
+    });
   });
 });
