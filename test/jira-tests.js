@@ -172,6 +172,21 @@ describe('Jira API Tests', () => {
       await jira.doRequest({})
         .should.eventually.be.rejectedWith('some error to throw, another error');
     });
+
+    it('doRequest does not throw an error on empty response', (done) => {
+      function dummyRequest(requestOptions) {
+        return Promise.resolve(undefined);
+      }
+      const jira = new JiraApi(
+        getOptions({
+          request: dummyRequest
+        })
+      );
+
+      jira.doRequest({})
+        .should.eventually.be.fulfilled
+        .and.notify(done);
+    });
   });
 
   describe('Request Functions Tests', () => {
