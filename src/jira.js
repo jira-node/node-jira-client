@@ -111,9 +111,10 @@ export default class JiraApi {
     };
 
     const response = await this.request(options);
-
-    if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
-      throw new Error(response.errorMessages.join(', '));
+    if (response) {
+      if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
+        throw new Error(response.errorMessages.join(', '));
+      }
     }
 
     return response;
