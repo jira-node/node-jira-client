@@ -193,9 +193,7 @@ describe('Jira API Tests', () => {
     async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod) {
       let dummyRequest = dummyRequestMethod;
       if (!dummyRequest) {
-        dummyRequest = async (requestOptions) => {
-          return requestOptions;
-        };
+        dummyRequest = async (requestOptions) => requestOptions;
       }
 
       const jira = new JiraApi(
@@ -209,9 +207,7 @@ describe('Jira API Tests', () => {
       // hack exposing the qs object as the query string in the URL so this is
       // uniformly testable
       if (resultObject.qs) {
-        const queryString = Object.keys(resultObject.qs).map((x) => {
-          return `${x}=${resultObject.qs[x]}`;
-        })
+        const queryString = Object.keys(resultObject.qs).map((x) => `${x}=${resultObject.qs[x]}`)
         .join('&');
         return `${resultObject.uri}?${queryString}`;
       }

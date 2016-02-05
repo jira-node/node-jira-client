@@ -645,7 +645,7 @@ export default class JiraApi {
    * @param {object} readStream - readStream object from fs
    */
   addAttachmentOnIssue(issueId, readStream) {
-    return this.doRequest(this.makeRequestHeader('/issue/' + issueId + '/attachments', {
+    return this.doRequest(this.makeRequestHeader(`/issue/${issueId}/attachments`, {
       method: 'POST',
       headers: {
         'X-Atlassian-Token': 'nocheck'
