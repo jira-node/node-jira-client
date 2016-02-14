@@ -11,7 +11,8 @@ function getOptions(options) {
     apiVersion: actualOptions.apiVersion || '2.0',
     base: actualOptions.base || '',
     strictSSL: actualOptions.strictSSL || true,
-    request: actualOptions.request
+    request: actualOptions.request,
+    oauth: actualOptions.oauth || null
   };
 }
 
@@ -38,6 +39,24 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(options);
 
       expect(jira.baseOptions.auth).to.be.undefined;
+    });
+
+    it('Constructor with oauth credentials', () => {
+      const options = getOptions({ oauth: {
+        consumer_key: 'consumer',
+        consumer_secret: 'consumer_secret',
+        access_token: 'token',
+        access_token_secret: 'token_secret'
+      } });
+
+      const jira = new JiraApi(options);
+
+      expect(jira.baseOptions.auth).to.be.undefined;
+      expect(jira.baseOptions.oauth.consumer_key).to.eql('consumer');
+      expect(jira.baseOptions.oauth.consumer_secret).to.eql('consumer_secret');
+      expect(jira.baseOptions.oauth.token).to.eql('token');
+      expect(jira.baseOptions.oauth.token_secret).to.eql('token_secret');
+      expect(jira.baseOptions.oauth.signature_method).to.eql('RSA-SHA1');
     });
 
     it('Constructor with timeout', () => {
@@ -112,6 +131,28 @@ describe('Jira API Tests', () => {
         pathname: '/somePathName'
       }))
         .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
+    });
+
+    it('makeUri functions properly no port http', () => {
+      const {
+        port,
+        ...options
+        } = getOptions();
+      const jira = new JiraApi(options);
+
+      expect(jira.makeUri('/somePathName'))
+        .to.eql('http://jira.somehost.com/rest/api/2.0/somePathName');
+    });
+
+    it('makeUri functions properly no port https', () => {
+      const {
+        port,
+        ...options
+        } = getOptions({ protocol: 'https' });
+      const jira = new JiraApi(options);
+
+      expect(jira.makeUri('/somePathName'))
+        .to.eql('https://jira.somehost.com/rest/api/2.0/somePathName');
     });
   });
 
