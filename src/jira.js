@@ -8,7 +8,7 @@ import url from 'url';
  * https://docs.atlassian.com/jira/REST/6.4.8/
  */
 export default class JiraApi {
-  /*
+  /**
    * @constructor
    * @function
    * @param {JiraApiOptions} options
@@ -16,7 +16,7 @@ export default class JiraApi {
   constructor(options) {
     this.protocol = options.protocol || 'http';
     this.host = options.host;
-    this.port = options.port || 80;
+    this.port = options.port || null;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
     this.strictSSL = options.strictSSL || true;
@@ -25,7 +25,15 @@ export default class JiraApi {
     this.webhookVersion = options.webHookVersion || '1.0';
     this.baseOptions = {};
 
-    if (options.username && options.password) {
+    if (options.oauth && options.oauth.consumer_key && options.oauth.access_token) {
+      this.baseOptions.oauth = {
+        consumer_key: options.oauth.consumer_key,
+        consumer_secret: options.oauth.consumer_secret,
+        token: options.oauth.access_token,
+        token_secret: options.oauth.access_token_secret,
+        signature_method: options.oauth.signature_method || 'RSA-SHA1'
+      };
+    } else if (options.username && options.password) {
       this.baseOptions.auth = {
         user: options.username,
         pass: options.password
@@ -44,8 +52,8 @@ export default class JiraApi {
    * jira? Ex: http|https
    * @property {string} host - What host is this tool connecting to for the jira
    * instance? Ex: jira.somehost.com
-   * @property {string} [port=80] - What port is this tool connecting to jira with?
-   * Ex: 8080, 3000, etc
+   * @property {string} [port] - What port is this tool connecting to jira with? Only needed for
+   * none standard ports. Ex: 8080, 3000, etc
    * @property {string} [username] - Specify a username for this tool to authenticate all
    * requests with.
    * @property {string} [password] - Specify a password for this tool to authenticate all
@@ -65,6 +73,19 @@ export default class JiraApi {
    * seconds](http://www.sekuda.com/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout)).
    * @property {string} [webhookVersion=1.0] - What webhook version does this api wrapper need to
    * hit?
+   * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
+   * OAuth.
+   */
+
+  /**
+   * @typedef OAuth
+   * @type {object}
+   * @property {string} consumer_key - The consumer entered in Jira Preferences.
+   * @property {string} consumer_secret - The private RSA file.
+   * @property {string} access_token - The generated access token.
+   * @property {string} access_token_secret - The generated access toke secret.
+   * @property {string} signature_method [signature_method=RSA-SHA1] - OAuth signurate methode
+   * Possible values RSA-SHA1, HMAC-SHA1, PLAINTEXT. Jira Cloud supports only RSA-SHA1.
    */
 
   /**
