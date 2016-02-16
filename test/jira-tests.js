@@ -54,7 +54,9 @@ describe('Jira API Tests', () => {
     it('makeRequestHeader functions properly in the average case', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeRequestHeader(jira.makeUri('/somePathName'))).to.eql({
+      expect(jira.makeRequestHeader(jira.makeUri({
+        pathname: '/somePathName'
+      }))).to.eql({
         json: true,
         method: 'GET',
         rejectUnauthorized: true,
@@ -65,7 +67,9 @@ describe('Jira API Tests', () => {
     it('makeRequestHeader functions properly with a different method', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeRequestHeader(jira.makeUri('/somePathName'), { method: 'POST' })).to.eql({
+      expect(jira.makeRequestHeader(jira.makeUri({
+        pathname: '/somePathName'
+      }), { method: 'POST' })).to.eql({
         json: true,
         method: 'POST',
         rejectUnauthorized: true,
@@ -96,13 +100,17 @@ describe('Jira API Tests', () => {
         }
       });
 
-      url.should.eql('http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three');
+      url.should.eql(
+        'http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three'
+      );
     });
 
     it('makeWebhookUri functions properly in the average case', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeWebhookUri('/somePathName'))
+      expect(jira.makeWebhookUri({
+        pathname: '/somePathName'
+      }))
         .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
     });
   });
