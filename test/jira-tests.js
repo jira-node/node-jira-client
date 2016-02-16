@@ -74,12 +74,29 @@ describe('Jira API Tests', () => {
     });
   });
 
-  describe('makeUri Tests', () => {
-    it('makeUri functions properly in the average case', () => {
+  describe('makeUri', () => {
+    it('builds url with pathname and default host, protocol, port, and base api', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeUri('/somePathName'))
+      expect(jira.makeUri({ pathname: '/somePathName' }))
         .to.eql('http://jira.somehost.com:8080/rest/api/2.0/somePathName');
+    });
+
+    it('builds url with query string parameters', () => {
+      const jira = new JiraApi(getOptions());
+
+      const url = jira.makeUri({
+        pathname: '/path',
+        query: {
+          fields: [
+            'one',
+            'two'
+          ],
+          expand: 'three'
+        }
+      });
+
+      url.should.eql('http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three');
     });
   });
 
