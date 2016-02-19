@@ -54,7 +54,9 @@ describe('Jira API Tests', () => {
     it('makeRequestHeader functions properly in the average case', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeRequestHeader('/somePathName')).to.eql({
+      expect(jira.makeRequestHeader(jira.makeUri({
+        pathname: '/somePathName'
+      }))).to.eql({
         json: true,
         method: 'GET',
         rejectUnauthorized: true,
@@ -65,7 +67,9 @@ describe('Jira API Tests', () => {
     it('makeRequestHeader functions properly with a different method', () => {
       const jira = new JiraApi(getOptions());
 
-      expect(jira.makeRequestHeader('/somePathName', { method: 'POST' })).to.eql({
+      expect(jira.makeRequestHeader(jira.makeUri({
+        pathname: '/somePathName'
+      }), { method: 'POST' })).to.eql({
         json: true,
         method: 'POST',
         rejectUnauthorized: true,
@@ -96,7 +100,18 @@ describe('Jira API Tests', () => {
         }
       });
 
-      url.should.eql('http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three');
+      url.should.eql(
+        'http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three'
+      );
+    });
+
+    it('makeWebhookUri functions properly in the average case', () => {
+      const jira = new JiraApi(getOptions());
+
+      expect(jira.makeWebhookUri({
+        pathname: '/somePathName'
+      }))
+        .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
     });
   });
 
@@ -438,22 +453,22 @@ describe('Jira API Tests', () => {
 
     it('registerWebhook hits proper url', async () => {
       const result = await dummyURLCall('registerWebhook', ['someWebhook']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook');
+      result.should.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/webhook');
     });
 
     it('listWebhooks hits proper url', async () => {
       const result = await dummyURLCall('listWebhooks', []);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook');
+      result.should.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/webhook');
     });
 
     it('getWebhook hits proper url', async () => {
       const result = await dummyURLCall('getWebhook', ['someWebhookId']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook/someWebhookId');
+      result.should.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/webhook/someWebhookId');
     });
 
     it('deleteWebhook hits proper url', async () => {
       const result = await dummyURLCall('deleteWebhook', ['someWebhookId']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/webhook/someWebhookId');
+      result.should.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/webhook/someWebhookId');
     });
 
     it('getCurrentUser hits proper url', async () => {
