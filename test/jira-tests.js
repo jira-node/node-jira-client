@@ -42,21 +42,24 @@ describe('Jira API Tests', () => {
     });
 
     it('Constructor with oauth credentials', () => {
-      const options = getOptions({ oauth: {
-        consumer_key: 'consumer',
-        consumer_secret: 'consumer_secret',
-        access_token: 'token',
-        access_token_secret: 'token_secret'
-      } });
+      const options = getOptions({
+        oauth: {
+          consumer_key: 'consumer',
+          consumer_secret: 'consumer_secret',
+          access_token: 'token',
+          access_token_secret: 'token_secret'
+        }
+      });
 
       const jira = new JiraApi(options);
 
-      expect(jira.baseOptions.auth).to.be.undefined;
-      expect(jira.baseOptions.oauth.consumer_key).to.eql('consumer');
-      expect(jira.baseOptions.oauth.consumer_secret).to.eql('consumer_secret');
-      expect(jira.baseOptions.oauth.token).to.eql('token');
-      expect(jira.baseOptions.oauth.token_secret).to.eql('token_secret');
-      expect(jira.baseOptions.oauth.signature_method).to.eql('RSA-SHA1');
+      expect(jira.baseOptions.oauth).to.eql({
+        consumer_key: 'consumer',
+        consumer_secret: 'consumer_secret',
+        token: 'token',
+        token_secret: 'token_secret',
+        signature_method: 'RSA-SHA1'
+      });
     });
 
     it('Constructor with timeout', () => {
