@@ -340,6 +340,31 @@ export default class JiraApi {
     }));
   }
 
+  /** Delete a version
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/version-delete)
+   * @name deleteVersion
+   * @function
+   * @param {string} versionId - the ID of the version to delete
+   * @param {string} moveFixIssuesToId - when provided, existing fixVersions will be moved
+   *                 to this ID. Otherwise, the deleted version will be removed from all
+   *                 issue fixVersions.
+   * @param {string} moveAffectedIssuesToId - when provided, existing affectedVersions will
+   *                 be moved to this ID. Otherwise, the deleted version will be removed
+   *                 from all issue affectedVersions.
+   */
+  deleteVersion(versionId, moveFixIssuesToId, moveAffectedIssuesToId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/version/${versionId}`
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+      qs: {
+        moveFixIssuesTo: moveFixIssuesToId,
+        moveAffectedIssuesTo: moveAffectedIssuesToId
+      }
+    }));
+  }
+
   /** Pass a search query to Jira
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e4424)
    * @name searchJira
