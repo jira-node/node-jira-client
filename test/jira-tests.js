@@ -337,6 +337,15 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId');
     });
 
+    it('deleteVersion hits proper url', async () => {
+      const result = await dummyURLCall('deleteVersion', [
+        'someVersionId',
+        'someFixVersionId',
+        'someAffectedVersionId'
+      ]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId?moveFixIssuesTo=someFixVersionId&moveAffectedIssuesTo=someAffectedVersionId');
+    });
+
     it('seachJira hits proper url', async () => {
       const result = await dummyURLCall('searchJira', ['someJQLhere', 'someOptionsObject']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
