@@ -143,7 +143,9 @@ describe('Jira API Tests', () => {
         } = getOptions();
       const jira = new JiraApi(options);
 
-      expect(jira.makeUri('/somePathName'))
+      expect(jira.makeUri({
+        pathname: '/somePathName'
+      }))
         .to.eql('http://jira.somehost.com/rest/api/2.0/somePathName');
     });
 
@@ -154,7 +156,9 @@ describe('Jira API Tests', () => {
         } = getOptions({ protocol: 'https' });
       const jira = new JiraApi(options);
 
-      expect(jira.makeUri('/somePathName'))
+      expect(jira.makeUri({
+        pathname: '/somePathName'
+      }))
         .to.eql('https://jira.somehost.com/rest/api/2.0/somePathName');
     });
   });
