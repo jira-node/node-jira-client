@@ -45,7 +45,7 @@
   "devDependencies": {
     "babel-cli": "^6.2.0",
     "babel-core": "^6.2.1",
-    "babel-eslint": "^5.0.0",
+    "babel-eslint": "^6.0.2",
     "babel-plugin-add-module-exports": "^0.1.1",
     "babel-plugin-transform-runtime": "^6.4.3",
     "babel-preset-es2015": "^6.1.18",
@@ -54,8 +54,8 @@
     "chai-as-promised": "^5.1.0",
     "esdoc": "^0.4.3",
     "esdoc-es7-plugin": "0.0.3",
-    "eslint": "^1.10.3",
-    "eslint-config-exchange-solutions": "^3.0.0",
+    "eslint": "^2.6.0",
+    "eslint-config-exchange-solutions": "^4.0.0",
     "eslint-plugin-mocha": "^1.0.0",
     "mocha": "^2.3.4",
     "release-script": "^1.0.1"
