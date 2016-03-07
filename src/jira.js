@@ -23,6 +23,7 @@ export default class JiraApi {
       // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
+    this.greenhopperVersion = options.greenhopperVersion || '1.0';
     this.baseOptions = {};
 
     if (options.oauth && options.oauth.consumer_key && options.oauth.access_token) {
@@ -73,6 +74,8 @@ export default class JiraApi {
    * seconds](http://www.sekuda.com/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout)).
    * @property {string} [webhookVersion=1.0] - What webhook version does this api wrapper need to
    * hit?
+   * @property {string} [greenhopperVersion=1.0] - What webhook version does this api wrapper need
+   * to hit?
    * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
    * OAuth.
    */
@@ -140,6 +143,22 @@ export default class JiraApi {
       hostname: this.host,
       port: this.port,
       pathname: `${this.base}/rest/webhooks/${this.webhookVersion}${pathname}`
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeSprintQueryUri
+   * @function
+   * Creates a URI object for a given pathName
+   * @param {string} pathname - The url after the /rest/
+   */
+  makeSprintQueryUri({ pathname }) {
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`
     });
     return decodeURIComponent(uri);
   }
@@ -234,7 +253,7 @@ export default class JiraApi {
    */
   async getLastSprintForRapidView(rapidViewId) {
     const response = await this.doRequest(
-      this.makeRequestHeader(this.makeUri({
+      this.makeRequestHeader(this.makeSprintQueryUri({
         pathname: `/sprintquery/${rapidViewId}`
       }))
     );

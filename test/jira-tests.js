@@ -136,6 +136,15 @@ describe('Jira API Tests', () => {
         .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
     });
 
+    it('makeSprintQueryUri functions properly in the average case', () => {
+      const jira = new JiraApi(getOptions());
+
+      expect(jira.makeSprintQueryUri({
+        pathname: '/somePathName'
+      }))
+        .to.eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/somePathName');
+    });
+
     it('makeUri functions properly no port http', () => {
       const {
         port,
@@ -341,7 +350,9 @@ describe('Jira API Tests', () => {
         ['someRapidViewId'],
         dummyRequest);
 
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/sprintquery/someRapidViewId');
+      result.should.eql(
+        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId'
+      );
     });
 
     it('getSprintIssues hits proper url', async () => {
