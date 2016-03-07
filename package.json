@@ -1,6 +1,6 @@
 {
   "name": "jira-client",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Wrapper for the JIRA API",
   "author": "Steven Surowiec <steven.surowiec@gmail.com>",
   "contributors": [
