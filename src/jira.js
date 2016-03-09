@@ -236,7 +236,7 @@ export default class JiraApi {
    * @param {string} projectName - name for the project
    */
   async findRapidView(projectName) {
-    const response = await this.doRequest(this.makeRequestHeader(this.makeUri({
+    const response = await this.doRequest(this.makeRequestHeader(this.makeSprintQueryUri({
       pathname: '/rapidviews/list'
     })));
 
