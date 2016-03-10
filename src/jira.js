@@ -153,12 +153,13 @@ export default class JiraApi {
    * Creates a URI object for a given pathName
    * @param {string} pathname - The url after the /rest/
    */
-  makeSprintQueryUri({ pathname }) {
+  makeSprintQueryUri({ pathname, query }) {
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`
+      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`,
+      query
     });
     return decodeURIComponent(uri);
   }
@@ -267,7 +268,7 @@ export default class JiraApi {
    * @param {string} sprintId - the id for the sprint
    */
   getSprintIssues(rapidViewId, sprintId) {
-    return this.doRequest(this.makeRequestHeader(this.makeUri({
+    return this.doRequest(this.makeRequestHeader(this.makeSprintQueryUri({
       pathname: '/rapid/charts/sprintreport',
       query: {
         rapidViewId,
