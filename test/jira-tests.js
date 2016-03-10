@@ -335,7 +335,7 @@ describe('Jira API Tests', () => {
       }
 
       const result = await dummyURLCall('findRapidView', ['theNameToLookFor'], dummyRequest);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/rapidviews/list');
+      result.should.eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapidviews/list');
     });
 
     it('getLastSprintForRapidView hits proper url', async () => {
@@ -358,7 +358,7 @@ describe('Jira API Tests', () => {
     it('getSprintIssues hits proper url', async () => {
       const result = await dummyURLCall('getSprintIssues', ['someRapidView', 'someSprintId']);
       result.should
-        .eql('http://jira.somehost.com:8080/rest/api/2.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
+        .eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
     });
 
     it('addIssueToSprint hits proper url', async () => {
