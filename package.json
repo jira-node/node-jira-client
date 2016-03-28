@@ -54,7 +54,7 @@
     "chai-as-promised": "^5.1.0",
     "esdoc": "^0.4.3",
     "esdoc-es7-plugin": "0.0.3",
-    "eslint": "^1.10.3",
+    "eslint": "^2.5.2",
     "eslint-config-exchange-solutions": "^3.0.0",
     "eslint-plugin-mocha": "^1.0.0",
     "mocha": "^2.3.4",
