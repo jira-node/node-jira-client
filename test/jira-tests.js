@@ -30,11 +30,10 @@ describe('Jira API Tests', () => {
     });
 
     it('Constructor with no auth credentials', () => {
-      const {
-        username,
-        password,
-        ...options
-      } = getOptions();
+      const { username, password, ...options } = getOptions();
+
+      expect(options.username).to.not.eql(username);
+      expect(options.password).to.not.eql(password);
 
       const jira = new JiraApi(options);
 
@@ -146,10 +145,10 @@ describe('Jira API Tests', () => {
     });
 
     it('makeUri functions properly no port http', () => {
-      const {
-        port,
-        ...options
-        } = getOptions();
+      const { port, ...options } = getOptions();
+
+      expect(options.port).to.not.eql(port);
+
       const jira = new JiraApi(options);
 
       expect(jira.makeUri({
@@ -159,10 +158,10 @@ describe('Jira API Tests', () => {
     });
 
     it('makeUri functions properly no port https', () => {
-      const {
-        port,
-        ...options
-        } = getOptions({ protocol: 'https' });
+      const { port, ...options } = getOptions({ protocol: 'https' });
+
+      expect(options.port).to.not.eql(port);
+
       const jira = new JiraApi(options);
 
       expect(jira.makeUri({
