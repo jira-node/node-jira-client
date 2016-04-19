@@ -540,7 +540,7 @@ describe('Jira API Tests', () => {
 
     it('getCurrentUser hits proper url', async () => {
       const result = await dummyURLCall('getCurrentUser', []);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/session');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/myself');
     });
 
     it('getBacklogForRapidView hits proper url', async () => {
