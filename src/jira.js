@@ -794,7 +794,7 @@ export default class JiraApi {
    */
   getCurrentUser() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/session',
+      pathname: '/myself',
     })));
   }
 
