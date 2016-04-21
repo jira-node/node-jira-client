@@ -10,7 +10,7 @@ function getOptions(options) {
     password: actualOptions.password || 'somepassword',
     apiVersion: actualOptions.apiVersion || '2.0',
     base: actualOptions.base || '',
-    strictSSL: actualOptions.strictSSL || true,
+    strictSSL: actualOptions.hasOwnProperty('strictSSL') ? actualOptions.strictSSL : true,
     request: actualOptions.request,
     oauth: actualOptions.oauth || null,
   };
@@ -68,6 +68,16 @@ describe('Jira API Tests', () => {
       });
 
       expect(jira.baseOptions.timeout).to.equal(2);
+    });
+
+    it('Constructor with strictSSL off', () => {
+      const jira = new JiraApi(
+        getOptions({
+          strictSSL: false,
+        })
+      );
+
+      expect(jira.strictSSL).to.equal(false);
     });
   });
 
