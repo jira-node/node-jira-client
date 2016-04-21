@@ -19,7 +19,7 @@ export default class JiraApi {
     this.port = options.port || null;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
-    this.strictSSL = options.strictSSL || true;
+    this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
