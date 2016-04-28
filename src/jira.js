@@ -237,6 +237,7 @@ export default class JiraApi {
      * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/project-createProject)
      * @param {object} project - with specs
      */
+
      createProject(project) {
       return this.doRequest(this.makeRequestHeader(this.makeUri({
         pathname: '/project/'
@@ -244,6 +245,7 @@ export default class JiraApi {
       method: 'POST',
       body: project
     }));
+  }
 
   /** Find the Rapid View for a specified project
    * @name findRapidView
