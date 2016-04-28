@@ -241,10 +241,10 @@ export default class JiraApi {
   createProject(project) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/project/',
-        }), {
+    }), {
           method: 'POST',
-          body: project
-     }));
+          body: project,
+        }));
   }
 
   /** Find the Rapid View for a specified project
