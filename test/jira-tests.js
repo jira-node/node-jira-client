@@ -332,7 +332,10 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('getProject', ['someProject']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject');
     });
-
+    it('createProject hits proper url', async () => {
+      const result = await dummyURLCall('createProject', ['dummyObject']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/');
+    });
     it('findRapidView hits proper url', async () => {
       async function dummyRequest(requestOptions) {
         return {
