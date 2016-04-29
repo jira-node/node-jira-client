@@ -10,8 +10,9 @@ function getOptions(options) {
     password: actualOptions.password || 'somepassword',
     apiVersion: actualOptions.apiVersion || '2.0',
     base: actualOptions.base || '',
-    strictSSL: actualOptions.strictSSL || true,
-    request: actualOptions.request
+    strictSSL: actualOptions.hasOwnProperty('strictSSL') ? actualOptions.strictSSL : true,
+    request: actualOptions.request,
+    oauth: actualOptions.oauth || null,
   };
 }
 
@@ -29,24 +30,54 @@ describe('Jira API Tests', () => {
     });
 
     it('Constructor with no auth credentials', () => {
-      const {
-        username,
-        password,
-        ...options
-      } = getOptions();
+      const { username, password, ...options } = getOptions();
+
+      expect(options.username).to.not.eql(username);
+      expect(options.password).to.not.eql(password);
 
       const jira = new JiraApi(options);
 
       expect(jira.baseOptions.auth).to.be.undefined;
     });
 
+    it('Constructor with oauth credentials', () => {
+      const options = getOptions({
+        oauth: {
+          consumer_key: 'consumer',
+          consumer_secret: 'consumer_secret',
+          access_token: 'token',
+          access_token_secret: 'token_secret',
+        },
+      });
+
+      const jira = new JiraApi(options);
+
+      expect(jira.baseOptions.oauth).to.eql({
+        consumer_key: 'consumer',
+        consumer_secret: 'consumer_secret',
+        token: 'token',
+        token_secret: 'token_secret',
+        signature_method: 'RSA-SHA1',
+      });
+    });
+
     it('Constructor with timeout', () => {
       const jira = new JiraApi({
         timeout: 2,
-        ...getOptions()
+        ...getOptions(),
       });
 
       expect(jira.baseOptions.timeout).to.equal(2);
+    });
+
+    it('Constructor with strictSSL off', () => {
+      const jira = new JiraApi(
+        getOptions({
+          strictSSL: false,
+        })
+      );
+
+      expect(jira.strictSSL).to.equal(false);
     });
   });
 
@@ -55,12 +86,12 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeRequestHeader(jira.makeUri({
-        pathname: '/somePathName'
+        pathname: '/somePathName',
       }))).to.eql({
         json: true,
         method: 'GET',
         rejectUnauthorized: true,
-        uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName'
+        uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName',
       });
     });
 
@@ -68,12 +99,12 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeRequestHeader(jira.makeUri({
-        pathname: '/somePathName'
+        pathname: '/somePathName',
       }), { method: 'POST' })).to.eql({
         json: true,
         method: 'POST',
         rejectUnauthorized: true,
-        uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName'
+        uri: 'http://jira.somehost.com:8080/rest/api/2.0/somePathName',
       });
     });
   });
@@ -94,10 +125,10 @@ describe('Jira API Tests', () => {
         query: {
           fields: [
             'one',
-            'two'
+            'two',
           ],
-          expand: 'three'
-        }
+          expand: 'three',
+        },
       });
 
       url.should.eql(
@@ -109,23 +140,58 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeWebhookUri({
-        pathname: '/somePathName'
+        pathname: '/somePathName',
       }))
         .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
+    });
+
+    it('makeSprintQueryUri functions properly in the average case', () => {
+      const jira = new JiraApi(getOptions());
+
+      expect(jira.makeSprintQueryUri({
+        pathname: '/somePathName',
+      }))
+        .to.eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/somePathName');
+    });
+
+    it('makeUri functions properly no port http', () => {
+      const { port, ...options } = getOptions();
+
+      expect(options.port).to.not.eql(port);
+
+      const jira = new JiraApi(options);
+
+      expect(jira.makeUri({
+        pathname: '/somePathName',
+      }))
+        .to.eql('http://jira.somehost.com/rest/api/2.0/somePathName');
+    });
+
+    it('makeUri functions properly no port https', () => {
+      const { port, ...options } = getOptions({ protocol: 'https' });
+
+      expect(options.port).to.not.eql(port);
+
+      const jira = new JiraApi(options);
+
+      expect(jira.makeUri({
+        pathname: '/somePathName',
+      }))
+        .to.eql('https://jira.somehost.com/rest/api/2.0/somePathName');
     });
   });
 
   describe('doRequest Tests', () => {
     it('doRequest functions properly in the average case', async () => {
       const dummyObject = {
-        someKey: 'someValue'
+        someKey: 'someValue',
       };
-      async function dummyRequest(requestOptions) {
+      async function dummyRequest() {
         return dummyObject;
       }
       const jira = new JiraApi(
         getOptions({
-          request: dummyRequest
+          request: dummyRequest,
         })
       );
 
@@ -144,7 +210,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions({
         username,
         password,
-        request: dummyRequest
+        request: dummyRequest,
       }));
 
       const result = await jira.doRequest({});
@@ -159,7 +225,7 @@ describe('Jira API Tests', () => {
 
       const jira = new JiraApi({
         timeout: 2,
-        ...getOptions({ request: dummyRequest })
+        ...getOptions({ request: dummyRequest }),
       });
 
       const result = await jira.doRequest({});
@@ -168,15 +234,15 @@ describe('Jira API Tests', () => {
 
     it('doRequest throws an error properly', async () => {
       const dummyObject = {
-        errorMessages: ['some error to throw']
+        errorMessages: ['some error to throw'],
       };
-      async function dummyRequest(requestOptions) {
+      async function dummyRequest() {
         return dummyObject;
       }
 
       const jira = new JiraApi(
         getOptions({
-          request: dummyRequest
+          request: dummyRequest,
         })
       );
 
@@ -188,16 +254,16 @@ describe('Jira API Tests', () => {
       const dummyObject = {
         errorMessages: [
           'some error to throw',
-          'another error'
-        ]
+          'another error',
+        ],
       };
-      async function dummyRequest(requestOptions) {
+      async function dummyRequest() {
         return dummyObject;
       }
 
       const jira = new JiraApi(
         getOptions({
-          request: dummyRequest
+          request: dummyRequest,
         })
       );
 
@@ -206,12 +272,12 @@ describe('Jira API Tests', () => {
     });
 
     it('doRequest does not throw an error on empty response', (done) => {
-      function dummyRequest(requestOptions) {
+      function dummyRequest() {
         return Promise.resolve(undefined);
       }
       const jira = new JiraApi(
         getOptions({
-          request: dummyRequest
+          request: dummyRequest,
         })
       );
 
@@ -230,7 +296,7 @@ describe('Jira API Tests', () => {
 
       const jira = new JiraApi(
         getOptions({
-          request: dummyRequest
+          request: dummyRequest,
         })
       );
 
@@ -266,25 +332,28 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('getProject', ['someProject']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject');
     });
-
+    it('createProject hits proper url', async () => {
+      const result = await dummyURLCall('createProject', ['dummyObject']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/');
+    });
     it('findRapidView hits proper url', async () => {
       async function dummyRequest(requestOptions) {
         return {
           views: [{
             ...requestOptions,
-            name: 'theNameToLookFor'
-          }]
+            name: 'theNameToLookFor',
+          }],
         };
       }
 
       const result = await dummyURLCall('findRapidView', ['theNameToLookFor'], dummyRequest);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/rapidviews/list');
+      result.should.eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapidviews/list');
     });
 
     it('getLastSprintForRapidView hits proper url', async () => {
       async function dummyRequest(requestOptions) {
         return {
-          sprints: [requestOptions]
+          sprints: [requestOptions],
         };
       }
 
@@ -293,13 +362,15 @@ describe('Jira API Tests', () => {
         ['someRapidViewId'],
         dummyRequest);
 
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/sprintquery/someRapidViewId');
+      result.should.eql(
+        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId'
+      );
     });
 
     it('getSprintIssues hits proper url', async () => {
       const result = await dummyURLCall('getSprintIssues', ['someRapidView', 'someSprintId']);
       result.should
-        .eql('http://jira.somehost.com:8080/rest/api/2.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
+        .eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
     });
 
     it('addIssueToSprint hits proper url', async () => {
@@ -337,6 +408,15 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId');
     });
 
+    it('deleteVersion hits proper url', async () => {
+      const result = await dummyURLCall('deleteVersion', [
+        'someVersionId',
+        'someFixVersionId',
+        'someAffectedVersionId',
+      ]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersionId?moveFixIssuesTo=someFixVersionId&moveAffectedIssuesTo=someAffectedVersionId');
+    });
+
     it('seachJira hits proper url', async () => {
       const result = await dummyURLCall('searchJira', ['someJQLhere', 'someOptionsObject']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
@@ -344,7 +424,7 @@ describe('Jira API Tests', () => {
 
     it('searchUsers hits proper url', async () => {
       const result = await dummyURLCall('searchUsers', [{
-        username: 'someUserName'
+        username: 'someUserName',
       }]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/user/search?username=someUserName&startAt=0&maxResults=50&includeActive=true&includeInactive=false');
     });
@@ -417,7 +497,7 @@ describe('Jira API Tests', () => {
     it('transitionIssue hits proper url', async () => {
       const result = await dummyURLCall('transitionIssue', [
         'someIssueNumber',
-        'someTransitionObject'
+        'someTransitionObject',
       ]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/transitions');
     });
@@ -436,7 +516,7 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('addWorklog', [
         'someIssueNumber',
         'someWorkLog',
-        'someNewEstimate'
+        'someNewEstimate',
       ]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?adjustEstimate=new&newEstimate=someNewEstimate');
     });
@@ -473,7 +553,7 @@ describe('Jira API Tests', () => {
 
     it('getCurrentUser hits proper url', async () => {
       const result = await dummyURLCall('getCurrentUser', []);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/session');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/myself');
     });
 
     it('getBacklogForRapidView hits proper url', async () => {

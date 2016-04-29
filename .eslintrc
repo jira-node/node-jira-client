@@ -1,6 +1,6 @@
 {
   "extends": [
-    "exchange-solutions/base"
+    "airbnb/base"
   ],
   "env": {
     "node": true

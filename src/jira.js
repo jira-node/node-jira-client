@@ -8,7 +8,7 @@ import url from 'url';
  * https://docs.atlassian.com/jira/REST/6.4.8/
  */
 export default class JiraApi {
-  /*
+  /**
    * @constructor
    * @function
    * @param {JiraApiOptions} options
@@ -16,19 +16,28 @@ export default class JiraApi {
   constructor(options) {
     this.protocol = options.protocol || 'http';
     this.host = options.host;
-    this.port = options.port || 80;
+    this.port = options.port || null;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
-    this.strictSSL = options.strictSSL || true;
+    this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
+    this.greenhopperVersion = options.greenhopperVersion || '1.0';
     this.baseOptions = {};
 
-    if (options.username && options.password) {
+    if (options.oauth && options.oauth.consumer_key && options.oauth.access_token) {
+      this.baseOptions.oauth = {
+        consumer_key: options.oauth.consumer_key,
+        consumer_secret: options.oauth.consumer_secret,
+        token: options.oauth.access_token,
+        token_secret: options.oauth.access_token_secret,
+        signature_method: options.oauth.signature_method || 'RSA-SHA1',
+      };
+    } else if (options.username && options.password) {
       this.baseOptions.auth = {
         user: options.username,
-        pass: options.password
+        pass: options.password,
       };
     }
 
@@ -44,8 +53,8 @@ export default class JiraApi {
    * jira? Ex: http|https
    * @property {string} host - What host is this tool connecting to for the jira
    * instance? Ex: jira.somehost.com
-   * @property {string} [port=80] - What port is this tool connecting to jira with?
-   * Ex: 8080, 3000, etc
+   * @property {string} [port] - What port is this tool connecting to jira with? Only needed for
+   * none standard ports. Ex: 8080, 3000, etc
    * @property {string} [username] - Specify a username for this tool to authenticate all
    * requests with.
    * @property {string} [password] - Specify a password for this tool to authenticate all
@@ -65,6 +74,21 @@ export default class JiraApi {
    * seconds](http://www.sekuda.com/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout)).
    * @property {string} [webhookVersion=1.0] - What webhook version does this api wrapper need to
    * hit?
+   * @property {string} [greenhopperVersion=1.0] - What webhook version does this api wrapper need
+   * to hit?
+   * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
+   * OAuth.
+   */
+
+  /**
+   * @typedef OAuth
+   * @type {object}
+   * @property {string} consumer_key - The consumer entered in Jira Preferences.
+   * @property {string} consumer_secret - The private RSA file.
+   * @property {string} access_token - The generated access token.
+   * @property {string} access_token_secret - The generated access toke secret.
+   * @property {string} signature_method [signature_method=RSA-SHA1] - OAuth signurate methode
+   * Possible values RSA-SHA1, HMAC-SHA1, PLAINTEXT. Jira Cloud supports only RSA-SHA1.
    */
 
   /**
@@ -80,7 +104,7 @@ export default class JiraApi {
       method: options.method || 'GET',
       uri,
       json: true,
-      ...options
+      ...options,
     };
   }
 
@@ -102,7 +126,7 @@ export default class JiraApi {
       hostname: this.host,
       port: this.port,
       pathname: `${this.base}/rest/api/${this.apiVersion}${pathname}`,
-      query
+      query,
     });
     return decodeURIComponent(uri);
   }
@@ -118,7 +142,24 @@ export default class JiraApi {
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/webhooks/${this.webhookVersion}${pathname}`
+      pathname: `${this.base}/rest/webhooks/${this.webhookVersion}${pathname}`,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeSprintQueryUri
+   * @function
+   * Creates a URI object for a given pathName
+   * @param {string} pathname - The url after the /rest/
+   */
+  makeSprintQueryUri({ pathname, query }) {
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`,
+      query,
     });
     return decodeURIComponent(uri);
   }
@@ -133,7 +174,7 @@ export default class JiraApi {
   async doRequest(requestOptions) {
     const options = {
       ...this.baseOptions,
-      ...requestOptions
+      ...requestOptions,
     };
 
     const response = await this.request(options);
@@ -155,7 +196,7 @@ export default class JiraApi {
    */
   findIssue(issueNumber) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueNumber}`
+      pathname: `/issue/${issueNumber}`,
     })));
   }
 
@@ -170,7 +211,7 @@ export default class JiraApi {
   async getUnresolvedIssueCount(version) {
     const requestHeaders = this.makeRequestHeader(
       this.makeUri({
-        pathname: `/version/${version}/unresolvedIssueCount`
+        pathname: `/version/${version}/unresolvedIssueCount`,
       })
     );
     const response = await this.doRequest(requestHeaders);
@@ -186,8 +227,24 @@ export default class JiraApi {
    */
   getProject(project) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/project/${project}`
+      pathname: `/project/${project}`,
     })));
+  }
+
+  /**
+   * @name createProject
+   * @function
+   * Create a new Project
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/project-createProject)
+   * @param {object} project - with specs
+   */
+  createProject(project) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/project/',
+    }), {
+      method: 'POST',
+      body: project,
+    }));
   }
 
   /** Find the Rapid View for a specified project
@@ -196,8 +253,8 @@ export default class JiraApi {
    * @param {string} projectName - name for the project
    */
   async findRapidView(projectName) {
-    const response = await this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/rapidviews/list'
+    const response = await this.doRequest(this.makeRequestHeader(this.makeSprintQueryUri({
+      pathname: '/rapidviews/list',
     })));
 
     const rapidViewResult = response.views
@@ -213,8 +270,8 @@ export default class JiraApi {
    */
   async getLastSprintForRapidView(rapidViewId) {
     const response = await this.doRequest(
-      this.makeRequestHeader(this.makeUri({
-        pathname: `/sprintquery/${rapidViewId}`
+      this.makeRequestHeader(this.makeSprintQueryUri({
+        pathname: `/sprintquery/${rapidViewId}`,
       }))
     );
     return response.sprints.pop();
@@ -227,12 +284,12 @@ export default class JiraApi {
    * @param {string} sprintId - the id for the sprint
    */
   getSprintIssues(rapidViewId, sprintId) {
-    return this.doRequest(this.makeRequestHeader(this.makeUri({
+    return this.doRequest(this.makeRequestHeader(this.makeSprintQueryUri({
       pathname: '/rapid/charts/sprintreport',
       query: {
         rapidViewId,
-        sprintId
-      }
+        sprintId,
+      },
     })));
   }
 
@@ -244,13 +301,13 @@ export default class JiraApi {
    */
   addIssueToSprint(issueId, sprintId) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/sprint/${sprintId}/issues/add`
+      pathname: `/sprint/${sprintId}/issues/add`,
     }), {
       method: 'PUT',
       followAllRedirects: true,
       body: {
-        issueKeys: [issueId]
-      }
+        issueKeys: [issueId],
+      },
     }));
   }
 
@@ -261,11 +318,11 @@ export default class JiraApi {
    */
   issueLink(link) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/issueLink'
+      pathname: '/issueLink',
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: link
+      body: link,
     }));
   }
 
@@ -276,7 +333,7 @@ export default class JiraApi {
    */
   getRemoteLinks(issueNumber) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueNumber}/remotelink`
+      pathname: `/issue/${issueNumber}/remotelink`,
     })));
   }
 
@@ -289,10 +346,10 @@ export default class JiraApi {
    */
   createRemoteLink(issueNumber, remoteLink) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueNumber}/remotelink`
+      pathname: `/issue/${issueNumber}/remotelink`,
     }), {
       method: 'POST',
-      body: remoteLink
+      body: remoteLink,
     }));
   }
 
@@ -304,7 +361,7 @@ export default class JiraApi {
    */
   getVersions(project) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/project/${project}/versions`
+      pathname: `/project/${project}/versions`,
     })));
   }
 
@@ -316,11 +373,11 @@ export default class JiraApi {
    */
   createVersion(version) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/version'
+      pathname: '/version',
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: version
+      body: version,
     }));
   }
 
@@ -332,11 +389,36 @@ export default class JiraApi {
    */
   updateVersion(version) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/version/${version.id}`
+      pathname: `/version/${version.id}`,
     }), {
       method: 'PUT',
       followAllRedirects: true,
-      body: version
+      body: version,
+    }));
+  }
+
+  /** Delete a version
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/version-delete)
+   * @name deleteVersion
+   * @function
+   * @param {string} versionId - the ID of the version to delete
+   * @param {string} moveFixIssuesToId - when provided, existing fixVersions will be moved
+   *                 to this ID. Otherwise, the deleted version will be removed from all
+   *                 issue fixVersions.
+   * @param {string} moveAffectedIssuesToId - when provided, existing affectedVersions will
+   *                 be moved to this ID. Otherwise, the deleted version will be removed
+   *                 from all issue affectedVersions.
+   */
+  deleteVersion(versionId, moveFixIssuesToId, moveAffectedIssuesToId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/version/${versionId}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+      qs: {
+        moveFixIssuesTo: moveFixIssuesToId,
+        moveAffectedIssuesTo: moveAffectedIssuesToId,
+      },
     }));
   }
 
@@ -352,14 +434,14 @@ export default class JiraApi {
    */
   searchJira(searchString, optional = {}) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/search'
+      pathname: '/search',
     }), {
       method: 'POST',
       followAllRedirects: true,
       body: {
         jql: searchString,
-        ...optional
-      }
+        ...optional,
+      },
     }));
   }
 
@@ -377,10 +459,10 @@ export default class JiraApi {
         startAt: startAt || 0,
         maxResults: maxResults || 50,
         includeActive: includeActive || true,
-        includeInactive: includeInactive || false
-      }
+        includeInactive: includeInactive || false,
+      },
     }), {
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -409,10 +491,10 @@ export default class JiraApi {
         pathname: '/group',
         query: {
           groupname,
-          expand: `users[${startAt}:${maxResults}]`
-        }
+          expand: `users[${startAt}:${maxResults}]`,
+        },
       }), {
-        followAllRedirects: true
+        followAllRedirects: true,
       })
     );
   }
@@ -438,11 +520,11 @@ export default class JiraApi {
    */
   addNewIssue(issue) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/issue'
+      pathname: '/issue',
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: issue
+      body: issue,
     }));
   }
 
@@ -454,11 +536,11 @@ export default class JiraApi {
    */
   addWatcher(issueKey, username) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueKey}/watchers`
+      pathname: `/issue/${issueKey}/watchers`,
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: JSON.stringify(username)
+      body: JSON.stringify(username),
     }));
   }
 
@@ -470,10 +552,10 @@ export default class JiraApi {
    */
   deleteIssue(issueId) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}`
+      pathname: `/issue/${issueId}`,
     }), {
       method: 'DELETE',
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -486,11 +568,11 @@ export default class JiraApi {
    */
   updateIssue(issueId, issueUpdate) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}`
+      pathname: `/issue/${issueId}`,
     }), {
       body: issueUpdate,
       method: 'PUT',
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -502,7 +584,7 @@ export default class JiraApi {
    */
   listComponents(project) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/project/${project}/components`
+      pathname: `/project/${project}/components`,
     })));
   }
 
@@ -514,11 +596,11 @@ export default class JiraApi {
    */
   addNewComponent(component) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/component'
+      pathname: '/component',
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: component
+      body: component,
     }));
   }
 
@@ -530,10 +612,10 @@ export default class JiraApi {
    */
   deleteComponent(componentId) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/component/${componentId}`
+      pathname: `/component/${componentId}`,
     }), {
       method: 'DELETE',
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -544,7 +626,7 @@ export default class JiraApi {
    */
   listFields() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/field'
+      pathname: '/field',
     })));
   }
 
@@ -555,7 +637,7 @@ export default class JiraApi {
    */
   listPriorities() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/priority'
+      pathname: '/priority',
     })));
   }
 
@@ -569,8 +651,8 @@ export default class JiraApi {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}/transitions`,
       query: {
-        expand: 'transitions.fields'
-      }
+        expand: 'transitions.fields',
+      },
     })));
   }
 
@@ -583,11 +665,11 @@ export default class JiraApi {
    */
   transitionIssue(issueId, issueTransition) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}/transitions`
+      pathname: `/issue/${issueId}/transitions`,
     }), {
       body: issueTransition,
       method: 'POST',
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -598,7 +680,7 @@ export default class JiraApi {
    */
   listProjects() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/project'
+      pathname: '/project',
     })));
   }
 
@@ -611,13 +693,13 @@ export default class JiraApi {
    */
   addComment(issueId, comment) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}/comment`
+      pathname: `/issue/${issueId}/comment`,
     }), {
       body: {
-        body: comment
+        body: comment,
       },
       method: 'POST',
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -632,11 +714,11 @@ export default class JiraApi {
   addWorklog(issueId, worklog, newEstimate) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}/worklog`,
-      query: (newEstimate) ? { adjustEstimate: 'new', newEstimate } : null
+      query: (newEstimate) ? { adjustEstimate: 'new', newEstimate } : null,
     }), {
       body: worklog,
       method: 'POST',
-      followAllRedirects: true
+      followAllRedirects: true,
     }));
   }
 
@@ -650,10 +732,10 @@ export default class JiraApi {
   deleteWorklog(issueId, worklogId) {
     return this.doRequest(this.makeRequestHeader(
       this.makeUri({
-        pathname: `/issue/${issueId}/worklog/${worklogId}`
+        pathname: `/issue/${issueId}/worklog/${worklogId}`,
       }), {
         method: 'DELETE',
-        followAllRedirects: true
+        followAllRedirects: true,
       }
     ));
   }
@@ -665,7 +747,7 @@ export default class JiraApi {
    */
   listIssueTypes() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/issuetype'
+      pathname: '/issuetype',
     })));
   }
 
@@ -677,10 +759,10 @@ export default class JiraApi {
    */
   registerWebhook(webhook) {
     return this.doRequest(this.makeRequestHeader(this.makeWebhookUri({
-      pathname: '/webhook'
+      pathname: '/webhook',
     }), {
       method: 'POST',
-      body: webhook
+      body: webhook,
     }));
   }
 
@@ -691,7 +773,7 @@ export default class JiraApi {
    */
   listWebhooks() {
     return this.doRequest(this.makeRequestHeader(this.makeWebhookUri({
-      pathname: '/webhook'
+      pathname: '/webhook',
     })));
   }
 
@@ -703,7 +785,7 @@ export default class JiraApi {
    */
   getWebhook(webhookID) {
     return this.doRequest(this.makeRequestHeader(this.makeWebhookUri({
-      pathname: `/webhook/${webhookID}`
+      pathname: `/webhook/${webhookID}`,
     })));
   }
 
@@ -715,9 +797,9 @@ export default class JiraApi {
    */
   deleteWebhook(webhookID) {
     return this.doRequest(this.makeRequestHeader(this.makeWebhookUri({
-      pathname: `/webhook/${webhookID}`
+      pathname: `/webhook/${webhookID}`,
     }), {
-      method: 'DELETE'
+      method: 'DELETE',
     }));
   }
 
@@ -728,7 +810,7 @@ export default class JiraApi {
    */
   getCurrentUser() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/session'
+      pathname: '/myself',
     })));
   }
 
@@ -741,8 +823,8 @@ export default class JiraApi {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/xboard/plan/backlog/data',
       query: {
-        rapidViewId
-      }
+        rapidViewId,
+      },
     })));
   }
 
@@ -755,15 +837,15 @@ export default class JiraApi {
    */
   addAttachmentOnIssue(issueId, readStream) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}/attachments`
+      pathname: `/issue/${issueId}/attachments`,
     }), {
       method: 'POST',
       headers: {
-        'X-Atlassian-Token': 'nocheck'
+        'X-Atlassian-Token': 'nocheck',
       },
       formData: {
-        file: readStream
-      }
+        file: readStream,
+      },
     }));
   }
 
@@ -774,7 +856,7 @@ export default class JiraApi {
    */
   listStatus() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/status'
+      pathname: '/status',
     })));
   }
 }
