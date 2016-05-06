@@ -46,9 +46,3 @@ in sync.
 ## Breaking changes
 
 We follow semantic versioning rather strictly.
-
-## Collaborators
-
-[editorconfig]: http://editorconfig.org
-[eslint]: http://eslint.org
-[commit-message]: http://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message
