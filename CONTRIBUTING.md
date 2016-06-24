@@ -10,6 +10,8 @@ be interested in. Maybe somebody is trying to fix that stupid bug that bothers
 you. Review the PR. Do you have any better ideas how to fix this problem? Let us
 know.
 
+Here is a helpful set of tips for making your own commits: https://robots.thoughtbot.com/5-useful-tips-for-a-better-commit-message 
+
 ## Issues
 
 The issue tracker is the preferred channel for bug reports, features requests
@@ -31,6 +33,11 @@ We use [ESLint][eslint] for all JavaScript Linting. There should be no linting
 errors and no new warnings for new work. You are welcome to configure your
 editor to use ESLint or the `npm test` command will run unit tests and the
 linter.
+
+
+
+-[editorconfig]: http://editorconfig.org
+-[eslint]: http://eslint.org
 
 ## Visual Changes
 
