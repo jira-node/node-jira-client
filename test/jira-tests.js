@@ -315,7 +315,12 @@ describe('Jira API Tests', () => {
 
     it('findIssue hits proper url', async () => {
       const result = await dummyURLCall('findIssue', ['PK-100']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=');
+    });
+
+    it('findIssue hits proper url with expansion', async () => {
+      const result = await dummyURLCall('findIssue', ['PK-100', 'transitions,changelog']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=transitions,changelog');
     });
 
     it('getUnresolvedIssueCount hits proper url', async () => {

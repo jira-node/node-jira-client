@@ -193,10 +193,14 @@ export default class JiraApi {
    * Find an issue in jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
    * @param {string} issueNumber - The issue number to search for including the project key
+   * @param {string} expand - The resource expansion to return additional fields in the response
    */
-  findIssue(issueNumber) {
+  findIssue(issueNumber, expand) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueNumber}`,
+      query: {
+        expand: expand || '',
+      },
     })));
   }
 
