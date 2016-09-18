@@ -261,10 +261,12 @@ export default class JiraApi {
       pathname: '/rapidviews/list',
     })));
 
-    const rapidViewResult = response.views
-      .filter(x => x.name.toLowerCase() === projectName.toLowerCase());
+    if (!projectName) return response.views;
 
-    return rapidViewResult[0];
+    const rapidViewResult = response.views
+      .find(x => x.name.toLowerCase() === projectName.toLowerCase());
+
+    return rapidViewResult;
   }
 
   /** Get a list of Sprints belonging to a Rapid View
