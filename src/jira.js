@@ -261,7 +261,7 @@ export default class JiraApi {
       pathname: '/rapidviews/list',
     })));
 
-    if (!projectName) return response.views;
+    if (typeof projectName === 'undefined' || projectName === null) return response.views;
 
     const rapidViewResult = response.views
       .find(x => x.name.toLowerCase() === projectName.toLowerCase());
