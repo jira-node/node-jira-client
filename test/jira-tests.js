@@ -380,6 +380,13 @@ describe('Jira API Tests', () => {
         .eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
     });
 
+    it('listSprints hits proper url', async () => {
+      const result = await dummyURLCall('listSprints', ['someRapidViewId']);
+      result.should.eql(
+        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId'
+      );
+    });
+
     it('addIssueToSprint hits proper url', async () => {
       const result = await dummyURLCall('addIssueToSprint', ['someIssueId', 'someSprintId']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/sprint/someSprintId/issues/add');

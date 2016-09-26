@@ -269,7 +269,7 @@ export default class JiraApi {
     return rapidViewResult;
   }
 
-  /** Get a list of Sprints belonging to a Rapid View
+  /** Get the most recent sprint for a given rapidViewId
    * @name getLastSprintForRapidView
    * @function
    * @param {string} rapidViewId - the id for the rapid view
@@ -296,6 +296,17 @@ export default class JiraApi {
         rapidViewId,
         sprintId,
       },
+    })));
+  }
+
+  /** Get a list of Sprints belonging to a Rapid View
+   * @name listSprints
+   * @function
+   * @param {string} rapidViewId - the id for the rapid view
+   */
+  listSprints(rapidViewId) {
+    return this.doRequest(this.makeRequestHeader(this.makeSprintQueryUri({
+      pathname: `/sprintquery/${rapidViewId}`,
     })));
   }
 
