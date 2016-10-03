@@ -526,7 +526,7 @@ export default class JiraApi {
   getUsersIssues(username, open) {
     return this.searchJira(
       `assignee = ${username.replace('@', '\\u0040')} ` +
-      `AND status in (Open, 'In Progress', Reopened) ${open}`, {});
+      `AND status in (Open, 'In Progress', Reopened) "${open}"`, {});
   }
 
   /** Add issue to Jira
