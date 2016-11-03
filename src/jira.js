@@ -178,6 +178,7 @@ export default class JiraApi {
     };
 
     const response = await this.request(options);
+
     if (response) {
       if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
         throw new Error(response.errorMessages.join(', '));
@@ -729,14 +730,18 @@ export default class JiraApi {
    * @param {object} newEstimate - the new value for the remaining estimate field
    */
   addWorklog(issueId, worklog, newEstimate) {
-    return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}/worklog`,
-      query: (newEstimate) ? { adjustEstimate: 'new', newEstimate } : null,
-    }), {
+    const header = {
+      uri: this.makeUri({
+        pathname: `/issue/${issueId}/worklog`,
+        query: { adjustEstimate: 'new', newEstimate },
+      }),
       body: worklog,
       method: 'POST',
-      followAllRedirects: true,
-    }));
+      'Content-Type': 'application/json',
+      json: true,
+    };
+
+    return this.doRequest(header);
   }
 
   /** Delete worklog from issue
