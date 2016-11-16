@@ -463,6 +463,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Create a Jira user
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/user-createUser)
+   * @name createUser
+   * @function
+   * @param {object} user - Properly Formatted User object
+   */
+  createUser(user) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: user,
+    }));
+  }
+
   /** Search user on Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
    * @name searchUsers
