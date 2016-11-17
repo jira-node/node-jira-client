@@ -436,6 +436,15 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
     });
 
+    it('createUser hits proper url', async () => {
+      const result = await dummyURLCall('createUser', [{
+        name: 'someUsername',
+        emailAddress: 'someEmail',
+        displayName: 'Some Name',
+      }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/user');
+    });
+
     it('searchUsers hits proper url', async () => {
       const result = await dummyURLCall('searchUsers', [{
         username: 'someUserName',
