@@ -31,7 +31,7 @@
     }
   ],
   "dependencies": {
-    "babel-runtime": "^6.3.13",
+    "babel-runtime": "^6.9.1",
     "request-promise": "^3.0.0"
   },
   "scripts": {
