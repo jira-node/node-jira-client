@@ -6,4 +6,8 @@
     "node": true
   },
   "parser": "babel-eslint",
+  "rules": {
+    "no-prototype-builtins": 0,
+    "prefer-spread": 0
+  }
 }
