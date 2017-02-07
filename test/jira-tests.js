@@ -458,7 +458,7 @@ describe('Jira API Tests', () => {
     });
 
     it('getUsersIssues hits proper url', async () => {
-      const result = await dummyURLCall('getUsersIssues', ['someUsername', 'true']);
+      const result = await dummyURLCall('getUsersIssues', ['someUsername', true]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
     });
 

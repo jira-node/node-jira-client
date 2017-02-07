@@ -541,9 +541,9 @@ export default class JiraApi {
    * @param {boolean} open - determines if only open issues should be returned
    */
   getUsersIssues(username, open) {
+    const openJql = open ? ' AND status in (Open, \'In Progress\', Reopened)' : '';
     return this.searchJira(
-      `assignee = ${username.replace('@', '\\u0040')} ` +
-      `AND status in (Open, 'In Progress', Reopened) "${open}"`, {});
+      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {});
   }
 
   /** Add issue to Jira
