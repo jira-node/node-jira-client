@@ -52,7 +52,7 @@
     "babel-preset-stage-0": "^6.1.18",
     "chai": "^3.4.1",
     "chai-as-promised": "^5.1.0",
-    "esdoc": "^0.4.3",
+    "esdoc": "^0.5.2",
     "esdoc-es7-plugin": "0.0.3",
     "eslint": "^2.6.0",
     "eslint-config-airbnb": "^7.0.0",
