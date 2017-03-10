@@ -217,7 +217,7 @@ export default class JiraApi {
     const requestHeaders = this.makeRequestHeader(
       this.makeUri({
         pathname: `/version/${version}/unresolvedIssueCount`,
-      })
+      }),
     );
     const response = await this.doRequest(requestHeaders);
     return response.issuesUnresolvedCount;
@@ -279,7 +279,7 @@ export default class JiraApi {
     const response = await this.doRequest(
       this.makeRequestHeader(this.makeSprintQueryUri({
         pathname: `/sprintquery/${rapidViewId}`,
-      }))
+      })),
     );
     return response.sprints.pop();
   }
@@ -529,7 +529,7 @@ export default class JiraApi {
         },
       }), {
         followAllRedirects: true,
-      })
+      }),
     );
   }
 
@@ -774,7 +774,7 @@ export default class JiraApi {
       }), {
         method: 'DELETE',
         followAllRedirects: true,
-      }
+      },
     ));
   }
 

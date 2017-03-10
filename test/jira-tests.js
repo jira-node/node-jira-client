@@ -1,4 +1,4 @@
-import JiraApi from '../src/jira.js';
+import JiraApi from '../src/jira';
 
 function getOptions(options) {
   const actualOptions = options || {};
@@ -74,7 +74,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(
         getOptions({
           strictSSL: false,
-        })
+        }),
       );
 
       expect(jira.strictSSL).to.equal(false);
@@ -132,7 +132,7 @@ describe('Jira API Tests', () => {
       });
 
       url.should.eql(
-        'http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three'
+        'http://jira.somehost.com:8080/rest/api/2.0/path?fields=one&fields=two&expand=three',
       );
     });
 
@@ -192,7 +192,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(
         getOptions({
           request: dummyRequest,
-        })
+        }),
       );
 
       const response = await jira.doRequest({});
@@ -243,7 +243,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(
         getOptions({
           request: dummyRequest,
-        })
+        }),
       );
 
       await jira.doRequest({})
@@ -264,7 +264,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(
         getOptions({
           request: dummyRequest,
-        })
+        }),
       );
 
       await jira.doRequest({})
@@ -278,7 +278,7 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(
         getOptions({
           request: dummyRequest,
-        })
+        }),
       );
 
       jira.doRequest({})
@@ -291,13 +291,13 @@ describe('Jira API Tests', () => {
     async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod) {
       let dummyRequest = dummyRequestMethod;
       if (!dummyRequest) {
-        dummyRequest = async (requestOptions) => requestOptions;
+        dummyRequest = async requestOptions => requestOptions;
       }
 
       const jira = new JiraApi(
         getOptions({
           request: dummyRequest,
-        })
+        }),
       );
 
       const resultObject = await jira[jiraApiMethodName].apply(jira, functionArguments);
@@ -305,7 +305,7 @@ describe('Jira API Tests', () => {
       // hack exposing the qs object as the query string in the URL so this is
       // uniformly testable
       if (resultObject.qs) {
-        const queryString = Object.keys(resultObject.qs).map((x) => `${x}=${resultObject.qs[x]}`)
+        const queryString = Object.keys(resultObject.qs).map(x => `${x}=${resultObject.qs[x]}`)
         .join('&');
         return `${resultObject.uri}?${queryString}`;
       }
@@ -370,7 +370,7 @@ describe('Jira API Tests', () => {
         dummyRequest);
 
       result.should.eql(
-        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId'
+        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId',
       );
     });
 
@@ -383,7 +383,7 @@ describe('Jira API Tests', () => {
     it('listSprints hits proper url', async () => {
       const result = await dummyURLCall('listSprints', ['someRapidViewId']);
       result.should.eql(
-        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId'
+        'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId',
       );
     });
 

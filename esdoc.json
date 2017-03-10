@@ -1,7 +1,10 @@
 {
   "source": "./src",
   "destination": "./docs",
-  "plugins": [{
-    "name": "esdoc-es7-plugin"
-  }]
+  "excludes": ["node_modules"],
+  "experimentalProposal": {
+    "classProperties": true,
+    "objectRestSpread": true
+  },
+  "plugins": []
 }
