@@ -1,6 +1,7 @@
 {
   "source": "./src",
   "destination": "./docs",
+  "excludes": ["node_modules"],
   "plugins": [{
     "name": "esdoc-es7-plugin"
   }]

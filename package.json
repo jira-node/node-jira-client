@@ -54,6 +54,7 @@
     "chai-as-promised": "^6.0.0",
     "esdoc": "^0.5.1",
     "esdoc-es7-plugin": "0.0.3",
+    "esdoc-node": "^1.0.1",
     "eslint": "^3.12.1",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-import": "^2.2.0",
