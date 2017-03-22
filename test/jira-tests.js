@@ -13,6 +13,7 @@ function getOptions(options) {
     strictSSL: actualOptions.hasOwnProperty('strictSSL') ? actualOptions.strictSSL : true,
     request: actualOptions.request,
     oauth: actualOptions.oauth || null,
+    intermediatePath: actualOptions.intermediatePath,
   };
 }
 
@@ -121,6 +122,15 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeUri({ pathname: '/somePathName', intermediatePath: 'intermediatePath' }))
+        .to.eql('http://jira.somehost.com:8080/intermediatePath/somePathName');
+    });
+
+    it('builds url with globally specified intermediatePath', () => {
+      const jira = new JiraApi(getOptions({
+        intermediatePath: 'intermediatePath',
+      }));
+
+      expect(jira.makeUri({ pathname: '/somePathName' }))
         .to.eql('http://jira.somehost.com:8080/intermediatePath/somePathName');
     });
 

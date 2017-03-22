@@ -19,6 +19,7 @@ export default class JiraApi {
     this.port = options.port || null;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
+    this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
@@ -63,6 +64,8 @@ export default class JiraApi {
    * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
    * section?
+   * @property {string} [intermediatePath] - If specified, overwrites the default rest/api/version
+   * section of the uri
    * @property {boolean} [strictSSL=true] - Does this tool require each request to be
    * authenticated?  Defaults to true.
    * @property {function} [request] - What method does this tool use to make its requests?
@@ -121,7 +124,8 @@ export default class JiraApi {
    * @param {object} [options] - an object containing path information
    */
   makeUri({ pathname, query, intermediatePath }) {
-    const tempPath = intermediatePath || `/rest/api/${this.apiVersion}`;
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/api/${this.apiVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
@@ -147,7 +151,8 @@ export default class JiraApi {
    * @param {object} [options] - An options object specifying uri information
    */
   makeWebhookUri({ pathname, intermediatePath }) {
-    const tempPath = intermediatePath || `/rest/webhooks/${this.webhookVersion}`;
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/webhooks/${this.webhookVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
@@ -171,7 +176,8 @@ export default class JiraApi {
    * @param {object} [options] - The url after the /rest/
    */
   makeSprintQueryUri({ pathname, query, intermediatePath }) {
-    const tempPath = intermediatePath || `/rest/greenhopper/${this.greenhopperVersion}`;
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/greenhopper/${this.greenhopperVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
