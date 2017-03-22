@@ -118,51 +118,77 @@ export default class JiraApi {
    * @name makeUri
    * @function
    * Creates a URI object for a given pathname
-   * @param {string} pathname - The url after the /rest/api/version
+   * @param {object} [options] - an object containing path information
    */
-  makeUri({ pathname, query }) {
+  makeUri({ pathname, query, intermediatePath }) {
+    const tempPath = intermediatePath || `/rest/api/${this.apiVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/api/${this.apiVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
       query,
     });
     return decodeURIComponent(uri);
   }
+
+  /**
+   * @typedef makeUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/api/version
+   * @property {object} query - a query object
+   * @property {string} intermediatePath - If specified will overwrite the /rest/api/version section
+   */
 
   /**
    * @name makeWebhookUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {string} pathname - The url after the /rest/
+   * @param {object} [options] - An options object specifying uri information
    */
-  makeWebhookUri({ pathname }) {
+  makeWebhookUri({ pathname, intermediatePath }) {
+    const tempPath = intermediatePath || `/rest/webhooks/${this.webhookVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/webhooks/${this.webhookVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
     });
     return decodeURIComponent(uri);
   }
 
   /**
+   * @typedef makeWebhookUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/webhooks
+   * @property {string} intermediatePath - If specified will overwrite the /rest/webhooks section
+   */
+
+  /**
    * @name makeSprintQueryUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {string} pathname - The url after the /rest/
+   * @param {object} [options] - The url after the /rest/
    */
-  makeSprintQueryUri({ pathname, query }) {
+  makeSprintQueryUri({ pathname, query, intermediatePath }) {
+    const tempPath = intermediatePath || `/rest/greenhopper/${this.greenhopperVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
       query,
     });
     return decodeURIComponent(uri);
   }
+
+  /**
+   * @typedef makeSprintQueryUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/api/version
+   * @property {object} query - a query object
+   * @property {string} intermediatePath - will overwrite the /rest/greenhopper/version section
+   */
 
   /**
    * @name doRequest
