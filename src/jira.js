@@ -19,6 +19,7 @@ export default class JiraApi {
     this.port = options.port || null;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
+    this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
@@ -63,6 +64,8 @@ export default class JiraApi {
    * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
    * section?
+   * @property {string} [intermediatePath] - If specified, overwrites the default rest/api/version
+   * section of the uri
    * @property {boolean} [strictSSL=true] - Does this tool require each request to be
    * authenticated?  Defaults to true.
    * @property {function} [request] - What method does this tool use to make its requests?
@@ -118,51 +121,80 @@ export default class JiraApi {
    * @name makeUri
    * @function
    * Creates a URI object for a given pathname
-   * @param {string} pathname - The url after the /rest/api/version
+   * @param {object} [options] - an object containing path information
    */
-  makeUri({ pathname, query }) {
+  makeUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/api/${this.apiVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/api/${this.apiVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
       query,
     });
     return decodeURIComponent(uri);
   }
+
+  /**
+   * @typedef makeUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/api/version
+   * @property {object} query - a query object
+   * @property {string} intermediatePath - If specified will overwrite the /rest/api/version section
+   */
 
   /**
    * @name makeWebhookUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {string} pathname - The url after the /rest/
+   * @param {object} [options] - An options object specifying uri information
    */
-  makeWebhookUri({ pathname }) {
+  makeWebhookUri({ pathname, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/webhooks/${this.webhookVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/webhooks/${this.webhookVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
     });
     return decodeURIComponent(uri);
   }
 
   /**
+   * @typedef makeWebhookUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/webhooks
+   * @property {string} intermediatePath - If specified will overwrite the /rest/webhooks section
+   */
+
+  /**
    * @name makeSprintQueryUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {string} pathname - The url after the /rest/
+   * @param {object} [options] - The url after the /rest/
    */
-  makeSprintQueryUri({ pathname, query }) {
+  makeSprintQueryUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/greenhopper/${this.greenhopperVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
       query,
     });
     return decodeURIComponent(uri);
   }
+
+  /**
+   * @typedef makeSprintQueryUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/api/version
+   * @property {object} query - a query object
+   * @property {string} intermediatePath - will overwrite the /rest/greenhopper/version section
+   */
 
   /**
    * @name doRequest
