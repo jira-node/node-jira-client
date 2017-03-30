@@ -70,3 +70,6 @@ async function logIssueName() {
 }
 
 ```
+
+## Documentation ##
+Can't find what you need in the readme?  Check out our documentation here: https://jira-node.github.io/
