@@ -534,9 +534,19 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component');
     });
 
+    it('updateComponent hits proper url', async () => {
+      const result = await dummyURLCall('updateComponent', ['someComponentNumber', 'someComponent']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber');
+    });
+
     it('deleteComponent hits proper url', async () => {
       const result = await dummyURLCall('deleteComponent', ['someComponentNumber']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber');
+    });
+
+    it('deleteComponent hits proper url', async () => {
+      const result = await dummyURLCall('deleteComponent', ['someComponentNumber', 'someComponentName']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber?moveIssuesTo=someComponentName');
     });
 
     it('listFields hits proper url', async () => {

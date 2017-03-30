@@ -670,18 +670,41 @@ export default class JiraApi {
     }));
   }
 
+  /** Update Jira component
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/component-updateComponent)
+   * @name updateComponent
+   * @function
+   * @param {string} componentId - the Id of the component to update
+   * @param {object} component - Properly Formatted Component
+   */
+  updateComponent(componentId, component) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/component/${componentId}`,
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: component,
+    }));
+  }
+
   /** Delete component from Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
    * @name deleteComponent
    * @function
-   * @param {string} componentId - the Id of the component to delete
+   * @param {string} componentId  - the Id of the component to delete
+   * @param {string} moveIssuesToId - the Id of the component to move existing issues to (optional)
    */
-  deleteComponent(componentId) {
+  deleteComponent(componentId, moveIssuesToId) {
+    const query = moveIssuesToId
+        ? { moveIssuesTo: moveIssuesToId }
+        : null;
+
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/component/${componentId}`,
     }), {
       method: 'DELETE',
       followAllRedirects: true,
+      qs: query,
     }));
   }
 
