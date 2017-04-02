@@ -685,6 +685,21 @@ export default class JiraApi {
     }));
   }
 
+  /** Create custom Jira field
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field-createCustomField)
+   * @name createCustomField
+   * @function
+   */
+  createCustomField(field) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/field',
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: field,
+    }));
+  }
+
   /** List all fields custom and not that jira knows about.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listFields
