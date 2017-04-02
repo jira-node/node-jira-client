@@ -689,6 +689,7 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field-createCustomField)
    * @name createCustomField
    * @function
+   * @param {object} field - properly Formatted Field object
    */
   createCustomField(field) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
