@@ -712,7 +712,7 @@ export default class JiraApi {
     })));
   }
 
-   /** Add an option for a select list issue field, for a given field key.
+   /** Add an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
    * @name createFieldOption
    * @function
@@ -729,7 +729,7 @@ export default class JiraApi {
     }));
   }
 
-  /** Returns all options defined for a select list issue field, for a given field key.
+  /** Returns all options defined for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-getAllOptions)
    * @name listFieldOptions
    * @function
@@ -741,7 +741,7 @@ export default class JiraApi {
     })));
   }
 
-  /** Creates or updates an option for a select list issue field, for a given field key and option Id.
+  /** Creates or updates an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-putOption)
    * @name upsertFieldOption
    * @function
@@ -755,11 +755,11 @@ export default class JiraApi {
     }), {
       method: 'PUT',
       followAllRedirects: true,
-      body: option
+      body: option,
     }));
   }
 
-  /** Returns an option for a select list issue field, for a given field key and option Id.
+  /** Returns an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-getOption)
    * @name getFieldOption
    * @function
@@ -772,7 +772,7 @@ export default class JiraApi {
     })));
   }
 
-  /** Deletes an option from a select list issue field, for a given field key and option Id.
+  /** Deletes an option from a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-delete)
    * @name deleteFieldOption
    * @function
