@@ -539,9 +539,45 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber');
     });
 
-    it('listFields hits proper url', async () => {
-      const result = await dummyURLCall('listFields', []);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
+    // Field APIs Suite Tests
+    describe('Field APIs Suite Tests', () => {
+      it('createCustomField hits proper url', async () => {
+        const result = await dummyURLCall('createCustomField', ['someField']);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
+      });
+
+      it('listFields hits proper url', async () => {
+        const result = await dummyURLCall('listFields', []);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
+      });
+    });
+
+    // Field Option APIs Suite Tests
+    describe('Field Option APIs Suite Tests', () => {
+      it('createFieldOption hits proper url', async () => {
+        const result = await dummyURLCall('createFieldOption', ['someFieldKey', 'someOption']);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field/someFieldKey/option');
+      });
+
+      it('listFieldOptions hits proper url', async () => {
+        const result = await dummyURLCall('listFieldOptions', ['someFieldKey']);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field/someFieldKey/option');
+      });
+
+      it('upsertFieldOption hits proper url', async () => {
+        const result = await dummyURLCall('upsertFieldOption', ['someFieldKey', 'someOptionId', 'someOption']);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field/someFieldKey/option/someOptionId');
+      });
+
+      it('getFieldOption hits proper url', async () => {
+        const result = await dummyURLCall('getFieldOption', ['someFieldKey', 'someOptionId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field/someFieldKey/option/someOptionId');
+      });
+
+      it('deleteFieldOption hits proper url', async () => {
+        const result = await dummyURLCall('deleteFieldOption', ['someFieldKey', 'someOptionId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field/someFieldKey/option/someOptionId');
+      });
     });
 
     it('listPriorities hits proper url', async () => {

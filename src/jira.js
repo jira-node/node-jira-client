@@ -685,6 +685,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Create custom Jira field
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field-createCustomField)
+   * @name createCustomField
+   * @function
+   * @param {object} field - Properly formatted Field object
+   */
+  createCustomField(field) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/field',
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: field,
+    }));
+  }
+
   /** List all fields custom and not that jira knows about.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listFields
@@ -694,6 +710,82 @@ export default class JiraApi {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/field',
     })));
+  }
+
+   /** Add an option for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
+   * @name createFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {object} option - properly formatted Option object
+   */
+  createFieldOption(fieldKey, option) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option`,
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: option,
+    }));
+  }
+
+  /** Returns all options defined for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-getAllOptions)
+   * @name listFieldOptions
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   */
+  listFieldOptions(fieldKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option`,
+    })));
+  }
+
+  /** Creates or updates an option for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-putOption)
+   * @name upsertFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {string} optionId - the id of the modified option
+   * @param {object} option - properly formatted Option object
+   */
+  upsertFieldOption(fieldKey, optionId, option) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option/${optionId}`,
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: option,
+    }));
+  }
+
+  /** Returns an option for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-getOption)
+   * @name getFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {string} optionId - the id of the option
+   */
+  getFieldOption(fieldKey, optionId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option/${optionId}`,
+    })));
+  }
+
+  /** Deletes an option from a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-delete)
+   * @name deleteFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {string} optionId - the id of the deleted option
+   */
+  deleteFieldOption(fieldKey, optionId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option/${optionId}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+    }));
   }
 
   /** List all priorities jira knows about
