@@ -861,6 +861,26 @@ export default class JiraApi {
     }));
   }
 
+  /** Update comment for an issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-updateComment)
+   * @name updateComment
+   * @function
+   * @param {string} issueId - Issue with the comment
+   * @param {string} commentId - Comment that is updated
+   * @param {string} comment - string containing new comment
+   */
+  updateComment(issueId, commentId, comment) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/comment/${commentId}`,
+    }), {
+      body: {
+        body: comment,
+      },
+      method: 'PUT',
+      followAllRedirects: true,
+    }));
+  }
+
   /** Add a worklog to a project
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id291617)
    * @name addWorklog
