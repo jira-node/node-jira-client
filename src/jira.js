@@ -868,13 +868,15 @@ export default class JiraApi {
    * @param {string} issueId - Issue with the comment
    * @param {string} commentId - Comment that is updated
    * @param {string} comment - string containing new comment
+   * @param {object} [options={}] - extra options
    */
-  updateComment(issueId, commentId, comment) {
+  updateComment(issueId, commentId, comment, options = {}) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}/comment/${commentId}`,
     }), {
       body: {
         body: comment,
+        ...options,
       },
       method: 'PUT',
       followAllRedirects: true,
