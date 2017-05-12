@@ -35,6 +35,13 @@ export default class JiraApi {
         token_secret: options.oauth.access_token_secret,
         signature_method: options.oauth.signature_method || 'RSA-SHA1',
       };
+    } else if (options.bearer) {
+      this.baseOptions.auth = {
+        user: '',
+        pass: '',
+        sendImmediately: true,
+        bearer: options.bearer
+      };
     } else if (options.username && options.password) {
       this.baseOptions.auth = {
         user: options.username,
