@@ -40,7 +40,7 @@ export default class JiraApi {
         user: '',
         pass: '',
         sendImmediately: true,
-        bearer: options.bearer
+        bearer: options.bearer,
       };
     } else if (options.username && options.password) {
       this.baseOptions.auth = {
