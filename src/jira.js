@@ -1040,6 +1040,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Notify people related to issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-notify)
+   * @name issueNotify
+   * @function
+   * @param {string} issueId - issue id
+   * @param {object} body - properly formatted body
+   */
+  issueNotify(issueId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/issue/${issueId}/notify',
+    }), {
+      method: 'POST',
+      body: body,
+    }));
+  }
+
   /** Get list of possible statuses
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/status-getStatuses)
    * @name listStatus
