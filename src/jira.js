@@ -1045,14 +1045,14 @@ export default class JiraApi {
    * @name issueNotify
    * @function
    * @param {string} issueId - issue id
-   * @param {object} body - properly formatted body
+   * @param {object} notificationBody - properly formatted body
    */
-  issueNotify(issueId, body) {
+  issueNotify(issueId, notificationBody) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/issue/${issueId}/notify',
+      pathname: `/issue/${issueId}/notify`,
     }), {
       method: 'POST',
-      body: body,
+      body: notificationBody,
     }));
   }
 
