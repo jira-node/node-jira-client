@@ -14,6 +14,7 @@ function getOptions(options) {
     request: actualOptions.request,
     oauth: actualOptions.oauth || null,
     intermediatePath: actualOptions.intermediatePath,
+    bearer: actualOptions.bearer || null,
   };
 }
 
@@ -39,6 +40,21 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(options);
 
       expect(jira.baseOptions.auth).to.be.undefined;
+    });
+
+    it('Constructor with bearer credentials', () => {
+      const options = getOptions({
+        bearer: 'testBearer',
+      });
+
+      const jira = new JiraApi(options);
+
+      expect(jira.baseOptions.auth).to.eql({
+        user: '',
+        pass: '',
+        sendImmediately: true,
+        bearer: options.bearer,
+      });
     });
 
     it('Constructor with oauth credentials', () => {
