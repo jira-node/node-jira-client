@@ -687,5 +687,23 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('listStatus');
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/status');
     });
+
+    // Field Option APIs Suite Tests
+    describe('Dev-Status APIs Suite Tests', () => {
+      it('getDevStatusSummary hits proper url', async () => {
+        const result = await dummyURLCall('getDevStatusSummary', ['someIssueId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/dev-status/latest/issue/summary?issueId=someIssueId');
+      });
+
+      it('getDevStatusDetail hits proper url - repo', async () => {
+        const result = await dummyURLCall('getDevStatusDetail', ['someIssueId', 'someApplicationType', 'repository']);
+        result.should.eql('http://jira.somehost.com:8080/rest/dev-status/latest/issue/detail?issueId=someIssueId&applicationType=someApplicationType&dataType=repository');
+      });
+
+      it('getDevStatusDetail hits proper url - pullrequest', async () => {
+        const result = await dummyURLCall('getDevStatusDetail', ['someIssueId', 'someApplicationType', 'pullrequest']);
+        result.should.eql('http://jira.somehost.com:8080/rest/dev-status/latest/issue/detail?issueId=someIssueId&applicationType=someApplicationType&dataType=pullrequest');
+      });
+    });
   });
 });
