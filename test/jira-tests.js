@@ -706,6 +706,7 @@ describe('Jira API Tests', () => {
     it('issueNotify hits proper url', async () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');
+    });
 
     // Dev-Status APIs Suite Tests
     describe('Dev-Status APIs Suite Tests', () => {
