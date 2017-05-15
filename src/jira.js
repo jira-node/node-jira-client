@@ -204,6 +204,29 @@ export default class JiraApi {
    */
 
   /**
+   * @typedef makeDevStatusUri
+   * @function
+   * Creates a URI object for a given pathname
+   * @arg {pathname, query, intermediatePath} obj1
+   * @param {string} pathname obj1.pathname - The url after the /rest/api/version
+   * @param {object} query obj1.query - a query object
+   * @param {string} intermediatePath obj1.intermediatePath - If specified will overwrite the
+   * /rest/dev-status/latest/issue/detail section
+   */
+  makeDevStatusUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || '/rest/dev-status/latest/issue';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${pathname}`,
+      query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
    * @name doRequest
    * @function
    * Does a request based on the requestOptions object
@@ -234,12 +257,18 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
    * @param {string} issueNumber - The issue number to search for including the project key
    * @param {string} expand - The resource expansion to return additional fields in the response
+   * @param {string} fields - Comma separated list of field ids or keys to retrieve
+   * @param {string} properties - Comma separated list of properties to retrieve
+   * @param {boolean} fieldsByKeys - False by default, used to retrieve fields by key instead of id
    */
-  findIssue(issueNumber, expand) {
+  findIssue(issueNumber, expand, fields, properties, fieldsByKeys) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueNumber}`,
       query: {
         expand: expand || '',
+        fields: fields || '*all',
+        properties: properties || '',
+        fieldsByKeys: fieldsByKeys || false,
       },
     })));
   }
@@ -1040,6 +1069,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Notify people related to issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-notify)
+   * @name issueNotify
+   * @function
+   * @param {string} issueId - issue id
+   * @param {object} notificationBody - properly formatted body
+   */
+  issueNotify(issueId, notificationBody) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/notify`,
+    }), {
+      method: 'POST',
+      body: notificationBody,
+    }));
+  }
+
   /** Get list of possible statuses
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/status-getStatuses)
    * @name listStatus
@@ -1048,6 +1093,38 @@ export default class JiraApi {
   listStatus() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/status',
+    })));
+  }
+
+  /** Get a Dev-Status summary by issue ID
+   * @name getDevStatusSummary
+   * @function
+   * @param {string} issueId - id of issue to get
+   */
+  getDevStatusSummary(issueId) {
+    return this.doRequest(this.makeRequestHeader(this.makeDevStatusUri({
+      pathname: '/summary',
+      query: {
+        issueId,
+      },
+    })));
+  }
+
+  /** Get a Dev-Status detail by issue ID
+   * @name getDevStatusDetail
+   * @function
+   * @param {string} issueId - id of issue to get
+   * @param {string} applicationType - type of application (stash, bitbucket)
+   * @param {string} dataType - info to return (repository, pullrequest)
+   */
+  getDevStatusDetail(issueId, applicationType, dataType) {
+    return this.doRequest(this.makeRequestHeader(this.makeDevStatusUri({
+      pathname: '/detail',
+      query: {
+        issueId,
+        applicationType,
+        dataType,
+      },
     })));
   }
 }
