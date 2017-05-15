@@ -831,6 +831,20 @@ export default class JiraApi {
     }));
   }
 
+  /**
+   * @name getIssueProperty
+   * @function
+   * Get Property of Issue by Issue and Property Id
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/properties-getProperty)
+   * @param {string} issueNumber - The issue number to search for including the project key
+   * @param {string} property - The property key to search for
+   */
+  getIssueProperty(issueNumber, property) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueNumber}/properties/${property}`,
+    })));
+  }
+
   /** List all priorities jira knows about
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listPriorities

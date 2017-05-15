@@ -611,6 +611,11 @@ describe('Jira API Tests', () => {
       });
     });
 
+    it('getIssueProperty hits proper url with expansion', async () => {
+      const result = await dummyURLCall('getIssueProperty', ['PK-100', 'somePropertyKey']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100/properties/somePropertyKey');
+    });
+
     it('listPriorities hits proper url', async () => {
       const result = await dummyURLCall('listPriorities', []);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/priority');
