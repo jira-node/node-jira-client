@@ -368,12 +368,27 @@ describe('Jira API Tests', () => {
 
     it('findIssue hits proper url', async () => {
       const result = await dummyURLCall('findIssue', ['PK-100']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=&fields=*all&properties=&fieldsByKeys=false');
     });
 
     it('findIssue hits proper url with expansion', async () => {
       const result = await dummyURLCall('findIssue', ['PK-100', 'transitions,changelog']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=transitions,changelog');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=transitions,changelog&fields=*all&properties=&fieldsByKeys=false');
+    });
+
+    it('findIssue hits proper url with fields', async () => {
+      const result = await dummyURLCall('findIssue', ['PK-100', null, 'transitions,changelog']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=&fields=transitions,changelog&properties=&fieldsByKeys=false');
+    });
+
+    it('findIssue hits proper url with properties', async () => {
+      const result = await dummyURLCall('findIssue', ['PK-100', null, null, 'transitions,changelog']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=&fields=*all&properties=transitions,changelog&fieldsByKeys=false');
+    });
+
+    it('findIssue hits proper url with fields and fieldsByKeys', async () => {
+      const result = await dummyURLCall('findIssue', ['PK-100', null, 'transitions,changelog', null, true]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=&fields=transitions,changelog&properties=&fieldsByKeys=true');
     });
 
     it('getUnresolvedIssueCount hits proper url', async () => {
