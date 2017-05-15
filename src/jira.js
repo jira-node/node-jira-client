@@ -55,8 +55,7 @@ export default class JiraApi {
   }
 
   /**
-   * @typedef JiraApiOptions
-   * @type {object}
+   * @typedef {object} JiraApiOptions
    * @property {string} [protocol=http] - What protocol to use to connect to
    * jira? Ex: http|https
    * @property {string} host - What host is this tool connecting to for the jira
@@ -82,22 +81,22 @@ export default class JiraApi {
    * that if the underlying TCP connection cannot be established, the OS-wide TCP connection timeout
    * will overrule the timeout option ([the default in Linux can be anywhere from 20-120 *
    * seconds](http://www.sekuda.com/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout)).
-   * @property {string} [webhookVersion=1.0] - What webhook version does this api wrapper need to
+   * @property {string} [webHookVersion=1.0] - What webhook version does this api wrapper need to
    * hit?
    * @property {string} [greenhopperVersion=1.0] - What webhook version does this api wrapper need
    * to hit?
-   * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
-   * OAuth.
+   * @property {OAuth} oauth - Specify an oauth object for this tool to authenticate all requests
+   * using OAuth.
+   * @property {string} bearer - Specify an Authorization Bearer to be used instead of user/pass
    */
 
   /**
-   * @typedef OAuth
-   * @type {object}
+   * @typedef {object} OAuth
    * @property {string} consumer_key - The consumer entered in Jira Preferences.
    * @property {string} consumer_secret - The private RSA file.
    * @property {string} access_token - The generated access token.
    * @property {string} access_token_secret - The generated access toke secret.
-   * @property {string} signature_method [signature_method=RSA-SHA1] - OAuth signurate methode
+   * @property {string} signature_method [signature_method=RSA-SHA1] - OAuth signature method
    * Possible values RSA-SHA1, HMAC-SHA1, PLAINTEXT. Jira Cloud supports only RSA-SHA1.
    */
 
@@ -107,11 +106,26 @@ export default class JiraApi {
    *  @property {object} [query] - An object of all query parameters
    *  @property {string} [intermediatePath] - Overwrites with specified path
    */
+
+  /**
+   *  @typedef {object} WebhookUriOptions
+   *  @property {string} pathname - The url after the specific functions path
+   *  @property {string} [intermediatePath] - Overwrites with specified path
+   */
+
+  /**
+   * @typedef {object} makeRequestHeaderOptions
+   * @property {string} [method] - HTTP Request Method. ie GET, POST, PUT, DELETE
+   * @property {boolean} [followAllRedirects]
+   */
+
+  /**
    * @name makeRequestHeader
    * @function
    * Creates a requestOptions object based on the default template for one
    * @param {string} uri
-   * @param {object} [options] - an object containing fields and formatting how the
+   * @param {makeRequestHeaderOptions} [options] - an object containing fields to
+   * add to the header request object
    */
   makeRequestHeader(uri, options = {}) {
     return {
@@ -124,89 +138,79 @@ export default class JiraApi {
   }
 
   /**
-   * @typedef makeRequestHeaderOptions
-   * @type {object}
-   * @property {string} [method] - HTTP Request Method. ie GET, POST, PUT, DELETE
-   */
-
-  /**
    * @name makeUri
    * @function
    * Creates a URI object for a given pathname
-   * @param {object} [options] - an object containing path information
+   * @param {UriOptions} object - an object containing path information
    */
-  makeUri({ pathname, query, intermediatePath }) {
-    const intermediateToUse = this.intermediatePath || intermediatePath;
+  makeUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
     const tempPath = intermediateToUse || `/rest/api/${this.apiVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}${tempPath}${pathname}`,
-      query,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
     });
     return decodeURIComponent(uri);
   }
-
-  /**
-   * @typedef makeUriOptions
-   * @type {object}
-   * @property {string} pathname - The url after the /rest/api/version
-   * @property {object} query - a query object
-   * @property {string} intermediatePath - If specified will overwrite the /rest/api/version section
-   */
 
   /**
    * @name makeWebhookUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {object} [options] - An options object specifying uri information
+   * @param {WebhookUriOptions} object - an object containing
    */
-  makeWebhookUri({ pathname, intermediatePath }) {
-    const intermediateToUse = this.intermediatePath || intermediatePath;
+  makeWebhookUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
     const tempPath = intermediateToUse || `/rest/webhooks/${this.webhookVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}${tempPath}${pathname}`,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
     });
     return decodeURIComponent(uri);
   }
-
-  /**
-   * @typedef makeWebhookUriOptions
-   * @type {object}
-   * @property {string} pathname - The url after the /rest/webhooks
-   * @property {string} intermediatePath - If specified will overwrite the /rest/webhooks section
-   */
 
   /**
    * @name makeSprintQueryUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {object} [options] - The url after the /rest/
+   * @param {UriOptions} object - an object containing path information
    */
-  makeSprintQueryUri({ pathname, query, intermediatePath }) {
-    const intermediateToUse = this.intermediatePath || intermediatePath;
+  makeSprintQueryUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
     const tempPath = intermediateToUse || `/rest/greenhopper/${this.greenhopperVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}${tempPath}${pathname}`,
-      query,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
     });
     return decodeURIComponent(uri);
   }
 
   /**
-   * @typedef makeSprintQueryUriOptions
-   * @type {object}
-   * @property {string} pathname - The url after the /rest/api/version
-   * @property {object} query - a query object
-   * @property {string} intermediatePath - will overwrite the /rest/greenhopper/version section
+   * @name makeDevStatusUri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
    */
+  makeDevStatusUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/dev-status/latest/issue';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
+    });
+    return decodeURIComponent(uri);
+  }
 
   /**
    * @name makeAgile1Uri
@@ -227,12 +231,17 @@ export default class JiraApi {
     return decodeURIComponent(uri);
   }
 
+  /** @typedef {object} doRequest
+   * @property {object} views
+   */
+
   /**
    * @name doRequest
    * @function
    * Does a request based on the requestOptions object
    * @param {object} requestOptions - fields on this object get posted as a request header for
    * requests to jira
+   * @returns {doRequest}
    */
   async doRequest(requestOptions) {
     const options = {
@@ -333,10 +342,8 @@ export default class JiraApi {
 
     if (typeof projectName === 'undefined' || projectName === null) return response.views;
 
-    const rapidViewResult = response.views
+    return response.views
       .find(x => x.name.toLowerCase() === projectName.toLowerCase());
-
-    return rapidViewResult;
   }
 
   /** Get the most recent sprint for a given rapidViewId
@@ -472,7 +479,7 @@ export default class JiraApi {
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e510)
    * @name updateVersion
    * @function
-   * @param {string} version - an new object of the version to update
+   * @param {object} version - an new object of the version to update
    */
   updateVersion(version) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
@@ -515,8 +522,8 @@ export default class JiraApi {
    * @function
    * @param {string} searchString - jira query string in JQL
    * @param {object} optional - object containing any of the following properties
-   * @param {integer} [optional.startAt=0]: optional starting index number
-   * @param {integer} [optional.maxResults=50]: optional ending index number
+   * @param {number} [optional.startAt=0]: optional starting index number
+   * @param {number} [optional.maxResults=50]: optional ending index number
    * @param {array} [optional.fields]: optional array of string names of desired fields
    */
   searchJira(searchString, optional = {}) {
@@ -554,15 +561,15 @@ export default class JiraApi {
    * @function
    * @param {SearchUserOptions} options
    */
-  searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
+  searchUsers(options) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user/search',
       query: {
-        username,
-        startAt: startAt || 0,
-        maxResults: maxResults || 50,
-        includeActive: includeActive || true,
-        includeInactive: includeInactive || false,
+        username: options.username,
+        startAt: options.startAt || 0,
+        maxResults: options.maxResults || 50,
+        includeActive: options.includeActive || true,
+        includeInactive: options.includeInactive || false,
       },
     }), {
       followAllRedirects: true,
@@ -570,11 +577,10 @@ export default class JiraApi {
   }
 
   /**
-   * @typedef SearchUserOptions
-   * @type {object}
+   * @typedef {object} SearchUserOptions
    * @property {string} username - A query string used to search username, name or e-mail address
-   * @property {integer} [startAt=0] - The index of the first user to return (0-based)
-   * @property {integer} [maxResults=50] - The maximum number of users to return
+   * @property {number} [startAt=0] - The index of the first user to return (0-based)
+   * @property {number} [maxResults=50] - The maximum number of users to return
    * @property {boolean} [includeActive=true] - If true, then active users are included
    * in the results
    * @property {boolean} [includeInactive=false] - If true, then inactive users
@@ -585,8 +591,8 @@ export default class JiraApi {
    * @name getUsersInGroup
    * @function
    * @param {string} groupname - A query string used to search users in group
-   * @param {integer} [startAt=0] - The index of the first user to return (0-based)
-   * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
+   * @param {number} [startAt=0] - The index of the first user to return (0-based)
+   * @param {number} [maxResults=50] - The maximum number of users to return (defaults to 50).
    */
   getUsersInGroup(groupname, startAt = 0, maxResults = 50) {
     return this.doRequest(
