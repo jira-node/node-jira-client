@@ -234,12 +234,18 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
    * @param {string} issueNumber - The issue number to search for including the project key
    * @param {string} expand - The resource expansion to return additional fields in the response
+   * @param {string} fields - Comma separated list of field ids or keys to retrieve
+   * @param {string} properties - Comma separated list of properties to retrieve
+   * @param {boolean} fieldsByKeys - False by default, used to retrieve fields by key instead of id
    */
-  findIssue(issueNumber, expand) {
+  findIssue(issueNumber, expand, fields, properties, fieldsByKeys) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueNumber}`,
       query: {
         expand: expand || '',
+        fields: fields || '*all',
+        properties: properties || '',
+        fieldsByKeys: fieldsByKeys || false,
       },
     })));
   }
@@ -795,6 +801,20 @@ export default class JiraApi {
     }));
   }
 
+  /**
+   * @name getIssueProperty
+   * @function
+   * Get Property of Issue by Issue and Property Id
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/properties-getProperty)
+   * @param {string} issueNumber - The issue number to search for including the project key
+   * @param {string} property - The property key to search for
+   */
+  getIssueProperty(issueNumber, property) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueNumber}/properties/${property}`,
+    })));
+  }
+
   /** List all priorities jira knows about
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listPriorities
@@ -1037,6 +1057,22 @@ export default class JiraApi {
       formData: {
         file: readStream,
       },
+    }));
+  }
+
+  /** Notify people related to issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-notify)
+   * @name issueNotify
+   * @function
+   * @param {string} issueId - issue id
+   * @param {object} notificationBody - properly formatted body
+   */
+  issueNotify(issueId, notificationBody) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/notify`,
+    }), {
+      method: 'POST',
+      body: notificationBody,
     }));
   }
 
