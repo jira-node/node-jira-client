@@ -725,6 +725,7 @@ describe('Jira API Tests', () => {
         result.should.eql('http://jira.somehost.com:8080/rest/dev-status/latest/issue/detail?issueId=someIssueId&applicationType=someApplicationType&dataType=pullrequest');
       });
     });
+
     it('issueNotify hits proper url', async () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');
