@@ -1,6 +1,6 @@
 {
   "name": "jira-client",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "description": "Wrapper for the JIRA API",
   "author": "Steven Surowiec <steven.surowiec@gmail.com>",
   "contributors": [
@@ -24,12 +24,7 @@
     "LICENSE.md",
     "README.md"
   ],
-  "licenses": [
-    {
-      "type": "The MIT License",
-      "url": "http://www.opensource.org/licenses/mit-license.php"
-    }
-  ],
+  "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.20.0",
     "request-promise": "^4.1.1"
@@ -39,7 +34,7 @@
     "docs-build": "rm -rf docs && esdoc -c esdoc.json",
     "lint": "eslint ./",
     "test": "npm run lint && mocha && npm run docs-build",
-    "prepublish": "npm run build && npm run docs-build",
+    "prepublishOnly": "npm run build && npm run docs-build",
     "release": "release"
   },
   "devDependencies": {
