@@ -234,12 +234,18 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
    * @param {string} issueNumber - The issue number to search for including the project key
    * @param {string} expand - The resource expansion to return additional fields in the response
+   * @param {string} fields - Comma separated list of field ids or keys to retrieve
+   * @param {string} properties - Comma separated list of properties to retrieve
+   * @param {boolean} fieldsByKeys - False by default, used to retrieve fields by key instead of id
    */
-  findIssue(issueNumber, expand) {
+  findIssue(issueNumber, expand, fields, properties, fieldsByKeys) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueNumber}`,
       query: {
         expand: expand || '',
+        fields: fields || '*all',
+        properties: properties || '',
+        fieldsByKeys: fieldsByKeys || false,
       },
     })));
   }
