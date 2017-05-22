@@ -726,6 +726,29 @@ describe('Jira API Tests', () => {
       });
     });
 
+    // Agile APIs Suite Tests
+    describe('Agile APIs Suite Tests', () => {
+      it('getIssue hits proper url', async () => {
+        const result = await dummyURLCall('getIssue', ['someIssueId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/issue/someIssueId?fields=&expand=');
+      });
+
+      it('getIssueEstimationForBoard hits proper url', async () => {
+        const result = await dummyURLCall('getIssueEstimationForBoard', ['someIssueId', 'someBoardId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/issue/someIssueId/estimation?boardId=someBoardId');
+      });
+
+      it('estimateIssueForBoard hits proper url', async () => {
+        const result = await dummyURLCall('estimateIssueForBoard', ['someIssueId', 'someBoardId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/issue/someIssueId/estimation?boardId=someBoardId');
+      });
+
+      it('rankIssues hits proper url', async () => {
+        const result = await dummyURLCall('rankIssues');
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/issue/rank');
+      });
+    });
+
     it('issueNotify hits proper url', async () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');

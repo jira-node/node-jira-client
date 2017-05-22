@@ -102,6 +102,13 @@ export default class JiraApi {
    */
 
   /**
+   *  @typedef {object} UriOptions
+   *  @property {string} pathname - The url after the specific functions path
+   *  @property {object} [query] - An object of all query parameters
+   *  @property {string} [intermediatePath] - Overwrites with specified path
+   */
+
+  /**
    * @name makeRequestHeader
    * @function
    * Creates a requestOptions object based on the default template for one
@@ -222,6 +229,25 @@ export default class JiraApi {
       port: this.port,
       pathname: `${this.base}${tempPath}${pathname}`,
       query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeAgile1Uri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
+   */
+  makeAgileUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/agile/1.0';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
     });
     return decodeURIComponent(uri);
   }
@@ -1140,5 +1166,76 @@ export default class JiraApi {
         dataType,
       },
     })));
+  }
+
+  /** Get issue
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-getIssue)
+   * @name getIssue
+   * @function
+   * @param {string} issueIdOrKey - Id of issue
+   * @param {string} [fields] - The list of fields to return for each issue.
+   * @param {string} [expand] - A comma-separated list of the parameters to expand.
+   */
+  getIssue(issueIdOrKey, fields, expand) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/issue/${issueIdOrKey}`,
+      query: {
+        fields,
+        expand,
+      },
+    })));
+  }
+
+  /** Get issue estimation for board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-getIssueEstimationForBoard)
+   * @name getIssueEstimationForBoard
+   * @function
+   * @param {string} issueIdOrKey - Id of issue
+   * @param {number} boardId - The id of the board required to determine which field
+   * is used for estimation.
+   */
+  getIssueEstimationForBoard(issueIdOrKey, boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/issue/${issueIdOrKey}/estimation`,
+      query: {
+        boardId,
+      },
+    })));
+  }
+
+  /** Estimate issue for board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-estimateIssueForBoard)
+   * @name estimateIssueForBoard
+   * @function
+   * @param {string} issueIdOrKey - Id of issue
+   * @param {number} boardId - The id of the board required to determine which field
+   * is used for estimation.
+   * @param {string} body - value to set
+   */
+  estimateIssueForBoard(issueIdOrKey, boardId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/issue/${issueIdOrKey}/estimation`,
+      query: {
+        boardId,
+      },
+    }), {
+      method: 'PUT',
+      body,
+    }));
+  }
+
+  /** Rank Issues
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-rankIssues)
+   * @name rankIssues
+   * @function
+   * @param {string} body - value to set
+   */
+  rankIssues(body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/issue/rank',
+    }), {
+      method: 'PUT',
+      body,
+    }));
   }
 }
