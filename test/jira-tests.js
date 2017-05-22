@@ -131,14 +131,14 @@ describe('Jira API Tests', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeUri({ pathname: '/somePathName' }))
-        .to.eql('http://jira.somehost.com:8080/rest/api/2.0/somePathName');
+      .to.eql('http://jira.somehost.com:8080/rest/api/2.0/somePathName');
     });
 
     it('builds url with intermediatePath', () => {
       const jira = new JiraApi(getOptions());
 
       expect(jira.makeUri({ pathname: '/somePathName', intermediatePath: 'intermediatePath' }))
-        .to.eql('http://jira.somehost.com:8080/intermediatePath/somePathName');
+      .to.eql('http://jira.somehost.com:8080/intermediatePath/somePathName');
     });
 
     it('builds url with globally specified intermediatePath', () => {
@@ -147,7 +147,7 @@ describe('Jira API Tests', () => {
       }));
 
       expect(jira.makeUri({ pathname: '/somePathName' }))
-        .to.eql('http://jira.somehost.com:8080/intermediatePath/somePathName');
+      .to.eql('http://jira.somehost.com:8080/intermediatePath/somePathName');
     });
 
     it('builds url with query string parameters', () => {
@@ -175,7 +175,7 @@ describe('Jira API Tests', () => {
       expect(jira.makeWebhookUri({
         pathname: '/somePathName',
       }))
-        .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
+      .to.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/somePathName');
     });
 
     it('makeWebhookUri functions with intermediate path', () => {
@@ -185,7 +185,7 @@ describe('Jira API Tests', () => {
         pathname: '/somePathName',
         intermediatePath: '/someIntermediatePath',
       }))
-        .to.eql('http://jira.somehost.com:8080/someIntermediatePath/somePathName');
+      .to.eql('http://jira.somehost.com:8080/someIntermediatePath/somePathName');
     });
 
     it('makeSprintQueryUri functions properly in the average case', () => {
@@ -194,7 +194,7 @@ describe('Jira API Tests', () => {
       expect(jira.makeSprintQueryUri({
         pathname: '/somePathName',
       }))
-        .to.eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/somePathName');
+      .to.eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/somePathName');
     });
 
     it('makeSprintQueryUri functions properly in the average case', () => {
@@ -204,7 +204,7 @@ describe('Jira API Tests', () => {
         pathname: '/somePathName',
         intermediatePath: '/someIntermediatePath',
       }))
-        .to.eql('http://jira.somehost.com:8080/someIntermediatePath/somePathName');
+      .to.eql('http://jira.somehost.com:8080/someIntermediatePath/somePathName');
     });
 
     it('makeUri functions properly no port http', () => {
@@ -217,7 +217,7 @@ describe('Jira API Tests', () => {
       expect(jira.makeUri({
         pathname: '/somePathName',
       }))
-        .to.eql('http://jira.somehost.com/rest/api/2.0/somePathName');
+      .to.eql('http://jira.somehost.com/rest/api/2.0/somePathName');
     });
 
     it('makeUri functions properly no port https', () => {
@@ -230,7 +230,7 @@ describe('Jira API Tests', () => {
       expect(jira.makeUri({
         pathname: '/somePathName',
       }))
-        .to.eql('https://jira.somehost.com/rest/api/2.0/somePathName');
+      .to.eql('https://jira.somehost.com/rest/api/2.0/somePathName');
     });
   });
 
@@ -300,7 +300,7 @@ describe('Jira API Tests', () => {
       );
 
       await jira.doRequest({})
-        .should.eventually.be.rejectedWith('some error to throw');
+      .should.eventually.be.rejectedWith('some error to throw');
     });
 
     it('doRequest throws a list of errors properly', async () => {
@@ -321,7 +321,7 @@ describe('Jira API Tests', () => {
       );
 
       await jira.doRequest({})
-        .should.eventually.be.rejectedWith('some error to throw, another error');
+      .should.eventually.be.rejectedWith('some error to throw, another error');
     });
 
     it('doRequest does not throw an error on empty response', (done) => {
@@ -335,8 +335,8 @@ describe('Jira API Tests', () => {
       );
 
       jira.doRequest({})
-        .should.eventually.be.fulfilled
-        .and.notify(done);
+      .should.eventually.be.fulfilled
+      .and.notify(done);
     });
   });
 
@@ -398,7 +398,7 @@ describe('Jira API Tests', () => {
 
       const result = await dummyURLCall('getUnresolvedIssueCount', ['someVersion'], dummyRequest);
       result.should
-        .eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersion/unresolvedIssueCount');
+      .eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersion/unresolvedIssueCount');
     });
 
     it('getProject hits proper url', async () => {
@@ -445,7 +445,7 @@ describe('Jira API Tests', () => {
     it('getSprintIssues hits proper url', async () => {
       const result = await dummyURLCall('getSprintIssues', ['someRapidView', 'someSprintId']);
       result.should
-        .eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
+      .eql('http://jira.somehost.com:8080/rest/greenhopper/1.0/rapid/charts/sprintreport?rapidViewId=someRapidView&sprintId=someSprintId');
     });
 
     it('listSprints hits proper url', async () => {
@@ -708,7 +708,12 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/status');
     });
 
-    // Field Option APIs Suite Tests
+    it('issueNotify hits proper url', async () => {
+      const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');
+    });
+
+    // Dev-Status APIs Suite Tests
     describe('Dev-Status APIs Suite Tests', () => {
       it('getDevStatusSummary hits proper url', async () => {
         const result = await dummyURLCall('getDevStatusSummary', ['someIssueId']);
