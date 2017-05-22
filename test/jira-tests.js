@@ -726,6 +726,69 @@ describe('Jira API Tests', () => {
       });
     });
 
+    // Agile APIs Suite Tests
+    describe('Agile APIs Suite Tests', () => {
+      it('createSprint hits proper url', async () => {
+        const result = await dummyURLCall('createSprint');
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint');
+      });
+
+      it('updateSprint hits proper url', async () => {
+        const result = await dummyURLCall('updateSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId');
+      });
+
+      it('partiallyUpdateSprint hits proper url', async () => {
+        const result = await dummyURLCall('partiallyUpdateSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId');
+      });
+
+      it('deleteSprint hits proper url', async () => {
+        const result = await dummyURLCall('deleteSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId');
+      });
+
+      it('getSprint hits proper url', async () => {
+        const result = await dummyURLCall('getSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId');
+      });
+
+      it('moveIssuesToSprint hits proper url', async () => {
+        const result = await dummyURLCall('moveIssuesToSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/issue');
+      });
+
+      it('getIssuesForSprint hits proper url', async () => {
+        const result = await dummyURLCall('getIssuesForSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/issue?startAt=0&maxResults=50&jql=&validateQuery=true&fields=&expand=');
+      });
+
+      it('swapSprint hits proper url', async () => {
+        const result = await dummyURLCall('swapSprint', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/swap');
+      });
+
+      it('getSprintPropertiesKeys hits proper url', async () => {
+        const result = await dummyURLCall('getSprintPropertiesKeys', ['someSprintId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/properties');
+      });
+
+      it('deleteSprintProperty hits proper url', async () => {
+        const result = await dummyURLCall('deleteSprintProperty', ['someSprintId', 'somePropertyKey']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/properties/somePropertyKey');
+      });
+
+      it('setSprintProperty hits proper url', async () => {
+        const result = await dummyURLCall('setSprintProperty', ['someSprintId', 'somePropertyKey']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/properties/somePropertyKey');
+      });
+
+      it('getSprintProperty hits proper url', async () => {
+        const result = await dummyURLCall('getSprintProperty', ['someSprintId', 'somePropertyKey']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/properties/somePropertyKey');
+      });
+    });
+
     it('issueNotify hits proper url', async () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');
