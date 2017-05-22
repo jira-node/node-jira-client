@@ -102,6 +102,13 @@ export default class JiraApi {
    */
 
   /**
+   *  @typedef {object} UriOptions
+   *  @property {string} pathname - The url after the specific functions path
+   *  @property {object} [query] - An object of all query parameters
+   *  @property {string} [intermediatePath] - Overwrites with specified path
+   */
+
+  /**
    * @name makeRequestHeader
    * @function
    * Creates a requestOptions object based on the default template for one
@@ -222,6 +229,25 @@ export default class JiraApi {
       port: this.port,
       pathname: `${this.base}${tempPath}${pathname}`,
       query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeAgile1Uri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
+   */
+  makeAgileUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/agile/1.0';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
     });
     return decodeURIComponent(uri);
   }
@@ -1139,6 +1165,196 @@ export default class JiraApi {
         applicationType,
         dataType,
       },
+    })));
+  }
+
+  /** Create sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-createSprint)
+   * @name createSprint
+   * @function
+   * @param {string} body - value to set
+   */
+  createSprint(body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/sprint',
+    }), {
+      method: 'POST',
+      body,
+    }));
+  }
+
+  /** Update sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-updateSprint)
+   * @name updateSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} body - value to set
+   */
+  updateSprint(sprintId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}`,
+    }), {
+      method: 'PUT',
+      body,
+    }));
+  }
+
+  /** Partially update sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-partiallyUpdateSprint)
+   * @name partiallyUpdateSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} body - value to set
+   */
+  partiallyUpdateSprint(sprintId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}`,
+    }), {
+      method: 'POST',
+      body,
+    }));
+  }
+
+  /** Delete sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-deleteSprint)
+   * @name deleteSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   */
+  deleteSprint(sprintId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}`,
+    }), {
+      method: 'DELETE',
+    }));
+  }
+
+  /** Get sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-getSprint)
+   * @name getSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   */
+  getSprint(sprintId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}`,
+    })));
+  }
+
+  /** Move Issues to Sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-moveIssuesToSprint)
+   * @name moveIssuesToSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} body - value to set
+   */
+  moveIssuesToSprint(sprintId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/issue`,
+    }), {
+      method: 'POST',
+      body,
+    }));
+  }
+
+  /** Get Issues for Sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-getIssuesForSprint)
+   * @name getIssuesForSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   * @param {string} [expand] - A comma-separated list of the parameters to expand.
+   */
+  getIssuesForSprint(sprintId, startAt = 0, maxResults = 50, jql,
+    validateQuery = true, fields, expand) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+        expand,
+      },
+    })));
+  }
+
+  /** Swap Sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-swapSprint)
+   * @name swapSprint
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} body - value to set
+   */
+  swapSprint(sprintId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/swap`,
+    }), {
+      method: 'POST',
+      body,
+    }));
+  }
+
+  /** Get Sprint Properties Keys
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint/{sprintId}/properties-getPropertiesKeys)
+   * @name getSprintPropertiesKeys
+   * @function
+   * @param {string} sprintId - Id of sprint
+   */
+  getSprintPropertiesKeys(sprintId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/properties`,
+    })));
+  }
+
+  /** Delete Sprint Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint/{sprintId}/properties-deleteProperty)
+   * @name deleteSprintProperty
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} propertyKey - Id of property
+   */
+  deleteSprintProperty(sprintId, propertyKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/properties/${propertyKey}`,
+    }), {
+      method: 'DELETE',
+    }));
+  }
+
+  /** Set Sprint Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint/{sprintId}/properties-setProperty)
+   * @name setSprintProperty
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} propertyKey - Id of property
+   * @param {string} body - value to set, for objects make sure to stringify first
+   */
+  setSprintProperty(sprintId, propertyKey, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/properties/${propertyKey}`,
+    }), {
+      method: 'PUT',
+      body,
+    }));
+  }
+
+  /** Get Sprint Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint/{sprintId}/properties-getProperty)
+   * @name getSprintProperty
+   * @function
+   * @param {string} sprintId - Id of sprint
+   * @param {string} propertyKey - Id of property
+   */
+  getSprintProperty(sprintId, propertyKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}/properties/${propertyKey}`,
     })));
   }
 }
