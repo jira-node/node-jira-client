@@ -726,6 +726,34 @@ describe('Jira API Tests', () => {
       });
     });
 
+    // Agile APIs Suite Tests
+    describe('Agile APIs Suite Tests', () => {
+      it('getEpic hits proper url', async () => {
+        const result = await dummyURLCall('getEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId');
+      });
+
+      it('partiallyUpdateEpic hits proper url', async () => {
+        const result = await dummyURLCall('partiallyUpdateEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId');
+      });
+
+      it('getIssuesForEpic hits proper url', async () => {
+        const result = await dummyURLCall('getIssuesForEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId/issue?startAt=0&maxResults=50&jql=&validateQuery=true&fields=');
+      });
+
+      it('moveIssuesToEpic hits proper url', async () => {
+        const result = await dummyURLCall('moveIssuesToEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId/issue');
+      });
+
+      it('rankEpics hits proper url', async () => {
+        const result = await dummyURLCall('rankEpics', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId/rank');
+      });
+    });
+
     it('issueNotify hits proper url', async () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');

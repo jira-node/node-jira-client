@@ -102,6 +102,13 @@ export default class JiraApi {
    */
 
   /**
+   *  @typedef {object} UriOptions
+   *  @property {string} pathname - The url after the specific functions path
+   *  @property {object} [query] - An object of all query parameters
+   *  @property {string} [intermediatePath] - Overwrites with specified path
+   */
+
+  /**
    * @name makeRequestHeader
    * @function
    * Creates a requestOptions object based on the default template for one
@@ -222,6 +229,25 @@ export default class JiraApi {
       port: this.port,
       pathname: `${this.base}${tempPath}${pathname}`,
       query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeAgile1Uri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
+   */
+  makeAgileUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/agile/1.0';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
     });
     return decodeURIComponent(uri);
   }
@@ -1140,5 +1166,95 @@ export default class JiraApi {
         dataType,
       },
     })));
+  }
+
+  /** Get Epic
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-getEpic)
+   * @name getEpic
+   * @function
+   * @param {string} epicIdOrKey - Id of epic to retrieve
+   */
+  getEpic(epicIdOrKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/epic/${epicIdOrKey}`,
+    })));
+  }
+
+  /** Partially update epic
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-partiallyUpdateEpic)
+   * @name partiallyUpdateEpic
+   * @function
+   * @param {string} epicIdOrKey - Id of epic to retrieve
+   * @param {string} body - value to set, for objects make sure to stringify first
+   */
+  partiallyUpdateEpic(epicIdOrKey, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/epic/${epicIdOrKey}`,
+    }), {
+      method: 'POST',
+      body,
+    }));
+  }
+
+  /** Get issues for epic
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-getIssuesForEpic)
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-getIssuesWithoutEpic)
+   * @name getIssuesForEpic
+   * @function
+   * @param {string} epicId - Id of epic to retrieve, specify 'none' to get issues without an epic.
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getIssuesForEpic(epicId, startAt = 0, maxResults = 50, jql,
+    validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/epic/${epicId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Move Issues to Epic
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-moveIssuesToEpic)
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-removeIssuesFromEpic)
+   * @name moveIssuesToEpic
+   * @function
+   * @param {string} epicIdOrKey - Id of epic to move issue to, or 'none' to remove from epic
+   * @param {array} issues - array of issues to move
+   */
+  moveIssuesToEpic(epicIdOrKey, issues) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/epic/${epicIdOrKey}/issue`,
+    }), {
+      method: 'POST',
+      body: {
+        issues,
+      },
+    }));
+  }
+
+  /** Rank Epics
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-rankEpics)
+   * @name rankEpics
+   * @function
+   * @param {string} epicIdOrKey - Id of epic
+   * @param {string} body - value to set
+   */
+  rankEpics(epicIdOrKey, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/epic/${epicIdOrKey}/rank`,
+    }), {
+      method: 'PUT',
+      body,
+    }));
   }
 }
