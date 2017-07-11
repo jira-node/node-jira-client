@@ -948,7 +948,7 @@ export default class JiraApi {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}/comment`,
     }), {
-      body: { comment },
+      body: comment,
       method: 'POST',
       followAllRedirects: true,
     }));
