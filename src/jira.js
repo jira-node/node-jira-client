@@ -941,9 +941,10 @@ export default class JiraApi {
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
    * @name addCommentAdvanced
    * @function
+   * @param {string} issueId - Issue to add a comment to
    * @param {object} comment - The object containing your comment data
    */
-  addCommentAdvanced(comment) {
+  addCommentAdvanced(issueId, comment) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}/comment`,
     }), {
