@@ -936,7 +936,7 @@ export default class JiraApi {
       followAllRedirects: true,
     }));
   }
-  
+
   /** Add a comment to an issue, supports full comment object
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
    * @name addCommentAdvanced
