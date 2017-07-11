@@ -644,6 +644,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment');
     });
 
+    it('addCommentAdvanced hits proper url', async () => {
+      const result = await dummyURLCall('addCommentAdvanced', ['someIssueNumber', 'someComment']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment');
+    });
+
     it('updateComment hits proper url', async () => {
       const result = await dummyURLCall('updateComment', ['someIssueNumber', 'someCommentNumber', 'someComment']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment/someCommentNumber');
