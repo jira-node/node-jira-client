@@ -293,7 +293,7 @@ export default class JiraApi {
       query: {
         expand: expand || '',
         fields: fields || '*all',
-        properties: properties || '',
+        properties: properties || '*',
         fieldsByKeys: fieldsByKeys || false,
       },
     })));
