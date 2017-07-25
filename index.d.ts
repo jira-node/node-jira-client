@@ -290,4 +290,4 @@ declare namespace JiraApi {
 	}
 }
 
-export default JiraApi;
+export = JiraApi;
