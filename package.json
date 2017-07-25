@@ -23,7 +23,8 @@
     "lib",
     "docs",
     "LICENSE.md",
-    "README.md"
+    "README.md",
+    "index.d.ts"
   ],
   "license": "MIT",
   "dependencies": {
@@ -37,7 +38,6 @@
     "docs-build": "rm -rf docs && esdoc -c esdoc.json",
     "lint": "eslint ./",
     "test": "npm run lint && mocha && npm run docs-build",
-    "prepublishOnly": "npm run build && npm run docs-build",
     "release": "release"
   },
   "devDependencies": {
