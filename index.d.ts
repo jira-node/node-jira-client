@@ -29,7 +29,7 @@ declare class JiraApi {
 
 	getLastSprintForRapidView (rapidViewId: string): Promise<JiraApi.JsonResponse>;
 
-	getSprintIssues (rapidViewId: string, rapidViewId: string): Promise<JiraApi.JsonResponse>;
+	getSprintIssues (rapidViewId: string, sprintId: string): Promise<JiraApi.JsonResponse>;
 
 	listSprints (rapidViewId: string): Promise<JiraApi.JsonResponse>;
 
@@ -195,7 +195,6 @@ declare namespace JiraApi {
 		timeout?: number;
 		webhookVersion?: string;
 		greenhopperVersion?: string;
-		apiVersion?: string;
 		bearer?: string;
 		oauth?: OAuth;
 	}
@@ -292,4 +291,3 @@ declare namespace JiraApi {
 }
 
 export default JiraApi;
-export = JiraApi;
