@@ -38,6 +38,7 @@
     "docs-build": "rm -rf docs && esdoc -c esdoc.json",
     "lint": "eslint ./",
     "test": "npm run lint && mocha && npm run docs-build",
+    "prepublishOnly": "npm run build && npm run docs-build",
     "release": "release"
   },
   "devDependencies": {
