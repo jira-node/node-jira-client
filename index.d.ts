@@ -191,7 +191,7 @@ declare namespace JiraApi {
 		base?: string;
 		intermediatePath?: string;
 		strictSSL?: boolean;
-		request: Function;
+		request?: Function;
 		timeout?: number;
 		webhookVersion?: string;
 		greenhopperVersion?: string;
