@@ -17,14 +17,17 @@ export default class JiraApi {
     this.protocol = options.protocol || 'http';
     this.host = options.host;
     this.port = options.port || null;
-    this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
     this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
       // This is so we can fake during unit tests
     this.request = options.request || request;
+    this.apiVersion = options.apiVersion || '2';
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
+    this.devStatusVersion = options.devStatusVersion || '1.0';
+    this.agileVersion = options.agileVersion || '1.0';
+
     this.baseOptions = {};
 
     if (options.oauth && options.oauth.consumer_key && options.oauth.access_token) {
@@ -67,8 +70,6 @@ export default class JiraApi {
    * requests with.
    * @property {string} [password] - Specify a password for this tool to authenticate all
    * requests with.
-   * @property {string} [apiVersion=2] - What version of the jira rest api is the instance the
-   * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
    * section?
    * @property {string} [intermediatePath] - If specified, overwrites the default rest/api/version
@@ -82,12 +83,18 @@ export default class JiraApi {
    * that if the underlying TCP connection cannot be established, the OS-wide TCP connection timeout
    * will overrule the timeout option ([the default in Linux can be anywhere from 20-120 *
    * seconds](http://www.sekuda.com/overriding_the_default_linux_kernel_20_second_tcp_socket_connect_timeout)).
+   * @property {string} [apiVersion=2] - What version of the jira rest api is the instance the
+   * tool is connecting to?
    * @property {string} [webhookVersion=1.0] - What webhook version does this api wrapper need to
    * hit?
-   * @property {string} [greenhopperVersion=1.0] - What webhook version does this api wrapper need
+   * @property {string} [greenhopperVersion=1.0] - What greenhopper version does this api wrapper
+   * need to hit?
+   * @property {string} [devStatusVersion=1.0] - What dev-status version does this api wrapper need
    * to hit?
-   * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
-   * OAuth.
+   * @property {string} [agileVersion=1.0] - What agile version does this api wrapper need to hit?
+   * @property {OAuth} [oauth] - Specify an oauth object for this tool to authenticate all requests
+   * using OAuth.
+   * @property {string} [bearer] - Specify an Authorization Bearer to be used instead of user/pass
    */
 
   /**
@@ -96,13 +103,14 @@ export default class JiraApi {
    * @property {string} consumer_key - The consumer entered in Jira Preferences.
    * @property {string} consumer_secret - The private RSA file.
    * @property {string} access_token - The generated access token.
-   * @property {string} access_token_secret - The generated access toke secret.
-   * @property {string} signature_method [signature_method=RSA-SHA1] - OAuth signurate methode
+   * @property {string} access_token_secret - The generated access token secret.
+   * @property {string} signature_method [signature_method=RSA-SHA1] - OAuth signature method.
    * Possible values RSA-SHA1, HMAC-SHA1, PLAINTEXT. Jira Cloud supports only RSA-SHA1.
    */
 
   /**
-   *  @typedef {object} UriOptions
+   *  @typedef UriOptions
+   *  @type {object}
    *  @property {string} pathname - The url after the specific functions path
    *  @property {object} [query] - An object of all query parameters
    *  @property {string} [intermediatePath] - Overwrites with specified path
@@ -113,7 +121,7 @@ export default class JiraApi {
    * @function
    * Creates a requestOptions object based on the default template for one
    * @param {string} uri
-   * @param {object} [options] - an object containing fields and formatting how the
+   * @param {makeRequestHeaderOptions} [options] - An object of fields and formatting options
    */
   makeRequestHeader(uri, options = {}) {
     return {
@@ -135,7 +143,7 @@ export default class JiraApi {
    * @name makeUri
    * @function
    * Creates a URI object for a given pathname
-   * @param {object} [options] - an object containing path information
+   * @param {UriOptions} [options] - An object containing path information
    */
   makeUri({ pathname, query, intermediatePath }) {
     const intermediateToUse = this.intermediatePath || intermediatePath;
@@ -151,18 +159,10 @@ export default class JiraApi {
   }
 
   /**
-   * @typedef makeUriOptions
-   * @type {object}
-   * @property {string} pathname - The url after the /rest/api/version
-   * @property {object} query - a query object
-   * @property {string} intermediatePath - If specified will overwrite the /rest/api/version section
-   */
-
-  /**
    * @name makeWebhookUri
    * @function
-   * Creates a URI object for a given pathName
-   * @param {object} [options] - An options object specifying uri information
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} [options] - An object containing path information
    */
   makeWebhookUri({ pathname, intermediatePath }) {
     const intermediateToUse = this.intermediatePath || intermediatePath;
@@ -177,17 +177,10 @@ export default class JiraApi {
   }
 
   /**
-   * @typedef makeWebhookUriOptions
-   * @type {object}
-   * @property {string} pathname - The url after the /rest/webhooks
-   * @property {string} intermediatePath - If specified will overwrite the /rest/webhooks section
-   */
-
-  /**
    * @name makeSprintQueryUri
    * @function
-   * Creates a URI object for a given pathName
-   * @param {object} [options] - The url after the /rest/
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} [options] - An object containing path information
    */
   makeSprintQueryUri({ pathname, query, intermediatePath }) {
     const intermediateToUse = this.intermediatePath || intermediatePath;
@@ -203,26 +196,14 @@ export default class JiraApi {
   }
 
   /**
-   * @typedef makeSprintQueryUriOptions
-   * @type {object}
-   * @property {string} pathname - The url after the /rest/api/version
-   * @property {object} query - a query object
-   * @property {string} intermediatePath - will overwrite the /rest/greenhopper/version section
-   */
-
-  /**
-   * @typedef makeDevStatusUri
+   * @name makeDevStatusUri
    * @function
    * Creates a URI object for a given pathname
-   * @arg {pathname, query, intermediatePath} obj1
-   * @param {string} pathname obj1.pathname - The url after the /rest/api/version
-   * @param {object} query obj1.query - a query object
-   * @param {string} intermediatePath obj1.intermediatePath - If specified will overwrite the
-   * /rest/dev-status/latest/issue/detail section
+   * @param {UriOptions} [options] - An object containing path information
    */
   makeDevStatusUri({ pathname, query, intermediatePath }) {
     const intermediateToUse = this.intermediatePath || intermediatePath;
-    const tempPath = intermediateToUse || '/rest/dev-status/latest/issue';
+    const tempPath = intermediateToUse || `/rest/dev-status/${this.devStatusVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
@@ -234,20 +215,20 @@ export default class JiraApi {
   }
 
   /**
-   * @name makeAgile1Uri
+   * @name makeAgileUri
    * @function
    * Creates a URI object for a given pathname
-   * @param {UriOptions} object
+   * @param {UriOptions} [options] - An object containing path information
    */
-  makeAgileUri(object) {
-    const intermediateToUse = this.intermediatePath || object.intermediatePath;
-    const tempPath = intermediateToUse || '/rest/agile/1.0';
+  makeAgileUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/agile/${this.agileVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}${tempPath}${object.pathname}`,
-      query: object.query,
+      pathname: `${this.base}${tempPath}${pathname}`,
+      query,
     });
     return decodeURIComponent(uri);
   }
@@ -1143,7 +1124,7 @@ export default class JiraApi {
    */
   getDevStatusSummary(issueId) {
     return this.doRequest(this.makeRequestHeader(this.makeDevStatusUri({
-      pathname: '/summary',
+      pathname: '/issue/summary',
       query: {
         issueId,
       },
@@ -1159,7 +1140,7 @@ export default class JiraApi {
    */
   getDevStatusDetail(issueId, applicationType, dataType) {
     return this.doRequest(this.makeRequestHeader(this.makeDevStatusUri({
-      pathname: '/detail',
+      pathname: '/issue/detail',
       query: {
         issueId,
         applicationType,
