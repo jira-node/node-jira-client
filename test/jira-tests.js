@@ -824,6 +824,24 @@ describe('Jira API Tests', () => {
       });
     });
 
+    // Cookie-based Authentication APIs Suite Tests
+    describe('Cookie-based Authentication APIs Suite Tests', () => {
+      it('createSession hits proper url', async () => {
+        const result = await dummyURLCall('createSession', ['someUsername', 'somePassword']);
+        result.should.eql('http://jira.somehost.com:8080/rest/auth/1/session');
+      });
+
+      it('getSession hits proper url', async () => {
+        const result = await dummyURLCall('getSession', []);
+        result.should.eql('http://jira.somehost.com:8080/rest/auth/1/session');
+      });
+
+      it('deleteSession hits proper url', async () => {
+        const result = await dummyURLCall('deleteSession', []);
+        result.should.eql('http://jira.somehost.com:8080/rest/auth/1/session');
+      });
+    });
+
     it('issueNotify hits proper url', async () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');

@@ -21,10 +21,11 @@ export default class JiraApi {
     this.base = options.base || '';
     this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
-      // This is so we can fake during unit tests
+    // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
+    this.authVersion = options.authVersion || '1';
     this.baseOptions = {};
 
     if (options.oauth && options.oauth.consumer_key && options.oauth.access_token) {
@@ -49,6 +50,10 @@ export default class JiraApi {
       };
     }
 
+    if (options.enableCookies) {
+      this.baseOptions.jar = this.request.jar();
+    }
+
     if (options.timeout) {
       this.baseOptions.timeout = options.timeout;
     }
@@ -64,9 +69,9 @@ export default class JiraApi {
    * @property {string} [port] - What port is this tool connecting to jira with? Only needed for
    * none standard ports. Ex: 8080, 3000, etc
    * @property {string} [username] - Specify a username for this tool to authenticate all
-   * requests with.
+   * requests with. Only used for Basic authentication.
    * @property {string} [password] - Specify a password for this tool to authenticate all
-   * requests with.
+   * requests with. Only used for Basic authentication.
    * @property {string} [apiVersion=2] - What version of the jira rest api is the instance the
    * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
@@ -75,6 +80,8 @@ export default class JiraApi {
    * section of the uri
    * @property {boolean} [strictSSL=true] - Does this tool require each request to be
    * authenticated?  Defaults to true.
+   * @property {boolean} [enableCookies=false] - Is this tool allowed to utilize cookies? Defaults
+   * to false.
    * @property {function} [request] - What method does this tool use to make its requests?
    * Defaults to request from request-promise
    * @property {number} [timeout] - Integer containing the number of milliseconds to wait for a
@@ -86,6 +93,8 @@ export default class JiraApi {
    * hit?
    * @property {string} [greenhopperVersion=1.0] - What webhook version does this api wrapper need
    * to hit?
+   * @property {string} [authVersion=1] - What cookie-based authentication version does this api
+   * wrapper need to hit?
    * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
    * OAuth.
    */
@@ -248,6 +257,24 @@ export default class JiraApi {
       port: this.port,
       pathname: `${this.base}${tempPath}${object.pathname}`,
       query: object.query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeAuthUri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} [options] - An object containing path information
+   */
+  makeAuthUri({ pathname, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/auth/${this.authVersion}`;
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${pathname}`,
     });
     return decodeURIComponent(uri);
   }
@@ -1520,5 +1547,53 @@ export default class JiraApi {
         released,
       },
     })));
+  }
+
+  /**
+   * @name createSession
+   * @function
+   * Create a cookie-based authentication session in Jira.
+   * Note that this will NOT result in a usable session for subsequent requests unless the JiraApi
+   * instance was also initially setup with `options.enableCookies=true`.
+   * [Jira Doc](https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-cookie-based-authentication)
+   * @param {string} username - The username to authenticate with
+   * @param {string} password - The password to authenticate with
+   */
+  createSession(username, password) {
+    return this.doRequest(this.makeRequestHeader(this.makeAuthUri({
+      pathname: '/session',
+    }), {
+      method: 'POST',
+      body: {
+        username,
+        password,
+      },
+    }));
+  }
+
+  /**
+   * @name getSession
+   * @function
+   * Get the current cookie-based authentication session in Jira.
+   * [Jira Doc](https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-cookie-based-authentication)
+   */
+  getSession() {
+    return this.doRequest(this.makeRequestHeader(this.makeAuthUri({
+      pathname: '/session',
+    })));
+  }
+
+  /**
+   * @name deleteSession
+   * @function
+   * Delete the current cookie-based authentication session in Jira.
+   * [Jira Doc](https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-cookie-based-authentication)
+   */
+  deleteSession() {
+    return this.doRequest(this.makeRequestHeader(this.makeAuthUri({
+      pathname: '/session',
+    }), {
+      method: 'DELETE',
+    }));
   }
 }
