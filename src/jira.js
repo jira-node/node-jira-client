@@ -689,6 +689,7 @@ export default class JiraApi {
   }
 
   /** Change an assignee on an issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-assign)
    * @name assignee
    * @function
    * @param {string} issueKey - the key of the existing issue
