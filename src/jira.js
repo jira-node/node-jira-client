@@ -672,6 +672,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Change an assignee on an issue
+   * @name assignee
+   * @function
+   * @param {string} issueKey - the key of the existing issue
+   * @param {string} assigneeName - the jira username to add as a new assignee to the issue
+   */
+  assignee(issueKey, assigneeName) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueKey}/assignee`,
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: { name: assigneeName },
+    }));
+  }
+
   /** Delete issue from Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
    * @name deleteIssue
