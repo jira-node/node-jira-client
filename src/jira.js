@@ -1136,6 +1136,18 @@ export default class JiraApi {
     })));
   }
 
+  /**
+   * @name getServerInfo
+   * @function
+   * Get server info
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289232)
+   */
+  getServerInfo() {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/serverInfo',
+    })));
+  }
+
   /** Get a Dev-Status summary by issue ID
    * @name getDevStatusSummary
    * @function
