@@ -534,6 +534,24 @@ export default class JiraApi {
     }));
   }
 
+  /** Move version
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/version-moveVersion)
+   * @name moveVersion
+   * @function
+   * @param {string} versionId - the ID of the version to delete
+   * @param {string} position - an object of the new position
+   */
+
+  moveVersion(versionId, position) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/version/${versionId}/move`,
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: position,
+    }));
+  }
+
   /** Pass a search query to Jira
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e4424)
    * @name searchJira
