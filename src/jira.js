@@ -864,6 +864,19 @@ export default class JiraApi {
     })));
   }
 
+  /** 
+   * @name getIssueChangeLog 
+   * @function
+   * List all changes for an issue, sorted by date, starting from the latest
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/changelog)
+   * @param {string} issueNumber - The issue number to search for including the project key
+   */
+  getIssueChangeLog(issueNumber) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/issue/' + issueNumber + '/changelog'
+    })));
+  }
+
   /** List all priorities jira knows about
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listPriorities
