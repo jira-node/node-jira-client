@@ -864,8 +864,8 @@ export default class JiraApi {
     })));
   }
 
-  /** 
-   * @name getIssueChangeLog 
+  /**
+   * @name getIssueChangeLog
    * @function
    * List all changes for an issue, sorted by date, starting from the latest
    * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/changelog)
@@ -873,7 +873,7 @@ export default class JiraApi {
    */
   getIssueChangeLog(issueNumber) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/issue/' + issueNumber + '/changelog'
+      pathname: `/issue/${issueNumber}/changelog`,
     })));
   }
 
