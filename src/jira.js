@@ -864,6 +864,19 @@ export default class JiraApi {
     })));
   }
 
+  /** 
+   * @name getIssueWatchers
+   * @function
+   * List all watchers for an issue
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/cloud/#api/2/issue-getIssueWatchers)
+   * @param {string} issueNumber - The issue number to search for including the project key
+   */
+  getIssueWatchers(issueNumber) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueNumber}/watchers`,
+    })));
+  }
+
   /** List all priorities jira knows about
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listPriorities
