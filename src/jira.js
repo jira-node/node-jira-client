@@ -864,7 +864,7 @@ export default class JiraApi {
     })));
   }
 
-  /** 
+  /**
    * @name getIssueWatchers
    * @function
    * List all watchers for an issue
