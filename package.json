@@ -27,7 +27,8 @@
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "request-promise": "^4.1.1"
+    "lodash": "^4.17.4",
+    "request-promise": "^4.2.2"
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
@@ -49,9 +50,10 @@
     "chai-as-promised": "^6.0.0",
     "esdoc": "^0.5.2",
     "esdoc-node": "^1.0.1",
-    "eslint": "^3.12.1",
+    "eslint": "^4.9.0",
     "eslint-config-airbnb": "^15.0.1",
-    "eslint-plugin-import": "^2.2.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-mocha": "^4.8.0",
     "mocha": "^3.4.0",
     "release-script": "^1.0.1"
