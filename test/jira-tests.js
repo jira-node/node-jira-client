@@ -359,7 +359,7 @@ describe('Jira API Tests', () => {
       // uniformly testable
       if (resultObject.qs) {
         const queryString = Object.keys(resultObject.qs).map(x => `${x}=${resultObject.qs[x]}`)
-        .join('&');
+          .join('&');
         return `${resultObject.uri}?${queryString}`;
       }
 

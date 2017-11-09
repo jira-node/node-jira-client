@@ -21,7 +21,7 @@ export default class JiraApi {
     this.base = options.base || '';
     this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
-      // This is so we can fake during unit tests
+    // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
@@ -330,7 +330,7 @@ export default class JiraApi {
     })));
   }
 
-/**
+  /**
    * @name createProject
    * @function
    * Create a new Project
@@ -774,7 +774,7 @@ export default class JiraApi {
     })));
   }
 
-   /** Add an option for a select list issue field.
+  /** Add an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
    * @name createFieldOption
    * @function
@@ -967,11 +967,17 @@ export default class JiraApi {
    * @param {object} worklog - worklog object from the rest API
    * @param {object} newEstimate - the new value for the remaining estimate field
    */
-  addWorklog(issueId, worklog, newEstimate) {
+  addWorklog(issueId, worklog, newEstimate = null) {
+    const query = { adjustEstimate: 'auto' };
+    if (newEstimate) {
+      query.adjustEstimate = 'new';
+      query.newEstimate = newEstimate;
+    }
+
     const header = {
       uri: this.makeUri({
         pathname: `/issue/${issueId}/worklog`,
-        query: { adjustEstimate: 'new', newEstimate },
+        query,
       }),
       body: worklog,
       method: 'POST',
