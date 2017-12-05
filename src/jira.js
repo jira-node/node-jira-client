@@ -477,6 +477,18 @@ export default class JiraApi {
     })));
   }
 
+  /** Get details of single Version in project
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/version-getVersion)
+   * @name getVersion
+   * @function
+   * @param {string} version - The id of this version
+   */
+  getVersion(version) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/version/${version}`,
+    })));
+  }
+
   /** Create a version
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288232)
    * @name createVersion

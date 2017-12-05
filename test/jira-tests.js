@@ -475,6 +475,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/issueNumber/remotelink');
     });
 
+    it('getVersion hits proper url', async () => {
+      const result = await dummyURLCall('getVersion', ['someVersion']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/someVersion');
+    });
+
     it('getVersions hits proper url', async () => {
       const result = await dummyURLCall('getVersions', ['someProject']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject/versions');
