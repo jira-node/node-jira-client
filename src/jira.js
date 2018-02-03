@@ -695,7 +695,7 @@ export default class JiraApi {
    * @param {string} issueKey - the key of the existing issue
    * @param {string} assigneeName - the jira username to add as a new assignee to the issue
    */
-  assignee(issueKey, assigneeName) {
+  updateAssignee(issueKey, assigneeName) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueKey}/assignee`,
     }), {
