@@ -1,5 +1,5 @@
 {
-  "name": "jira-client",
+  "name": "@roadmunk/jira-client",
   "version": "6.4.0",
   "description": "Wrapper for the JIRA API",
   "author": "Steven Surowiec <steven.surowiec@gmail.com>",
@@ -9,10 +9,10 @@
     "Matt Smith <mtscout6+node-jira@gmail.com>",
     "Anson Wayman <kanoyugoro+node-jira@gmail.com>"
   ],
-  "homepage": "http://github.com/jira-node/node-jira-client",
+  "homepage": "https://github.com/Roadmunk/node-jira-client",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jira-node/node-jira-client"
+    "url": "git+ssh://git@github.com:Roadmunk/node-jira-client.git"
   },
   "engine": {
     "node": ">=4.2.2"
@@ -60,5 +60,11 @@
     "docsRepo": "git@github.com:jira-node/jira-node.github.io.git",
     "docsRoot": "docs/",
     "tmpDocsRepo": "tmp-docs-repo"
+  },
+  "bugs": {
+    "url": "https://github.com/Roadmunk/node-jira-client/issues"
+  },
+  "directories": {
+    "lib": "lib"
   }
 }
