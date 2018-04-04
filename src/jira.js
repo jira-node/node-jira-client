@@ -86,8 +86,9 @@ export default class JiraApi {
    * hit?
    * @property {string} [greenhopperVersion=1.0] - What webhook version does this api wrapper need
    * to hit?
-   * @property {OAuth} - Specify an oauth object for this tool to authenticate all requests using
-   * OAuth.
+   * @property {OAuth} [oauth] - Specify an OAuth object for this tool to authenticate all requests
+   * using OAuth.
+   * @property {string} [bearer] - Specify an OAuth bearer token to authenticate all requests with.
    */
 
   /**
