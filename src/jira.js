@@ -668,7 +668,7 @@ export default class JiraApi {
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: JSON.stringify(username),
+      body: username,
     }));
   }
 
