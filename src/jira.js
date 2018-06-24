@@ -1203,7 +1203,7 @@ export default class JiraApi {
         maxResults,
         type,
         name,
-        projectKeyOrId,
+        ...projectKeyOrId && { projectKeyOrId },
       },
     })));
   }
