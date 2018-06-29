@@ -693,10 +693,12 @@ export default class JiraApi {
    * @function
    * @param {string} issueId - the Id of the issue to delete
    * @param {object} issueUpdate - update Object as specified by the rest api
+   * @param {object} query - adds parameters to the query string
    */
-  updateIssue(issueId, issueUpdate) {
+  updateIssue(issueId, issueUpdate, query = {}) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}`,
+      query,
     }), {
       body: issueUpdate,
       method: 'PUT',
