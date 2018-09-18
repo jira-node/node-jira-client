@@ -21,7 +21,7 @@ export default class JiraApi {
     this.base = options.base || '';
     this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
-      // This is so we can fake during unit tests
+    // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
@@ -253,6 +253,25 @@ export default class JiraApi {
   }
 
   /**
+   * @name makeServiceDeskUri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
+   */
+  makeServiceDeskUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/servicedeskapi';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
    * @name doRequest
    * @function
    * Does a request based on the requestOptions object
@@ -330,7 +349,7 @@ export default class JiraApi {
     })));
   }
 
-/**
+  /**
    * @name createProject
    * @function
    * Create a new Project
@@ -774,7 +793,7 @@ export default class JiraApi {
     })));
   }
 
-   /** Add an option for a select list issue field.
+  /** Add an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
    * @name createFieldOption
    * @function
@@ -1520,5 +1539,65 @@ export default class JiraApi {
         released,
       },
     })));
+  }
+
+  /** Get Organizations
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getOrganizations)
+   * @name getOrganization
+   * @function
+   * @param {number} [start=0] - The starting index of the returned versions. Base index: 0.
+   * @param {number} [limit=50] - The maximum number of versions to return per page.
+   * Default: 50.
+   */
+  getOrganizations(start = 0, limit = 50) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: '/organization',
+      query: {
+        start,
+        limit,
+      },
+    }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Get Organization
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getOrganization)
+   * @name getOrganization
+   * @function
+   * @param {string} organizationId - The organization indentifier.
+   */
+  getOrganization(organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}`,
+    }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Add users to an Organization
+   * [Jira Doc] (https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-addUsersToOrganization)
+   * @name addUsersToOrganization
+   * @function
+   * @param {string} usernames - the list of usernames of users to add
+   * @param {string} organizationId - the id of the organization to them it to
+   */
+  addUsersToOrganization(usernames, organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}/user`,
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: {
+        usernames: usernames,
+      },
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
   }
 }
