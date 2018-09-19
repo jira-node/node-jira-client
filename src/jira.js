@@ -1579,6 +1579,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Get Users in an Organization
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getUsersInOrganization)
+   * @name getUsersInOrganization
+   * @function
+   * @param {string} organizationId - The organization indentifier.
+   */
+  getUsersInOrganization(organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}/user`,
+    }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
   /** Add users to an Organization
    * [Jira Doc] (https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-addUsersToOrganization)
    * @name addUsersToOrganization
