@@ -1617,13 +1617,35 @@ export default class JiraApi {
    * @name addUsersToOrganization
    * @function
    * @param {string} usernames - the list of usernames of users to add
-   * @param {string} organizationId - the id of the organization to them it to
+   * @param {string} organizationId - the id of the organization to add them to
    */
   addUsersToOrganization(usernames, organizationId) {
     return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
       pathname: `/organization/${organizationId}/user`,
     }), {
       method: 'POST',
+      followAllRedirects: true,
+      body: {
+        usernames: usernames,
+      },
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Remove users from an Organization
+   * [Jira Doc] (https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-removeUsersFromOrganization)
+   * @name aUsersToOrganization
+   * @function
+   * @param {string} usernames - the list of usernames of users to remove
+   * @param {string} organizationId - the id of the organization to remove them from
+   */
+  removeUsersFromOrganization(usernames, organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}/user`,
+    }), {
+      method: 'DELETE',
       followAllRedirects: true,
       body: {
         usernames: usernames,
