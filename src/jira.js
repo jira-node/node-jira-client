@@ -592,6 +592,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Delete a Jira user
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-user-delete)
+   * @name deleteUser
+   * @function
+   * @param {object} user - an object containing user reference : accou
+   */
+  deleteUser(accountId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+      query: {accountId: accountId},
+    }));
+  }
+
   /** Search user on Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
    * @name searchUsers
