@@ -579,7 +579,9 @@ export default class JiraApi {
    * @function
    * @param {SearchUserOptions} options
    */
-  searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
+  searchUsers({
+    username, startAt, maxResults, includeActive, includeInactive,
+  }) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user/search',
       query: {
@@ -637,7 +639,8 @@ export default class JiraApi {
   getUsersIssues(username, open) {
     const openJql = open ? ' AND status in (Open, \'In Progress\', Reopened)' : '';
     return this.searchJira(
-      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {});
+      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {},
+    );
   }
 
   /** Add issue to Jira
