@@ -1430,7 +1430,7 @@ export default class JiraApi {
    * @function
    * @param {string} boardId - Id of board to retrieve
    * @param {string} propertyKey - Id of property to delete
-   * @param {string} body - value to set, for objects make sure to stringify first
+   * FIXME @param {string} body - value to set, for objects make sure to stringify first
    */
   setBoardProperty(boardId, propertyKey, body) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
@@ -1512,7 +1512,7 @@ export default class JiraApi {
    * @param {number} [maxResults=50] - The maximum number of versions to return per page.
    * Default: 50.
    * @param {string} [released] - Filters results to versions that are either released or
-   * unreleased.Valid values: true, false.
+   * unreleased. Valid values: true, false.
    */
   getAllVersions(boardId, startAt = 0, maxResults = 50, released) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({

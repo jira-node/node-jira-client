@@ -18,14 +18,18 @@
     "node": ">=4.2.2"
   },
   "main": "./lib/jira.js",
+  "typings": "./index.d.ts",
   "files": [
     "lib",
     "docs",
     "LICENSE.md",
-    "README.md"
+    "README.md",
+    "index.d.ts"
   ],
   "license": "MIT",
   "dependencies": {
+    "@types/node": "^8.0.16",
+    "@types/request": "^2.0.0",
     "babel-runtime": "^6.20.0",
     "request-promise": "^4.1.1"
   },
