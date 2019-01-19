@@ -52,7 +52,7 @@
     "esdoc-node": "^1.0.4",
     "eslint": "^5.12.1",
     "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-mocha": "^5.2.1",
     "mocha": "^5.2.0",
     "release-script": "^1.0.1"
