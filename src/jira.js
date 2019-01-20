@@ -757,10 +757,11 @@ export default class JiraApi {
    * @name deleteComponent
    * @function
    * @param {string} id - The ID of the component.
-   * @param {string} moveIssuesTo - The ID of the component to replace the deleted component. If this value is null no replacement is made.
+   * @param {string} moveIssuesTo - The ID of the component to replace the deleted component.
+   *                                If this value is null no replacement is made.
    */
   deleteComponent(id, moveIssuesTo = null) {
-    const query = moveIssuesTo ? { moveIssuesTo: moveIssuesTo } : null;
+    const query = moveIssuesTo ? { moveIssuesTo } : null;
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/component/${id}`,
     }), {
