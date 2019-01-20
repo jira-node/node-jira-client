@@ -359,7 +359,7 @@ describe('Jira API Tests', () => {
       // uniformly testable
       if (resultObject.qs) {
         const queryString = Object.keys(resultObject.qs).map(x => `${x}=${resultObject.qs[x]}`)
-        .join('&');
+          .join('&');
         return `${resultObject.uri}?${queryString}`;
       }
 
@@ -435,7 +435,8 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall(
         'getLastSprintForRapidView',
         ['someRapidViewId'],
-        dummyRequest);
+        dummyRequest,
+      );
 
       result.should.eql(
         'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId',
