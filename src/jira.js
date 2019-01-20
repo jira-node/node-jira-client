@@ -735,18 +735,38 @@ export default class JiraApi {
     }));
   }
 
-  /** Delete component from Jira
-   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
-   * @name deleteComponent
+  /** Update Jira component
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/component-updateComponent)
+   * @name updateComponent
    * @function
-   * @param {string} componentId - the Id of the component to delete
+   * @param {string} componentId - the Id of the component to update
+   * @param {object} component - Properly Formatted Component
    */
-  deleteComponent(componentId) {
+  updateComponent(componentId, component) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/component/${componentId}`,
     }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: component,
+    }));
+  }
+
+  /** Delete component from Jira
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-component-id-delete)
+   * @name deleteComponent
+   * @function
+   * @param {string} id - The ID of the component.
+   * @param {string} moveIssuesTo - The ID of the component to replace the deleted component.
+   *                                If this value is null no replacement is made.
+   */
+  deleteComponent(id, moveIssuesTo) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/component/${id}`,
+    }), {
       method: 'DELETE',
       followAllRedirects: true,
+      qs: moveIssuesTo ? { moveIssuesTo } : null,
     }));
   }
 
