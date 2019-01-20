@@ -253,6 +253,25 @@ export default class JiraApi {
   }
 
   /**
+   * @name makeServiceDeskUri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
+   */
+  makeServiceDeskUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/servicedeskapi';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
    * @name doRequest
    * @function
    * Does a request based on the requestOptions object
@@ -570,6 +589,22 @@ export default class JiraApi {
       method: 'POST',
       followAllRedirects: true,
       body: user,
+    }));
+  }
+
+  /** Delete a Jira user
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-user-delete)
+   * @name deleteUser
+   * @function
+   * @param {object} user - an object containing user reference : accou
+   */
+  deleteUser(accountId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+      query: {accountId: accountId},
     }));
   }
 
@@ -1523,5 +1558,120 @@ export default class JiraApi {
         released,
       },
     })));
+  }
+
+  /** Add an organization.
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-createOrganization)
+   * @name createOrganization
+   */
+  createOrganization(name) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization`,
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: {'name': name},
+      headers: {
+        'X-ExperimentalApi': 'opt-in'
+      }
+    }));
+  }
+
+  /** Get Organizations
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getOrganizations)
+   * @name getOrganization
+   * @function
+   * @param {number} [start=0] - The starting index of the returned versions. Base index: 0.
+   * @param {number} [limit=50] - The maximum number of versions to return per page.
+   * Default: 50.
+   */
+  getOrganizations(start = 0, limit = 50) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: '/organization',
+      query: {
+        start,
+        limit,
+      },
+    }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Get Organization
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getOrganization)
+   * @name getOrganization
+   * @function
+   * @param {string} organizationId - The organization indentifier.
+   */
+  getOrganization(organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}`,
+    }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Get Users in an Organization
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getUsersInOrganization)
+   * @name getUsersInOrganization
+   * @function
+   * @param {string} organizationId - The organization indentifier.
+   */
+  getUsersInOrganization(organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}/user`,
+    }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Add users to an Organization
+   * [Jira Doc] (https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-addUsersToOrganization)
+   * @name addUsersToOrganization
+   * @function
+   * @param {string} usernames - the list of usernames of users to add
+   * @param {string} organizationId - the id of the organization to add them to
+   */
+  addUsersToOrganization(usernames, organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}/user`,
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: {
+        usernames: usernames,
+      },
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Remove users from an Organization
+   * [Jira Doc] (https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-removeUsersFromOrganization)
+   * @name aUsersToOrganization
+   * @function
+   * @param {string} usernames - the list of usernames of users to remove
+   * @param {string} organizationId - the id of the organization to remove them from
+   */
+  removeUsersFromOrganization(usernames, organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}/user`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+      body: {
+        usernames: usernames,
+      },
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
   }
 }
