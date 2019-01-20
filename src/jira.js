@@ -21,7 +21,7 @@ export default class JiraApi {
     this.base = options.base || '';
     this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
-      // This is so we can fake during unit tests
+    // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
@@ -293,7 +293,7 @@ export default class JiraApi {
       query: {
         expand: expand || '',
         fields: fields || '*all',
-        properties: properties || '',
+        properties: properties || '*all',
         fieldsByKeys: fieldsByKeys || false,
       },
     })));
@@ -330,7 +330,7 @@ export default class JiraApi {
     })));
   }
 
-/**
+  /**
    * @name createProject
    * @function
    * Create a new Project
@@ -579,7 +579,9 @@ export default class JiraApi {
    * @function
    * @param {SearchUserOptions} options
    */
-  searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
+  searchUsers({
+    username, startAt, maxResults, includeActive, includeInactive,
+  }) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user/search',
       query: {
@@ -637,7 +639,8 @@ export default class JiraApi {
   getUsersIssues(username, open) {
     const openJql = open ? ' AND status in (Open, \'In Progress\', Reopened)' : '';
     return this.searchJira(
-      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {});
+      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {},
+    );
   }
 
   /** Add issue to Jira
@@ -774,7 +777,7 @@ export default class JiraApi {
     })));
   }
 
-   /** Add an option for a select list issue field.
+  /** Add an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
    * @name createFieldOption
    * @function
@@ -1186,6 +1189,152 @@ export default class JiraApi {
     })));
   }
 
+  /** Move issues to backlog
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/backlog-moveIssuesToBacklog)
+   * @name moveToBacklog
+   * @function
+   * @param {array} issues - id or key of issues to get
+   */
+  moveToBacklog(issues) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/backlog/issue',
+    }), {
+      method: 'POST',
+      body: {
+        issues,
+      },
+    }));
+  }
+
+  /** Get all boards
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getAllBoards)
+   * @name getAllBoards
+   * @function
+   * @param {number} [startAt=0] - The starting index of the returned boards.
+   * @param {number} [maxResults=50] - The maximum number of boards to return per page.
+   * @param {string} [type] - Filters results to boards of the specified type.
+   * @param {string} [name] - Filters results to boards that match the specified name.
+   * @param {string} [projectKeyOrId] - Filters results to boards that are relevant to a project.
+   */
+  getAllBoards(startAt = 0, maxResults = 50, type, name, projectKeyOrId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/board',
+      query: {
+        startAt,
+        maxResults,
+        type,
+        name,
+        projectKeyOrId,
+      },
+    })));
+  }
+
+  /** Create Board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-createBoard)
+   * @name createBoard
+   * @function
+   * @param {object} boardBody - Board name, type and filter Id is required.
+   * @param {string} boardBody.type - Valid values: scrum, kanban
+   * @param {string} boardBody.name - Must be less than 255 characters.
+   * @param {string} boardBody.filterId - Id of a filter that the user has permissions to view.
+   */
+  createBoard(boardBody) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/board',
+    }), {
+      method: 'POST',
+      body: boardBody,
+    }));
+  }
+
+  /** Get Board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getBoard)
+   * @name getBoard
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getBoard(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}`,
+    })));
+  }
+
+  /** Delete Board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-deleteBoard)
+   * @name deleteBoard
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  deleteBoard(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}`,
+    }), {
+      method: 'DELETE',
+    }));
+  }
+
+  /** Get issues for backlog
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getIssuesForBacklog)
+   * @name getIssuesForBacklog
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getIssuesForBacklog(boardId, startAt = 0, maxResults = 50, jql, validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/backlog`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Get Configuration
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getConfiguration)
+   * @name getConfiguration
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getConfiguration(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/configuration`,
+    })));
+  }
+
+  /** Get issues for board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getIssuesForBoard)
+   * @name getIssuesForBoard
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getIssuesForBoard(boardId, startAt = 0, maxResults = 50, jql, validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
   /** Get issue estimation for board
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-getIssueEstimationForBoard)
    * @name getIssueEstimationForBoard
@@ -1199,6 +1348,55 @@ export default class JiraApi {
       pathname: `/issue/${issueIdOrKey}/estimation`,
       query: {
         boardId,
+      },
+    })));
+  }
+
+  /** Get Epics
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getEpics)
+   * @name getEpics
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned epics. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of epics to return per page. Default: 50.
+   * @param {string} [done] - Filters results to epics that are either done or not done.
+   * Valid values: true, false.
+   */
+  getEpics(boardId, startAt = 0, maxResults = 50, done) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/epic`,
+      query: {
+        startAt,
+        maxResults,
+        done,
+      },
+    })));
+  }
+
+  /** Get board issues for epic
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getIssuesForEpic)
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getIssuesWithoutEpic)
+   * @name getBoardIssuesForEpic
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} epicId - Id of epic to retrieve, specify 'none' to get issues without an epic.
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getBoardIssuesForEpic(boardId, epicId, startAt = 0, maxResults = 50, jql,
+    validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/epic/${epicId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
       },
     })));
   }
@@ -1237,5 +1435,164 @@ export default class JiraApi {
       method: 'PUT',
       body,
     }));
+  }
+
+  /** Get Projects
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/project-getProjects)
+   * @name getProjects
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned projects. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of projects to return per page.
+   * Default: 50.
+   */
+  getProjects(boardId, startAt = 0, maxResults = 50) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/project`,
+      query: {
+        startAt,
+        maxResults,
+      },
+    })));
+  }
+
+  /** Get Projects Full
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/project-getProjectsFull)
+   * @name getProjectsFull
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getProjectsFull(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/project/full`,
+    })));
+  }
+
+  /** Get Board Properties Keys
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-getPropertiesKeys)
+   * @name getBoardPropertiesKeys
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getBoardPropertiesKeys(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties`,
+    })));
+  }
+
+  /** Delete Board Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-deleteProperty)
+   * @name deleteBoardProperty
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} propertyKey - Id of property to delete
+   */
+  deleteBoardProperty(boardId, propertyKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties/${propertyKey}`,
+    }), {
+      method: 'DELETE',
+    }));
+  }
+
+  /** Set Board Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-setProperty)
+   * @name setBoardProperty
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} propertyKey - Id of property to delete
+   * @param {string} body - value to set, for objects make sure to stringify first
+   */
+  setBoardProperty(boardId, propertyKey, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties/${propertyKey}`,
+    }), {
+      method: 'PUT',
+      body,
+    }));
+  }
+
+  /** Get Board Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-getProperty)
+   * @name getBoardProperty
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} propertyKey - Id of property to retrieve
+   */
+  getBoardProperty(boardId, propertyKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties/${propertyKey}`,
+    })));
+  }
+
+  /** Get All Sprints
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/sprint-getAllSprints)
+   * @name getAllSprints
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned sprints. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of sprints to return per page.
+   * Default: 50.
+   * @param {string} [state] - Filters results to sprints in specified states.
+   * Valid values: future, active, closed.
+   */
+  getAllSprints(boardId, startAt = 0, maxResults = 50, state) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/sprint`,
+      query: {
+        startAt,
+        maxResults,
+        state,
+      },
+    })));
+  }
+
+  /** Get Board issues for sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/sprint-getIssuesForSprint)
+   * @name getBoardIssuesForSprint
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} sprintId - Id of sprint to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getBoardIssuesForSprint(boardId, sprintId, startAt = 0, maxResults = 50, jql,
+    validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/sprint/${sprintId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Get All Versions
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/version-getAllVersions)
+   * @name getAllVersions
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned versions. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of versions to return per page.
+   * Default: 50.
+   * @param {string} [released] - Filters results to versions that are either released or
+   * unreleased.Valid values: true, false.
+   */
+  getAllVersions(boardId, startAt = 0, maxResults = 50, released) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/version`,
+      query: {
+        startAt,
+        maxResults,
+        released,
+      },
+    })));
   }
 }
