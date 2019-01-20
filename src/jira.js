@@ -753,19 +753,16 @@ export default class JiraApi {
   }
 
   /** Delete component from Jira
-   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-component-id-delete)
    * @name deleteComponent
    * @function
-   * @param {string} componentId  - the Id of the component to delete
-   * @param {string} moveIssuesToId - the Id of the component to move existing issues to (optional)
+   * @param {string} id - The ID of the component.
+   * @param {string} moveIssuesTo - The ID of the component to replace the deleted component. If this value is null no replacement is made.
    */
-  deleteComponent(componentId, moveIssuesToId) {
-    const query = moveIssuesToId
-        ? { moveIssuesTo: moveIssuesToId }
-        : null;
-
+  deleteComponent(id, moveIssuesTo = null) {
+    const query = moveIssuesTo ? { moveIssuesTo: moveIssuesTo } : null;
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/component/${componentId}`,
+      pathname: `/component/${id}`,
     }), {
       method: 'DELETE',
       followAllRedirects: true,
