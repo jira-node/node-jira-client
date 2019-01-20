@@ -766,7 +766,7 @@ export default class JiraApi {
     }), {
       method: 'DELETE',
       followAllRedirects: true,
-      qs: { moveIssuesTo },
+      qs: moveIssuesTo ? { moveIssuesTo } : null,
     }));
   }
 
