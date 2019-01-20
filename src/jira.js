@@ -19,8 +19,9 @@ export default class JiraApi {
     this.port = options.port || null;
     this.apiVersion = options.apiVersion || '2';
     this.base = options.base || '';
+    this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
-      // This is so we can fake during unit tests
+    // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
@@ -33,6 +34,13 @@ export default class JiraApi {
         token: options.oauth.access_token,
         token_secret: options.oauth.access_token_secret,
         signature_method: options.oauth.signature_method || 'RSA-SHA1',
+      };
+    } else if (options.bearer) {
+      this.baseOptions.auth = {
+        user: '',
+        pass: '',
+        sendImmediately: true,
+        bearer: options.bearer,
       };
     } else if (options.username && options.password) {
       this.baseOptions.auth = {
@@ -63,6 +71,8 @@ export default class JiraApi {
    * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
    * section?
+   * @property {string} [intermediatePath] - If specified, overwrites the default rest/api/version
+   * section of the uri
    * @property {boolean} [strictSSL=true] - Does this tool require each request to be
    * authenticated?  Defaults to true.
    * @property {function} [request] - What method does this tool use to make its requests?
@@ -92,6 +102,13 @@ export default class JiraApi {
    */
 
   /**
+   *  @typedef {object} UriOptions
+   *  @property {string} pathname - The url after the specific functions path
+   *  @property {object} [query] - An object of all query parameters
+   *  @property {string} [intermediatePath] - Overwrites with specified path
+   */
+
+  /**
    * @name makeRequestHeader
    * @function
    * Creates a requestOptions object based on the default template for one
@@ -118,48 +135,119 @@ export default class JiraApi {
    * @name makeUri
    * @function
    * Creates a URI object for a given pathname
-   * @param {string} pathname - The url after the /rest/api/version
+   * @param {object} [options] - an object containing path information
    */
-  makeUri({ pathname, query }) {
+  makeUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/api/${this.apiVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/api/${this.apiVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
       query,
     });
     return decodeURIComponent(uri);
   }
+
+  /**
+   * @typedef makeUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/api/version
+   * @property {object} query - a query object
+   * @property {string} intermediatePath - If specified will overwrite the /rest/api/version section
+   */
 
   /**
    * @name makeWebhookUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {string} pathname - The url after the /rest/
+   * @param {object} [options] - An options object specifying uri information
    */
-  makeWebhookUri({ pathname }) {
+  makeWebhookUri({ pathname, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/webhooks/${this.webhookVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/webhooks/${this.webhookVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
     });
     return decodeURIComponent(uri);
   }
 
   /**
+   * @typedef makeWebhookUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/webhooks
+   * @property {string} intermediatePath - If specified will overwrite the /rest/webhooks section
+   */
+
+  /**
    * @name makeSprintQueryUri
    * @function
    * Creates a URI object for a given pathName
-   * @param {string} pathname - The url after the /rest/
+   * @param {object} [options] - The url after the /rest/
    */
-  makeSprintQueryUri({ pathname, query }) {
+  makeSprintQueryUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || `/rest/greenhopper/${this.greenhopperVersion}`;
     const uri = url.format({
       protocol: this.protocol,
       hostname: this.host,
       port: this.port,
-      pathname: `${this.base}/rest/greenhopper/${this.greenhopperVersion}${pathname}`,
+      pathname: `${this.base}${tempPath}${pathname}`,
       query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @typedef makeSprintQueryUriOptions
+   * @type {object}
+   * @property {string} pathname - The url after the /rest/api/version
+   * @property {object} query - a query object
+   * @property {string} intermediatePath - will overwrite the /rest/greenhopper/version section
+   */
+
+  /**
+   * @typedef makeDevStatusUri
+   * @function
+   * Creates a URI object for a given pathname
+   * @arg {pathname, query, intermediatePath} obj1
+   * @param {string} pathname obj1.pathname - The url after the /rest/api/version
+   * @param {object} query obj1.query - a query object
+   * @param {string} intermediatePath obj1.intermediatePath - If specified will overwrite the
+   * /rest/dev-status/latest/issue/detail section
+   */
+  makeDevStatusUri({ pathname, query, intermediatePath }) {
+    const intermediateToUse = this.intermediatePath || intermediatePath;
+    const tempPath = intermediateToUse || '/rest/dev-status/latest/issue';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${pathname}`,
+      query,
+    });
+    return decodeURIComponent(uri);
+  }
+
+  /**
+   * @name makeAgile1Uri
+   * @function
+   * Creates a URI object for a given pathname
+   * @param {UriOptions} object
+   */
+  makeAgileUri(object) {
+    const intermediateToUse = this.intermediatePath || object.intermediatePath;
+    const tempPath = intermediateToUse || '/rest/agile/1.0';
+    const uri = url.format({
+      protocol: this.protocol,
+      hostname: this.host,
+      port: this.port,
+      pathname: `${this.base}${tempPath}${object.pathname}`,
+      query: object.query,
     });
     return decodeURIComponent(uri);
   }
@@ -178,6 +266,7 @@ export default class JiraApi {
     };
 
     const response = await this.request(options);
+
     if (response) {
       if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
         throw new Error(response.errorMessages.join(', '));
@@ -193,10 +282,20 @@ export default class JiraApi {
    * Find an issue in jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290709)
    * @param {string} issueNumber - The issue number to search for including the project key
+   * @param {string} expand - The resource expansion to return additional fields in the response
+   * @param {string} fields - Comma separated list of field ids or keys to retrieve
+   * @param {string} properties - Comma separated list of properties to retrieve
+   * @param {boolean} fieldsByKeys - False by default, used to retrieve fields by key instead of id
    */
-  findIssue(issueNumber) {
+  findIssue(issueNumber, expand, fields, properties, fieldsByKeys) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueNumber}`,
+      query: {
+        expand: expand || '',
+        fields: fields || '*all',
+        properties: properties || '*all',
+        fieldsByKeys: fieldsByKeys || false,
+      },
     })));
   }
 
@@ -212,7 +311,7 @@ export default class JiraApi {
     const requestHeaders = this.makeRequestHeader(
       this.makeUri({
         pathname: `/version/${version}/unresolvedIssueCount`,
-      })
+      }),
     );
     const response = await this.doRequest(requestHeaders);
     return response.issuesUnresolvedCount;
@@ -231,7 +330,7 @@ export default class JiraApi {
     })));
   }
 
-/**
+  /**
    * @name createProject
    * @function
    * Create a new Project
@@ -257,13 +356,15 @@ export default class JiraApi {
       pathname: '/rapidviews/list',
     })));
 
-    const rapidViewResult = response.views
-      .filter(x => x.name.toLowerCase() === projectName.toLowerCase());
+    if (typeof projectName === 'undefined' || projectName === null) return response.views;
 
-    return rapidViewResult[0];
+    const rapidViewResult = response.views
+      .find(x => x.name.toLowerCase() === projectName.toLowerCase());
+
+    return rapidViewResult;
   }
 
-  /** Get a list of Sprints belonging to a Rapid View
+  /** Get the most recent sprint for a given rapidViewId
    * @name getLastSprintForRapidView
    * @function
    * @param {string} rapidViewId - the id for the rapid view
@@ -272,7 +373,7 @@ export default class JiraApi {
     const response = await this.doRequest(
       this.makeRequestHeader(this.makeSprintQueryUri({
         pathname: `/sprintquery/${rapidViewId}`,
-      }))
+      })),
     );
     return response.sprints.pop();
   }
@@ -290,6 +391,17 @@ export default class JiraApi {
         rapidViewId,
         sprintId,
       },
+    })));
+  }
+
+  /** Get a list of Sprints belonging to a Rapid View
+   * @name listSprints
+   * @function
+   * @param {string} rapidViewId - the id for the rapid view
+   */
+  listSprints(rapidViewId) {
+    return this.doRequest(this.makeRequestHeader(this.makeSprintQueryUri({
+      pathname: `/sprintquery/${rapidViewId}`,
     })));
   }
 
@@ -445,13 +557,31 @@ export default class JiraApi {
     }));
   }
 
+  /** Create a Jira user
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/user-createUser)
+   * @name createUser
+   * @function
+   * @param {object} user - Properly Formatted User object
+   */
+  createUser(user) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: user,
+    }));
+  }
+
   /** Search user on Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
    * @name searchUsers
    * @function
    * @param {SearchUserOptions} options
    */
-  searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
+  searchUsers({
+    username, startAt, maxResults, includeActive, includeInactive,
+  }) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user/search',
       query: {
@@ -495,7 +625,7 @@ export default class JiraApi {
         },
       }), {
         followAllRedirects: true,
-      })
+      }),
     );
   }
 
@@ -507,9 +637,10 @@ export default class JiraApi {
    * @param {boolean} open - determines if only open issues should be returned
    */
   getUsersIssues(username, open) {
+    const openJql = open ? ' AND status in (Open, \'In Progress\', Reopened)' : '';
     return this.searchJira(
-      `assignee = ${username.replace('@', '\\u0040')} ` +
-      `AND status in (Open, 'In Progress', Reopened) ${open}`, {});
+      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {},
+    );
   }
 
   /** Add issue to Jira
@@ -540,7 +671,7 @@ export default class JiraApi {
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: JSON.stringify(username),
+      body: username,
     }));
   }
 
@@ -619,6 +750,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Create custom Jira field
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field-createCustomField)
+   * @name createCustomField
+   * @function
+   * @param {object} field - Properly formatted Field object
+   */
+  createCustomField(field) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/field',
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: field,
+    }));
+  }
+
   /** List all fields custom and not that jira knows about.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290489)
    * @name listFields
@@ -627,6 +774,96 @@ export default class JiraApi {
   listFields() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/field',
+    })));
+  }
+
+  /** Add an option for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
+   * @name createFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {object} option - properly formatted Option object
+   */
+  createFieldOption(fieldKey, option) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option`,
+    }), {
+      method: 'POST',
+      followAllRedirects: true,
+      body: option,
+    }));
+  }
+
+  /** Returns all options defined for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-getAllOptions)
+   * @name listFieldOptions
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   */
+  listFieldOptions(fieldKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option`,
+    })));
+  }
+
+  /** Creates or updates an option for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-putOption)
+   * @name upsertFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {string} optionId - the id of the modified option
+   * @param {object} option - properly formatted Option object
+   */
+  upsertFieldOption(fieldKey, optionId, option) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option/${optionId}`,
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: option,
+    }));
+  }
+
+  /** Returns an option for a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-getOption)
+   * @name getFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {string} optionId - the id of the option
+   */
+  getFieldOption(fieldKey, optionId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option/${optionId}`,
+    })));
+  }
+
+  /** Deletes an option from a select list issue field.
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-delete)
+   * @name deleteFieldOption
+   * @function
+   * @param {string} fieldKey - the key of the select list field
+   * @param {string} optionId - the id of the deleted option
+   */
+  deleteFieldOption(fieldKey, optionId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/field/${fieldKey}/option/${optionId}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+    }));
+  }
+
+  /**
+   * @name getIssueProperty
+   * @function
+   * Get Property of Issue by Issue and Property Id
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/properties-getProperty)
+   * @param {string} issueNumber - The issue number to search for including the project key
+   * @param {string} property - The property key to search for
+   */
+  getIssueProperty(issueNumber, property) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueNumber}/properties/${property}`,
     })));
   }
 
@@ -703,6 +940,28 @@ export default class JiraApi {
     }));
   }
 
+  /** Update comment for an issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-updateComment)
+   * @name updateComment
+   * @function
+   * @param {string} issueId - Issue with the comment
+   * @param {string} commentId - Comment that is updated
+   * @param {string} comment - string containing new comment
+   * @param {object} [options={}] - extra options
+   */
+  updateComment(issueId, commentId, comment, options = {}) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/comment/${commentId}`,
+    }), {
+      body: {
+        body: comment,
+        ...options,
+      },
+      method: 'PUT',
+      followAllRedirects: true,
+    }));
+  }
+
   /** Add a worklog to a project
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id291617)
    * @name addWorklog
@@ -712,14 +971,18 @@ export default class JiraApi {
    * @param {object} newEstimate - the new value for the remaining estimate field
    */
   addWorklog(issueId, worklog, newEstimate) {
-    return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}/worklog`,
-      query: (newEstimate) ? { adjustEstimate: 'new', newEstimate } : null,
-    }), {
+    const header = {
+      uri: this.makeUri({
+        pathname: `/issue/${issueId}/worklog`,
+        query: { adjustEstimate: 'new', newEstimate },
+      }),
       body: worklog,
       method: 'POST',
-      followAllRedirects: true,
-    }));
+      'Content-Type': 'application/json',
+      json: true,
+    };
+
+    return this.doRequest(header);
   }
 
   /** Delete worklog from issue
@@ -736,7 +999,7 @@ export default class JiraApi {
       }), {
         method: 'DELETE',
         followAllRedirects: true,
-      }
+      },
     ));
   }
 
@@ -849,6 +1112,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Notify people related to issue
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-notify)
+   * @name issueNotify
+   * @function
+   * @param {string} issueId - issue id
+   * @param {object} notificationBody - properly formatted body
+   */
+  issueNotify(issueId, notificationBody) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/notify`,
+    }), {
+      method: 'POST',
+      body: notificationBody,
+    }));
+  }
+
   /** Get list of possible statuses
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#api/2/status-getStatuses)
    * @name listStatus
@@ -857,6 +1136,392 @@ export default class JiraApi {
   listStatus() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/status',
+    })));
+  }
+
+  /** Get a Dev-Status summary by issue ID
+   * @name getDevStatusSummary
+   * @function
+   * @param {string} issueId - id of issue to get
+   */
+  getDevStatusSummary(issueId) {
+    return this.doRequest(this.makeRequestHeader(this.makeDevStatusUri({
+      pathname: '/summary',
+      query: {
+        issueId,
+      },
+    })));
+  }
+
+  /** Get a Dev-Status detail by issue ID
+   * @name getDevStatusDetail
+   * @function
+   * @param {string} issueId - id of issue to get
+   * @param {string} applicationType - type of application (stash, bitbucket)
+   * @param {string} dataType - info to return (repository, pullrequest)
+   */
+  getDevStatusDetail(issueId, applicationType, dataType) {
+    return this.doRequest(this.makeRequestHeader(this.makeDevStatusUri({
+      pathname: '/detail',
+      query: {
+        issueId,
+        applicationType,
+        dataType,
+      },
+    })));
+  }
+
+  /** Move issues to backlog
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/backlog-moveIssuesToBacklog)
+   * @name moveToBacklog
+   * @function
+   * @param {array} issues - id or key of issues to get
+   */
+  moveToBacklog(issues) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/backlog/issue',
+    }), {
+      method: 'POST',
+      body: {
+        issues,
+      },
+    }));
+  }
+
+  /** Get all boards
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getAllBoards)
+   * @name getAllBoards
+   * @function
+   * @param {number} [startAt=0] - The starting index of the returned boards.
+   * @param {number} [maxResults=50] - The maximum number of boards to return per page.
+   * @param {string} [type] - Filters results to boards of the specified type.
+   * @param {string} [name] - Filters results to boards that match the specified name.
+   * @param {string} [projectKeyOrId] - Filters results to boards that are relevant to a project.
+   */
+  getAllBoards(startAt = 0, maxResults = 50, type, name, projectKeyOrId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/board',
+      query: {
+        startAt,
+        maxResults,
+        type,
+        name,
+        projectKeyOrId,
+      },
+    })));
+  }
+
+  /** Create Board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-createBoard)
+   * @name createBoard
+   * @function
+   * @param {object} boardBody - Board name, type and filter Id is required.
+   * @param {string} boardBody.type - Valid values: scrum, kanban
+   * @param {string} boardBody.name - Must be less than 255 characters.
+   * @param {string} boardBody.filterId - Id of a filter that the user has permissions to view.
+   */
+  createBoard(boardBody) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/board',
+    }), {
+      method: 'POST',
+      body: boardBody,
+    }));
+  }
+
+  /** Get Board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getBoard)
+   * @name getBoard
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getBoard(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}`,
+    })));
+  }
+
+  /** Delete Board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-deleteBoard)
+   * @name deleteBoard
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  deleteBoard(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}`,
+    }), {
+      method: 'DELETE',
+    }));
+  }
+
+  /** Get issues for backlog
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getIssuesForBacklog)
+   * @name getIssuesForBacklog
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getIssuesForBacklog(boardId, startAt = 0, maxResults = 50, jql, validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/backlog`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Get Configuration
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getConfiguration)
+   * @name getConfiguration
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getConfiguration(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/configuration`,
+    })));
+  }
+
+  /** Get issues for board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getIssuesForBoard)
+   * @name getIssuesForBoard
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getIssuesForBoard(boardId, startAt = 0, maxResults = 50, jql, validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Get Epics
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getEpics)
+   * @name getEpics
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned epics. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of epics to return per page. Default: 50.
+   * @param {string} [done] - Filters results to epics that are either done or not done.
+   * Valid values: true, false.
+   */
+  getEpics(boardId, startAt = 0, maxResults = 50, done) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/epic`,
+      query: {
+        startAt,
+        maxResults,
+        done,
+      },
+    })));
+  }
+
+  /** Get board issues for epic
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getIssuesForEpic)
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getIssuesWithoutEpic)
+   * @name getBoardIssuesForEpic
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} epicId - Id of epic to retrieve, specify 'none' to get issues without an epic.
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getBoardIssuesForEpic(boardId, epicId, startAt = 0, maxResults = 50, jql,
+    validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/epic/${epicId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Get Projects
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/project-getProjects)
+   * @name getProjects
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned projects. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of projects to return per page.
+   * Default: 50.
+   */
+  getProjects(boardId, startAt = 0, maxResults = 50) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/project`,
+      query: {
+        startAt,
+        maxResults,
+      },
+    })));
+  }
+
+  /** Get Projects Full
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/project-getProjectsFull)
+   * @name getProjectsFull
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getProjectsFull(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/project/full`,
+    })));
+  }
+
+  /** Get Board Properties Keys
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-getPropertiesKeys)
+   * @name getBoardPropertiesKeys
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   */
+  getBoardPropertiesKeys(boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties`,
+    })));
+  }
+
+  /** Delete Board Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-deleteProperty)
+   * @name deleteBoardProperty
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} propertyKey - Id of property to delete
+   */
+  deleteBoardProperty(boardId, propertyKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties/${propertyKey}`,
+    }), {
+      method: 'DELETE',
+    }));
+  }
+
+  /** Set Board Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-setProperty)
+   * @name setBoardProperty
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} propertyKey - Id of property to delete
+   * @param {string} body - value to set, for objects make sure to stringify first
+   */
+  setBoardProperty(boardId, propertyKey, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties/${propertyKey}`,
+    }), {
+      method: 'PUT',
+      body,
+    }));
+  }
+
+  /** Get Board Property
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/properties-getProperty)
+   * @name getBoardProperty
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} propertyKey - Id of property to retrieve
+   */
+  getBoardProperty(boardId, propertyKey) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/properties/${propertyKey}`,
+    })));
+  }
+
+  /** Get All Sprints
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/sprint-getAllSprints)
+   * @name getAllSprints
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned sprints. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of sprints to return per page.
+   * Default: 50.
+   * @param {string} [state] - Filters results to sprints in specified states.
+   * Valid values: future, active, closed.
+   */
+  getAllSprints(boardId, startAt = 0, maxResults = 50, state) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/sprint`,
+      query: {
+        startAt,
+        maxResults,
+        state,
+      },
+    })));
+  }
+
+  /** Get Board issues for sprint
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/sprint-getIssuesForSprint)
+   * @name getBoardIssuesForSprint
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {string} sprintId - Id of sprint to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned issues. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of issues to return per page. Default: 50.
+   * @param {string} [jql] - Filters results using a JQL query.
+   * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
+   * Default: true.
+   * @param {string} [fields] - The list of fields to return for each issue.
+   */
+  getBoardIssuesForSprint(boardId, sprintId, startAt = 0, maxResults = 50, jql,
+    validateQuery = true, fields) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/sprint/${sprintId}/issue`,
+      query: {
+        startAt,
+        maxResults,
+        jql,
+        validateQuery,
+        fields,
+      },
+    })));
+  }
+
+  /** Get All Versions
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/version-getAllVersions)
+   * @name getAllVersions
+   * @function
+   * @param {string} boardId - Id of board to retrieve
+   * @param {number} [startAt=0] - The starting index of the returned versions. Base index: 0.
+   * @param {number} [maxResults=50] - The maximum number of versions to return per page.
+   * Default: 50.
+   * @param {string} [released] - Filters results to versions that are either released or
+   * unreleased.Valid values: true, false.
+   */
+  getAllVersions(boardId, startAt = 0, maxResults = 50, released) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/board/${boardId}/version`,
+      query: {
+        startAt,
+        maxResults,
+        released,
+      },
     })));
   }
 }
