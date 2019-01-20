@@ -21,7 +21,7 @@ export default class JiraApi {
     this.base = options.base || '';
     this.intermediatePath = options.intermediatePath;
     this.strictSSL = options.hasOwnProperty('strictSSL') ? options.strictSSL : true;
-      // This is so we can fake during unit tests
+    // This is so we can fake during unit tests
     this.request = options.request || request;
     this.webhookVersion = options.webHookVersion || '1.0';
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
@@ -330,7 +330,7 @@ export default class JiraApi {
     })));
   }
 
-/**
+  /**
    * @name createProject
    * @function
    * Create a new Project
@@ -579,7 +579,9 @@ export default class JiraApi {
    * @function
    * @param {SearchUserOptions} options
    */
-  searchUsers({ username, startAt, maxResults, includeActive, includeInactive }) {
+  searchUsers({
+    username, startAt, maxResults, includeActive, includeInactive,
+  }) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user/search',
       query: {
@@ -637,7 +639,8 @@ export default class JiraApi {
   getUsersIssues(username, open) {
     const openJql = open ? ' AND status in (Open, \'In Progress\', Reopened)' : '';
     return this.searchJira(
-      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {});
+      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {},
+    );
   }
 
   /** Add issue to Jira
@@ -774,7 +777,7 @@ export default class JiraApi {
     })));
   }
 
-   /** Add an option for a select list issue field.
+  /** Add an option for a select list issue field.
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field/{fieldKey}/option-createOption)
    * @name createFieldOption
    * @function

@@ -2,9 +2,11 @@
   "source": "./src",
   "destination": "./docs",
   "excludes": ["node_modules"],
-  "experimentalProposal": {
-    "classProperties": true,
-    "objectRestSpread": true
-  },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "esdoc-ecmascript-proposal-plugin",
+      "option": { "objectRestSpread": true, "objectRestSpread": true }
+    },
+    { "name": "esdoc-standard-plugin" }
+  ]
 }
