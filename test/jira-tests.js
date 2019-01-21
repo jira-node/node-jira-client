@@ -341,7 +341,7 @@ describe('Jira API Tests', () => {
   });
 
   describe('Request Functions Tests', () => {
-    async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod) {
+    async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod, returnedValue = 'uri') {
       let dummyRequest = dummyRequestMethod;
       if (!dummyRequest) {
         dummyRequest = async requestOptions => requestOptions;
@@ -363,7 +363,7 @@ describe('Jira API Tests', () => {
         return `${resultObject.uri}?${queryString}`;
       }
 
-      return resultObject.uri;
+      return resultObject[returnedValue];
     }
 
     it('findIssue hits proper url', async () => {
@@ -544,6 +544,11 @@ describe('Jira API Tests', () => {
     it('addWatcher hits proper url', async () => {
       const result = await dummyURLCall('addWatcher', ['ZQ-9001']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/watchers');
+    });
+
+    it('addWatcher sends unquoted string in body', async () => {
+      const result = await dummyURLCall('addWatcher', ['ZQ-9001', 'John Smith'], null, 'body');
+      result.should.eql('John Smith');
     });
 
     it('deleteIssue hits proper url', async () => {
