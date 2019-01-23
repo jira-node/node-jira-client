@@ -6,6 +6,7 @@
     {
       "name": "esdoc-ecmascript-proposal-plugin",
       "option": { "objectRestSpread": true, "objectRestSpread": true }
-    }
+    },
+    { "name": "esdoc-standard-plugin" }
   ]
 }
