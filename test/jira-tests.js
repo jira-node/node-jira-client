@@ -561,6 +561,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/MI-6');
     });
 
+    it('properly creates query params for updateIssue', async () => {
+      const result = await dummyURLCall('updateIssue', ['MI-6', 'someInfo', { notifyUsers: true }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/MI-6?notifyUsers=true');
+    });
+
     it('listComponents hits proper url', async () => {
       const result = await dummyURLCall('listComponents', ['ProjectName']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/ProjectName/components');
