@@ -341,7 +341,7 @@ describe('Jira API Tests', () => {
   });
 
   describe('Request Functions Tests', () => {
-    async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod) {
+    async function dummyURLCall(jiraApiMethodName, functionArguments, dummyRequestMethod, returnedValue = 'uri') {
       let dummyRequest = dummyRequestMethod;
       if (!dummyRequest) {
         dummyRequest = async requestOptions => requestOptions;
@@ -359,11 +359,11 @@ describe('Jira API Tests', () => {
       // uniformly testable
       if (resultObject.qs) {
         const queryString = Object.keys(resultObject.qs).map(x => `${x}=${resultObject.qs[x]}`)
-        .join('&');
+          .join('&');
         return `${resultObject.uri}?${queryString}`;
       }
 
-      return resultObject.uri;
+      return resultObject[returnedValue];
     }
 
     it('findIssue hits proper url', async () => {
@@ -435,7 +435,8 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall(
         'getLastSprintForRapidView',
         ['someRapidViewId'],
-        dummyRequest);
+        dummyRequest,
+      );
 
       result.should.eql(
         'http://jira.somehost.com:8080/rest/greenhopper/1.0/sprintquery/someRapidViewId',
@@ -550,6 +551,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/watchers');
     });
 
+    it('addWatcher sends unquoted string in body', async () => {
+      const result = await dummyURLCall('addWatcher', ['ZQ-9001', 'John Smith'], null, 'body');
+      result.should.eql('John Smith');
+    });
+
     it('deleteIssue hits proper url', async () => {
       const result = await dummyURLCall('deleteIssue', ['FU-69']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/FU-69');
@@ -558,6 +564,11 @@ describe('Jira API Tests', () => {
     it('updateIssue hits proper url', async () => {
       const result = await dummyURLCall('updateIssue', ['MI-6', 'someInfo']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/MI-6');
+    });
+
+    it('properly creates query params for updateIssue', async () => {
+      const result = await dummyURLCall('updateIssue', ['MI-6', 'someInfo', { notifyUsers: true }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/MI-6?notifyUsers=true');
     });
 
     it('listComponents hits proper url', async () => {
@@ -570,9 +581,19 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component');
     });
 
+    it('updateComponent hits proper url', async () => {
+      const result = await dummyURLCall('updateComponent', ['someComponentNumber', 'someComponent']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber');
+    });
+
     it('deleteComponent hits proper url', async () => {
       const result = await dummyURLCall('deleteComponent', ['someComponentNumber']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber');
+    });
+
+    it('deleteComponent hits proper url', async () => {
+      const result = await dummyURLCall('deleteComponent', ['someComponentNumber', 'someComponentName']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber?moveIssuesTo=someComponentName');
     });
 
     // Field APIs Suite Tests
@@ -826,6 +847,31 @@ describe('Jira API Tests', () => {
       it('getAllVersions hits proper url', async () => {
         const result = await dummyURLCall('getAllVersions', ['someBoardId']);
         result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board/someBoardId/version?startAt=0&maxResults=50&released=');
+      });
+
+      it('getEpic hits proper url', async () => {
+        const result = await dummyURLCall('getEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId');
+      });
+
+      it('partiallyUpdateEpic hits proper url', async () => {
+        const result = await dummyURLCall('partiallyUpdateEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId');
+      });
+
+      it('getIssuesForEpic hits proper url', async () => {
+        const result = await dummyURLCall('getIssuesForEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId/issue?startAt=0&maxResults=50&jql=&validateQuery=true&fields=');
+      });
+
+      it('moveIssuesToEpic hits proper url', async () => {
+        const result = await dummyURLCall('moveIssuesToEpic', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId/issue');
+      });
+
+      it('rankEpics hits proper url', async () => {
+        const result = await dummyURLCall('rankEpics', ['someEpicId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/epic/someEpicId/rank');
       });
     });
 
