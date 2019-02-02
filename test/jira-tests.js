@@ -556,6 +556,11 @@ describe('Jira API Tests', () => {
       result.should.eql('John Smith');
     });
 
+    it('getIssueChangelog hits proper url', async () => {
+      const result = await dummyURLCall('getIssueChangelog', ['ZQ-9001']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/changelog');
+    });
+
     it('getIssueWatchers hits proper url', async () => {
       const result = await dummyURLCall('getIssueWatchers', ['ZQ-9001']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/watchers');

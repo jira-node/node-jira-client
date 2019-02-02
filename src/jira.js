@@ -920,6 +920,19 @@ export default class JiraApi {
   }
 
   /**
+   * @name getIssueChangelog
+   * @function
+   * List all changes for an issue, sorted by date, starting from the latest
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/changelog)
+   * @param {string} issueNumber - The issue number to search for including the project key
+   */
+  getIssueChangelog(issueNumber) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueNumber}/changelog`,
+    })));
+  }
+
+  /**
    * @name getIssueWatchers
    * @function
    * List all watchers for an issue
