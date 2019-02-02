@@ -555,6 +555,7 @@ export default class JiraApi {
    * @param {integer} [optional.startAt=0]: optional starting index number
    * @param {integer} [optional.maxResults=50]: optional ending index number
    * @param {array} [optional.fields]: optional array of string names of desired fields
+   * @param {array} [optional.expand]: optional array of string names of desired expand nodes
    */
   searchJira(searchString, optional = {}) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
