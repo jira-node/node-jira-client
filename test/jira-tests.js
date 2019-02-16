@@ -894,5 +894,10 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('issueNotify', ['someIssueId', {}]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueId/notify');
     });
+
+    it('getServerInfo hits proper url', async () => {
+      const result = await dummyURLCall('getServerInfo');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/serverInfo');
+    });
   });
 });

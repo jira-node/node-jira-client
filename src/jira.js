@@ -1699,4 +1699,16 @@ export default class JiraApi {
       body,
     }));
   }
+
+  /**
+   * @name getServerInfo
+   * @function
+   * Get server info
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-serverInfo-get)
+   */
+  getServerInfo() {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/serverInfo',
+    })));
+  }
 }
