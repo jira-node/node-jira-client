@@ -899,5 +899,10 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('getServerInfo');
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/serverInfo');
     });
+
+    it('moveVersion hits proper url', async () => {
+      const result = await dummyURLCall('moveVersion', ['myVersion']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/myVersion/move');
+    });
   });
 });
