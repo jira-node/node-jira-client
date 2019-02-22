@@ -704,6 +704,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId');
     });
 
+    it('getIssueWorklogs hits proper url', async () => {
+      const result = await dummyURLCall('getIssueWorklogs', ['someIssueNumber']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog');
+    });
+
     it('listIssueTypes hits proper url', async () => {
       const result = await dummyURLCall('listIssueTypes', []);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issuetype');
