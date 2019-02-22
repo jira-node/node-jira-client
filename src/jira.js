@@ -1106,6 +1106,20 @@ export default class JiraApi {
     ));
   }
 
+  /** Get worklogs list from a given issue
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-worklog-get)
+   * @name getIssueWorklogs
+   * @function
+   * @param {string} issueId - the Id of the issue to find worklogs for
+   */
+  getIssueWorklogs(issueId) {
+    return this.doRequest(this.makeRequestHeader(
+      this.makeUri({
+        pathname: `/issue/${issueId}/worklog`
+      }),
+    ));
+  }
+
   /** List all Issue Types jira knows about
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id295946)
    * @name listIssueTypes
