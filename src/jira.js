@@ -1115,7 +1115,7 @@ export default class JiraApi {
   getIssueWorklogs(issueId) {
     return this.doRequest(this.makeRequestHeader(
       this.makeUri({
-        pathname: `/issue/${issueId}/worklog`
+        pathname: `/issue/${issueId}/worklog`,
       }),
     ));
   }
