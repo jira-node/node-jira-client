@@ -781,7 +781,7 @@ describe('Jira API Tests', () => {
 
       it('getAllBoards hits proper url', async () => {
         const result = await dummyURLCall('getAllBoards');
-        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board?startAt=0&maxResults=50&type=&name=&projectKeyOrId=');
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board?startAt=0&maxResults=50&type=&name=');
       });
 
       it('createBoard hits proper url', async () => {
