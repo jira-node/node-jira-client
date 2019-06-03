@@ -96,7 +96,7 @@ describe('Jira API Tests', () => {
 
       expect(jira.strictSSL).to.equal(false);
     });
-    
+
     it('should allow the user to pass in a certificate authority', () => {
       const jira = new JiraApi(
         getOptions({
