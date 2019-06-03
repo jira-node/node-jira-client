@@ -96,6 +96,16 @@ describe('Jira API Tests', () => {
 
       expect(jira.strictSSL).to.equal(false);
     });
+    
+    it('should allow the user to pass in a certificate authority', () => {
+      const jira = new JiraApi(
+        getOptions({
+          ca: 'fakestring',
+        }),
+      );
+
+      expect(jira.baseOptions.ca).to.equal('fakestring');
+    });
   });
 
   describe('makeRequestHeader Tests', () => {
