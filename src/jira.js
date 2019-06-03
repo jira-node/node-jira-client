@@ -30,7 +30,7 @@ export default class JiraApi {
     if (options.ca) {
       this.baseOptions.ca = options.ca;
     }
-    
+
     if (options.oauth && options.oauth.consumer_key && options.oauth.access_token) {
       this.baseOptions.oauth = {
         consumer_key: options.oauth.consumer_key,
