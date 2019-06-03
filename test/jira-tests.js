@@ -15,6 +15,7 @@ function getOptions(options) {
     oauth: actualOptions.oauth || null,
     intermediatePath: actualOptions.intermediatePath,
     bearer: actualOptions.bearer || null,
+    ca: actualOptions.ca || null,
   };
 }
 
