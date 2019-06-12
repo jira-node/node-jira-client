@@ -15,6 +15,7 @@ function getOptions(options) {
     oauth: actualOptions.oauth || null,
     intermediatePath: actualOptions.intermediatePath,
     bearer: actualOptions.bearer || null,
+    ca: actualOptions.ca || null,
   };
 }
 
@@ -95,6 +96,16 @@ describe('Jira API Tests', () => {
       );
 
       expect(jira.strictSSL).to.equal(false);
+    });
+
+    it('should allow the user to pass in a certificate authority', () => {
+      const jira = new JiraApi(
+        getOptions({
+          ca: 'fakestring',
+        }),
+      );
+
+      expect(jira.baseOptions.ca).to.equal('fakestring');
     });
   });
 
