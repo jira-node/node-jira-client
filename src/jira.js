@@ -305,6 +305,21 @@ export default class JiraApi {
   }
 
   /**
+   * @name downloadAttachment
+   * @function
+   * Download an attachment
+   * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288524)
+   * @param {object} attachment - the attachment
+   */
+  downloadAttachment(attachment) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/attachment/${attachment.id}/${attachment.filename}`,
+      intermediatePath: '/secure',
+    }), { json: false, encoding: null }));
+  }
+
+
+  /**
    * @name getUnresolvedIssueCount
    * @function
    * Get the unresolved issue count

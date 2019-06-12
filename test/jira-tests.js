@@ -402,6 +402,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/PK-100?expand=&fields=transitions,changelog&properties=*all&fieldsByKeys=true');
     });
 
+    it('downloadAttachment hits proper url with attachment id and filename', async () => {
+      const result = await dummyURLCall('downloadAttachment', [{ id: '123456', filename: 'attachment.txt' }]);
+      result.should.eql('http://jira.somehost.com:8080/secure/attachment/123456/attachment.txt');
+    });
+
     it('getUnresolvedIssueCount hits proper url', async () => {
       async function dummyRequest(requestOptions) {
         return { issuesUnresolvedCount: requestOptions };
