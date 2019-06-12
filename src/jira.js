@@ -309,7 +309,7 @@ export default class JiraApi {
    */
   downloadAttachment(attachment) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/attachment/'.concat(attachment.id).concat('/').concat(attachment.filename),
+      pathname: `/attachment/${attachment.id}/${attachment.filename}`,
       intermediatePath: '/secure',
     }), { json: false, encoding: null }));
   }
