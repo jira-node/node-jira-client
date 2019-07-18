@@ -627,6 +627,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber?moveIssuesTo=someComponentName');
     });
 
+    it('relatedIssueCounts hits proper url', async () => {
+      const result = await dummyURLCall('relatedIssueCounts', ['someComponentNumber', 'someComponentName']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/component/someComponentNumber/relatedIssueCounts');
+    });
+
     // Field APIs Suite Tests
     describe('Field APIs Suite Tests', () => {
       it('createCustomField hits proper url', async () => {
