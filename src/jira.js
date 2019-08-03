@@ -840,6 +840,18 @@ export default class JiraApi {
     }));
   }
 
+  /** Get count of issues assigned to the component.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-rest-api-2-component-id-relatedIssueCounts-get)
+   * @name relatedIssueCounts
+   * @function
+   * @param {string} id - Component Id.
+   */
+  relatedIssueCounts(id) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/component/${id}/relatedIssueCounts`,
+    })));
+  }
+
   /** Create custom Jira field
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#api/2/field-createCustomField)
    * @name createCustomField
