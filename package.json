@@ -15,7 +15,7 @@
     "url": "http://github.com/jira-node/node-jira-client"
   },
   "engine": {
-    "node": ">=4.2.2"
+    "node": ">=10.0.0"
   },
   "main": "./lib/jira.js",
   "files": [
@@ -26,7 +26,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.0.0",
+    "@babel/runtime": "^7.6.0",
     "request": "^2.88.0",
     "request-promise": "^4.1.1"
   },
@@ -39,23 +39,23 @@
     "release": "release"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/register": "^7.0.0",
-    "babel-eslint": "^10.0.1",
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/register": "^7.6.0",
+    "babel-eslint": "^10.0.3",
     "babel-plugin-add-module-exports": "^1.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "esdoc": "^1.1.0",
     "esdoc-ecmascript-proposal-plugin": "^1.0.0",
     "esdoc-standard-plugin": "^1.0.0",
-    "eslint": "^5.12.1",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-mocha": "^5.2.1",
-    "mocha": "^5.2.0",
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-mocha": "^6.1.0",
+    "mocha": "^6.2.0",
     "release-script": "^1.0.1"
   },
   "release-script": {

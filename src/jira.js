@@ -379,7 +379,7 @@ export default class JiraApi {
     if (typeof projectName === 'undefined' || projectName === null) return response.views;
 
     const rapidViewResult = response.views
-      .find(x => x.name.toLowerCase() === projectName.toLowerCase());
+      .find((x) => x.name.toLowerCase() === projectName.toLowerCase());
 
     return rapidViewResult;
   }
