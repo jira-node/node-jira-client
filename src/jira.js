@@ -1319,6 +1319,24 @@ export default class JiraApi {
     })));
   }
 
+  /** Get issue
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-getIssue)
+   * @name getIssue
+   * @function
+   * @param {string} issueIdOrKey - Id of issue
+   * @param {string} [fields] - The list of fields to return for each issue.
+   * @param {string} [expand] - A comma-separated list of the parameters to expand.
+   */
+  getIssue(issueIdOrKey, fields, expand) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/issue/${issueIdOrKey}`,
+      query: {
+        fields,
+        expand,
+      },
+    })));
+  }
+
   /** Move issues to backlog
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/backlog-moveIssuesToBacklog)
    * @name moveToBacklog
@@ -1465,6 +1483,23 @@ export default class JiraApi {
     })));
   }
 
+  /** Get issue estimation for board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-getIssueEstimationForBoard)
+   * @name getIssueEstimationForBoard
+   * @function
+   * @param {string} issueIdOrKey - Id of issue
+   * @param {number} boardId - The id of the board required to determine which field
+   * is used for estimation.
+   */
+  getIssueEstimationForBoard(issueIdOrKey, boardId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/issue/${issueIdOrKey}/estimation`,
+      query: {
+        boardId,
+      },
+    })));
+  }
+
   /** Get Epics
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/epic-getEpics)
    * @name getEpics
@@ -1512,6 +1547,42 @@ export default class JiraApi {
         fields,
       },
     })));
+  }
+
+  /** Estimate issue for board
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-estimateIssueForBoard)
+   * @name estimateIssueForBoard
+   * @function
+   * @param {string} issueIdOrKey - Id of issue
+   * @param {number} boardId - The id of the board required to determine which field
+   * is used for estimation.
+   * @param {string} body - value to set
+   */
+  estimateIssueForBoard(issueIdOrKey, boardId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/issue/${issueIdOrKey}/estimation`,
+      query: {
+        boardId,
+      },
+    }), {
+      method: 'PUT',
+      body,
+    }));
+  }
+
+  /** Rank Issues
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/issue-rankIssues)
+   * @name rankIssues
+   * @function
+   * @param {string} body - value to set
+   */
+  rankIssues(body) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: '/issue/rank',
+    }), {
+      method: 'PUT',
+      body,
+    }));
   }
 
   /** Get Projects
