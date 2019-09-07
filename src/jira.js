@@ -1068,6 +1068,23 @@ export default class JiraApi {
     }));
   }
 
+  /** Add a comment to an issue, supports full comment object
+   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
+   * @name addCommentAdvanced
+   * @function
+   * @param {string} issueId - Issue to add a comment to
+   * @param {object} comment - The object containing your comment data
+   */
+  addCommentAdvanced(issueId, comment) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/comment`,
+    }), {
+      body: comment,
+      method: 'POST',
+      followAllRedirects: true,
+    }));
+  }
+
   /** Update comment for an issue
    * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-updateComment)
    * @name updateComment
