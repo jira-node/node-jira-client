@@ -574,7 +574,7 @@ describe('Jira API Tests', () => {
 
     it('getIssueChangelog hits proper url', async () => {
       const result = await dummyURLCall('getIssueChangelog', ['ZQ-9001']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/changelog');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/changelog?startAt=0&maxResults=50');
     });
 
     it('getIssueWatchers hits proper url', async () => {
@@ -732,7 +732,7 @@ describe('Jira API Tests', () => {
 
     it('getIssueWorklogs hits proper url', async () => {
       const result = await dummyURLCall('getIssueWorklogs', ['someIssueNumber']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?startAt=0&maxResults=1000');
     });
 
     it('listIssueTypes hits proper url', async () => {

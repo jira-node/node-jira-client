@@ -975,10 +975,16 @@ export default class JiraApi {
    * List all changes for an issue, sorted by date, starting from the latest
    * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue/{issueIdOrKey}/changelog)
    * @param {string} issueNumber - The issue number to search for including the project key
+   * @param {integer} [startAt=0] - optional starting index number
+   * @param {integer} [maxResults=50] - optional ending index number
    */
-  getIssueChangelog(issueNumber) {
+  getIssueChangelog(issueNumber, startAt = 0, maxResults = 50) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueNumber}/changelog`,
+      query: {
+        startAt,
+        maxResults,
+      },
     })));
   }
 
@@ -1182,11 +1188,17 @@ export default class JiraApi {
    * @name getIssueWorklogs
    * @function
    * @param {string} issueId - the Id of the issue to find worklogs for
+   * @param {integer} [startAt=0] - optional starting index number
+   * @param {integer} [maxResults=1000] - optional ending index number
    */
-  getIssueWorklogs(issueId) {
+  getIssueWorklogs(issueId, startAt = 0, maxResults = 1000) {
     return this.doRequest(this.makeRequestHeader(
       this.makeUri({
         pathname: `/issue/${issueId}/worklog`,
+        query: {
+          startAt,
+          maxResults,
+        },
       }),
     ));
   }
