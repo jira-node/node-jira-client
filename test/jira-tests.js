@@ -730,6 +730,12 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId');
     });
 
+    it('getWorklogs hits proper url', async () => {
+      const result = await dummyURLCall('getWorklogs');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/worklog/list?expand=');
+    });
+
+
     it('getIssueWorklogs hits proper url', async () => {
       const result = await dummyURLCall('getIssueWorklogs', ['someIssueNumber']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?startAt=0&maxResults=1000');

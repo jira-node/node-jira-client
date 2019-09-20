@@ -1183,6 +1183,30 @@ export default class JiraApi {
     ));
   }
 
+  /** Returns worklog details for a list of worklog IDs.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-worklog-list-post)
+   * @name getWorklogs
+   * @function
+   * @param {array} worklogsIDs - a list of worklog IDs.
+   * @param {string} expand - expand to include additional information about worklogs
+   *
+   */
+  getWorklogs(worklogsIDs, expand) {
+    return this.doRequest(this.makeRequestHeader(
+      this.makeUri({
+        pathname: '/worklog/list',
+        query: {
+          expand,
+        },
+      }), {
+        method: 'POST',
+        body: {
+          ids: worklogsIDs,
+        },
+      },
+    ));
+  }
+
   /** Get worklogs list from a given issue
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-issue-issueIdOrKey-worklog-get)
    * @name getIssueWorklogs
