@@ -458,6 +458,17 @@ export default class JiraApi {
     }));
   }
 
+  /** List all issue link types jira knows about
+   * [Jira Doc](https://docs.atlassian.com/software/jira/docs/api/REST/8.5.0/#api/2/issueLinkType-getIssueLinkTypes)
+   * @name listIssueLinkTypes
+   * @function
+   */
+  listIssueLinkTypes() {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/issueLinkType',
+    })));
+  }
+
   /** Retrieves the remote links associated with the given issue.
    * @name getRemoteLinks
    * @function
