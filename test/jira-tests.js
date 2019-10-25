@@ -746,6 +746,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issuetype');
     });
 
+    it('listIssueLinkTypes hits proper url', async () => {
+      const result = await dummyURLCall('listIssueLinkTypes', []);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issueLinkType');
+    });
+
     it('registerWebhook hits proper url', async () => {
       const result = await dummyURLCall('registerWebhook', ['someWebhook']);
       result.should.eql('http://jira.somehost.com:8080/rest/webhooks/1.0/webhook');
