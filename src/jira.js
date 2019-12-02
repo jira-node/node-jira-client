@@ -1194,6 +1194,21 @@ export default class JiraApi {
     ));
   }
 
+  /** Deletes an issue link.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-issueLink-linkId-delete)
+   * @name deleteIssueLink
+   * @function
+   * @param {string} linkId - the Id of the issue link to delete
+   */
+  deleteIssueLink(linkId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issueLink/${linkId}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+    }));
+  }
+
   /** Returns worklog details for a list of worklog IDs.
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-worklog-list-post)
    * @name getWorklogs
