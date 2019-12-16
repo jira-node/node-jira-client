@@ -524,7 +524,7 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id288232)
    * @name createVersion
    * @function
-   * @param {string} version - an object of the new version
+   * @param {object} version - an object of the new version
    */
   createVersion(version) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
@@ -773,7 +773,7 @@ export default class JiraApi {
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290878)
    * @name updateIssue
    * @function
-   * @param {string} issueId - the Id of the issue to delete
+   * @param {string} issueId - the Id of the issue to update
    * @param {object} issueUpdate - update Object as specified by the rest api
    * @param {object} query - adds parameters to the query string
    */
