@@ -1130,13 +1130,34 @@ export default class JiraApi {
    * @function
    * @param {string} issueId - Issue to add a worklog to
    * @param {object} worklog - worklog object from the rest API
-   * @param {object} newEstimate - the new value for the remaining estimate field
+   * @param {object} queryParameters - newEstimate or Query object
    */
-  addWorklog(issueId, worklog, newEstimate = null) {
+  addWorklog(issueId, worklog, queryParameters = null) {
     const query = { adjustEstimate: 'auto' };
-    if (newEstimate) {
-      query.adjustEstimate = 'new';
-      query.newEstimate = newEstimate;
+    
+    if (queryParameters) {
+      if(queryParameters instanceof String){
+        query.adjustEstimate = 'new';
+        query.newEstimate = estimate;
+      }else{
+        if ('adjustEstimate' in queryParameters){
+          if (queryParameters.adjustEstimate === 'leave' || queryParameters.adjustEstimate === 'auto'){
+            query.adjustEstimate = queryParameters.adjustEstimate;
+          }else if(queryParameters.adjustEstimate === 'manual' && ('reduceBy' in queryParameters)){
+            query.adjustEstimate = queryParameters.adjustEstimate;
+            query.reduceBy = queryParameters.reduceBy;
+          }else if(queryParameters.adjustEstimate === 'new' && ('newEstimate' in queryParameters)){
+            query.adjustEstimate = queryParameters.adjustEstimate;
+            query.newEstimate = queryParameters.newEstimate;
+          }
+        }
+        if ('notifyUsers' in queryParameters){
+          query.notifyUsers = queryParameters.notifyUsers;
+        }
+        if ('overrideEditableFlag' in queryParameters){
+          query.overrideEditableFlag = queryParameters.overrideEditableFlag;
+        }
+      }
     }
 
     const header = {
