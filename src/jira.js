@@ -705,6 +705,41 @@ export default class JiraApi {
     );
   }
 
+  /** Returns a user.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-user-get)
+   * @name getUser
+   * @function
+   * @param {string} accountId - The accountId of user to search for
+   * @param {string} expand - The expand for additional info (groups,applicationRoles)
+   */
+  getUser(accountId, expand) {
+    const query = {
+      accountId,
+      expand,
+    };
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+      query,
+    })));
+  }
+
+  /** Returns a list of all (active and inactive) users.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-users-search-get)
+   * @name getUsers
+   * @function
+   * @param {integer} [startAt=0] - The index of the first user to return (0-based)
+   * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
+   */
+  getUsers(startAt = 0, maxResults = 100) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/users',
+      query: {
+        startAt,
+        maxResults,
+      },
+    })));
+  }
+
   /** Add issue to Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290028)
    * @name addNewIssue

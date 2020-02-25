@@ -552,6 +552,16 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');
     });
 
+    it('getUser hits proper url', async () => {
+      const result = await dummyURLCall('getUser', ['some-account-Id', 'groups,applicationRoles']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/user?accountId=some-account-Id&expand=groups,applicationRoles');
+    });
+
+    it('getUsers hits proper url', async () => {
+      const result = await dummyURLCall('getUsers', [0, 50]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/users?startAt=0&maxResults=50');
+    });
+
     it('addNewIssue hits proper url', async () => {
       const result = await dummyURLCall('addNewIssue', ['someIssue']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue');
