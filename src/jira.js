@@ -713,13 +713,12 @@ export default class JiraApi {
    * @param {string} expand - The expand for additional info (groups,applicationRoles)
    */
   getUser(accountId, expand) {
-    const query = {
-      accountId,
-      expand,
-    };
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user',
-      query,
+      query: {
+        accountId,
+        expand,
+      },
     })));
   }
 
