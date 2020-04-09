@@ -726,6 +726,21 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment/someCommentNumber');
     });
 
+    it('getComments hits proper url', async () => {
+      const result = await dummyURLCall('getComments', ['someIssueNumber']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment');
+    });
+
+    it('getComment hits proper url', async () => {
+      const result = await dummyURLCall('getComment', ['someIssueNumber', 'someCommentNumber']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment/someCommentNumber');
+    });
+
+    it('deleteComment hits proper url', async () => {
+      const result = await dummyURLCall('deleteComment', ['someIssueNumber', 'someCommentNumber']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment/someCommentNumber');
+    });
+
     it('addWorklog hits proper url', async () => {
       const result = await dummyURLCall('addWorklog', [
         'someIssueNumber',

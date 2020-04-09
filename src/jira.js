@@ -1158,6 +1158,50 @@ export default class JiraApi {
     }));
   }
 
+  /**
+   * @name getComments
+   * @function
+   * Get Comments by IssueId. 
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-comment-list-post)
+   * @param {number} issueId - this issue this comment is on
+   */
+  getComments(issueId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/comment`,
+    })));
+  }
+
+  /**
+   * @name getComment
+   * @function
+   * Get Comment by Id. 
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-comment-list-post)
+   * @param {number} issueId - this issue this comment is on
+   * @param {number} commentId - the id of the comment
+   */
+  getComment(issueId, commentId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/comment/${commentId}`,
+    })));
+  }
+
+  /**
+   * @name deleteComment
+   * @function
+   * Delete Comments by Id. 
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-comment-list-post)
+   * @param {number} issueId - this issue this comment is on
+   * @param {number} commentId - the id of the comment
+   */
+  deleteComment(issueId, commentId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/comment/${commentId}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+    }));
+  }
+
   /** Add a worklog to a project
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id291617)
    * @name addWorklog
