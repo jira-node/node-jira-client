@@ -142,7 +142,9 @@ export default class JiraApi {
    * Creates a URI object for a given pathname
    * @param {object} [options] - an object containing path information
    */
-  makeUri({ pathname, query, intermediatePath }) {
+  makeUri({
+    pathname, query, intermediatePath, encode = false,
+  }) {
     const intermediateToUse = this.intermediatePath || intermediatePath;
     const tempPath = intermediateToUse || `/rest/api/${this.apiVersion}`;
     const uri = url.format({
@@ -152,7 +154,7 @@ export default class JiraApi {
       pathname: `${this.base}${tempPath}${pathname}`,
       query,
     });
-    return decodeURIComponent(uri);
+    return encode ? encodeURI(uri) : decodeURIComponent(uri);
   }
 
   /**
@@ -315,6 +317,7 @@ export default class JiraApi {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/attachment/${attachment.id}/${attachment.filename}`,
       intermediatePath: '/secure',
+      encode: true,
     }), { json: false, encoding: null }));
   }
 

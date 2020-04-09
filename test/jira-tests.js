@@ -407,6 +407,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/secure/attachment/123456/attachment.txt');
     });
 
+    it('downloadAttachment hits proper url with attachment id and filename with special characters', async () => {
+      const result = await dummyURLCall('downloadAttachment', [{ id: '123456', filename: 'attachment-æøå.txt' }]);
+      result.should.eql('http://jira.somehost.com:8080/secure/attachment/123456/attachment-%C3%A6%C3%B8%C3%A5.txt');
+    });
+
     it('getUnresolvedIssueCount hits proper url', async () => {
       async function dummyRequest(requestOptions) {
         return { issuesUnresolvedCount: requestOptions };
