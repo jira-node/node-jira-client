@@ -788,6 +788,23 @@ export default class JiraApi {
     }));
   }
 
+  /** Change an assignee on an issue
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-rest-api-2-issue-issueIdOrKey-assignee-put)
+   * @name updateAssigneeWithId
+   * @function
+   * @param {string} issueKey - the key of the existing issue
+   * @param {string} userId - the jira username to add as a new assignee to the issue
+   */
+  updateAssigneeWithId(issueKey, userId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueKey}/assignee`,
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: { accountId: userId },
+    }));
+  }
+
   /** Delete issue from Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id290791)
    * @name deleteIssue
