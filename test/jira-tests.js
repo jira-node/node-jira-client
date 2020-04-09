@@ -601,6 +601,11 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('updateAssignee', ['ZQ-9001', 'Assignee']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/assignee');
     });
+    
+    it('updateAssigneeWithId hits proper url', async () => {
+      const result = await dummyURLCall('updateAssigneeWithId', ['ZQ-9001', 'Assignee']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/assignee');
+    });
 
     it('deleteIssue hits proper url', async () => {
       const result = await dummyURLCall('deleteIssue', ['FU-69']);
