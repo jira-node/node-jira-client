@@ -542,9 +542,10 @@ describe('Jira API Tests', () => {
 
     it('searchUsers hits proper url', async () => {
       const result = await dummyURLCall('searchUsers', [{
+        query: 'someOtherUserName',
         username: 'someUserName',
       }]);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/user/search?username=someUserName&startAt=0&maxResults=50&includeActive=true&includeInactive=false');
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/user/search?username=someUserName&query=someOtherUserName&startAt=0&maxResults=50&includeActive=true&includeInactive=false');
     });
 
     it('getUsersInGroup hits proper url', async () => {
