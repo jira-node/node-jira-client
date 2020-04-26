@@ -645,12 +645,13 @@ export default class JiraApi {
    * @param {SearchUserOptions} options
    */
   searchUsers({
-    username, startAt, maxResults, includeActive, includeInactive,
+    username, query, startAt, maxResults, includeActive, includeInactive,
   }) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/user/search',
       query: {
         username,
+        query,
         startAt: startAt || 0,
         maxResults: maxResults || 50,
         includeActive: includeActive || true,
@@ -664,7 +665,13 @@ export default class JiraApi {
   /**
    * @typedef SearchUserOptions
    * @type {object}
-   * @property {string} username - A query string used to search username, name or e-mail address
+   * @property {string} username - (DEPRECATED) A query string used to search username, name or
+   * e-mail address
+   * @property {string} query - A query string that is matched against user attributes
+   * (displayName, and emailAddress) to find relevant users. The string can match the prefix of
+   * the attribute's value. For example, query=john matches a user with a displayName of John
+   * Smith and a user with an emailAddress of johnson@example.com. Required, unless accountId
+   * or property is specified.
    * @property {integer} [startAt=0] - The index of the first user to return (0-based)
    * @property {integer} [maxResults=50] - The maximum number of users to return
    * @property {boolean} [includeActive=true] - If true, then active users are included
