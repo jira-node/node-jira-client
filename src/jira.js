@@ -1190,7 +1190,7 @@ export default class JiraApi {
    * @function
    * Get Comments by IssueId.
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-comment-list-post)
-   * @param {number} issueId - this issue this comment is on
+   * @param {string} issueId - this issue this comment is on
    */
   getComments(issueId) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
@@ -1203,7 +1203,7 @@ export default class JiraApi {
    * @function
    * Get Comment by Id.
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-comment-list-post)
-   * @param {number} issueId - this issue this comment is on
+   * @param {string} issueId - this issue this comment is on
    * @param {number} commentId - the id of the comment
    */
   getComment(issueId, commentId) {
@@ -1217,7 +1217,7 @@ export default class JiraApi {
    * @function
    * Delete Comments by Id.
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-comment-list-post)
-   * @param {number} issueId - this issue this comment is on
+   * @param {string} issueId - this issue this comment is on
    * @param {number} commentId - the id of the comment
    */
   deleteComment(issueId, commentId) {
