@@ -70,7 +70,7 @@ export default class JiraApi {
    * @property {string} [username] - Specify a username for this tool to authenticate all
    * requests with.
    * @property {string} [password] - Specify a password for this tool to authenticate all
-   * requests with. Cloud users need to generate an API token for this value.
+   * requests with. Cloud users need to generate an [API token](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) for this value.
    * @property {string} [apiVersion=2] - What version of the jira rest api is the instance the
    * tool is connecting to?
    * @property {string} [base] - What other url parts exist, if any, before the rest/api/
