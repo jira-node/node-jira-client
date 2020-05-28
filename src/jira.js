@@ -606,9 +606,9 @@ export default class JiraApi {
    * @param {string} searchString - jira query string in JQL
    * @param {object} optional - object containing any of the following properties
    * @param {integer} [optional.startAt=0]: optional starting index number
-   * @param {integer} [optional.maxResults=50]: optional The maximum number of items to 
-   *                  return per page. To manage page size, Jira may return fewer items per 
-   *                  page where a large number of fields are requested. 
+   * @param {integer} [optional.maxResults=50]: optional The maximum number of items to
+   *                  return per page. To manage page size, Jira may return fewer items per
+   *                  page where a large number of fields are requested.
    * @param {array} [optional.fields]: optional array of string names of desired fields
    * @param {array} [optional.expand]: optional array of string names of desired expand nodes
    */
