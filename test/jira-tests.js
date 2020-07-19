@@ -761,6 +761,16 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?adjustEstimate=new&newEstimate=someNewEstimate');
     });
 
+    it('addWorklog hits proper url with adjustEstimate=leave', async () => {
+      const result = await dummyURLCall('addWorklog', [
+        'someIssueNumber',
+        'someWorkLog',
+        '',
+        { adjustEstimate: 'leave' },
+      ]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog?adjustEstimate=leave');
+    });
+
     it('deleteWorklog hits proper url', async () => {
       const result = await dummyURLCall('deleteWorklog', ['someIssueNumber', 'someWorklogId']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId');
