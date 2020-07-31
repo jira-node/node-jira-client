@@ -322,7 +322,6 @@ export default class JiraApi {
     }), { json: false, encoding: null }));
   }
 
-
   /**
    * @name getUnresolvedIssueCount
    * @function
