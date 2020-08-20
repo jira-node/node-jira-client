@@ -1954,6 +1954,19 @@ export default class JiraApi {
     })));
   }
 
+  /** Get Filter
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/filter)
+   * @name getFilter
+   * @function
+   * @param {string} filterId - Id of filter to retrieve
+   */
+
+  getFilter(filterId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/filter/${filterId}`
+    })));
+  }
+
   /** Get Epic
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-getEpic)
    * @name getEpic
