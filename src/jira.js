@@ -1963,7 +1963,7 @@ export default class JiraApi {
 
   getFilter(filterId) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
-      pathname: `/filter/${filterId}`
+      pathname: `/filter/${filterId}`,
     })));
   }
 
