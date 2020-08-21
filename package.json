@@ -34,7 +34,7 @@
     "build": "rm -rf lib && babel src --out-dir lib",
     "docs-build": "rm -rf docs && esdoc -c esdoc.json",
     "lint": "eslint ./",
-    "test": "npm run lint && mocha && npm run docs-build",
+    "test": "npm run lint && mocha --require @babel/register && npm run docs-build",
     "prepublishOnly": "npm run build && npm run docs-build",
     "release": "release"
   },
@@ -55,7 +55,7 @@
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-mocha": "^8.0.0",
-    "mocha": "^6.2.0",
+    "mocha": "^8.1.1",
     "release-script": "^1.0.1"
   },
   "release-script": {
