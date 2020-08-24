@@ -1026,5 +1026,10 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('moveVersion', ['myVersion']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/myVersion/move');
     });
+
+    it('getIssueCreateMetadata hits proper url', async () => {
+      const result = await dummyURLCall('getIssueCreateMetadata', [{ expand: 'projects.issuetypes.fields' }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/createmeta?expand=projects.issuetypes.fields');
+    });
   });
 });

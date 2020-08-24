@@ -2068,4 +2068,24 @@ export default class JiraApi {
       pathname: '/serverInfo',
     })));
   }
+
+  /**
+   * @name getIssueCreateMetadata
+   * @param {object} optional - object containing any of the following properties
+   * @param {array} [optional.projectIds]: optional Array of project ids to return metadata for
+   * @param {array} [optional.projectKeys]: optional Array of project keys to return metadata for
+   * @param {array} [optional.issuetypeIds]: optional Array of issuetype ids to return metadata for
+   * @param {array} [optional.issuetypeNames]: optional Array of issuetype names to return metadata
+   * for
+   * @param {string} [optional.expand]: optional Include additional information about issue
+   * metadata. Valid value is 'projects.issuetypes.fields'
+   * Get metadata for creating an issue.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-createmeta-get)
+   */
+  getIssueCreateMetadata(optional = {}) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/issue/createmeta',
+      query: optional,
+    })));
+  }
 }
