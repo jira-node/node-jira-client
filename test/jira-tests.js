@@ -1031,5 +1031,11 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('getIssueCreateMetadata', [{ expand: 'projects.issuetypes.fields' }]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/createmeta?expand=projects.issuetypes.fields');
     });
+
+    it('genericGet hits proper url', async () => {
+      // Test with field endpoint as a simple example
+      const result = await dummyURLCall('genericGet', ['field']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
+    });
   });
 });
