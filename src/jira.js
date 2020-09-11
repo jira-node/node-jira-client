@@ -2088,6 +2088,7 @@ export default class JiraApi {
       query: optional,
     })));
   }
+
   /** Generic Get Request
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/2/)
    * @name genericGet
@@ -2096,7 +2097,7 @@ export default class JiraApi {
    */
   genericGet(endpoint) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/${endpoint}`
+      pathname: `/${endpoint}`,
     })));
   }
 }
