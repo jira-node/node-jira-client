@@ -926,6 +926,11 @@ describe('Jira API Tests', () => {
         result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board/someBoardId/issue?startAt=0&maxResults=50&jql=&validateQuery=true&fields=');
       });
 
+      it('getFilter hits proper url', async () => {
+        const result = await dummyURLCall('getFilter', ['someFilterId']);
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/filter/someFilterId');
+      });
+
       it('getEpics hits proper url', async () => {
         const result = await dummyURLCall('getEpics', ['someBoardId']);
         result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board/someBoardId/epic?startAt=0&maxResults=50&done=');
@@ -1020,6 +1025,17 @@ describe('Jira API Tests', () => {
     it('moveVersion hits proper url', async () => {
       const result = await dummyURLCall('moveVersion', ['myVersion']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version/myVersion/move');
+    });
+
+    it('getIssueCreateMetadata hits proper url', async () => {
+      const result = await dummyURLCall('getIssueCreateMetadata', [{ expand: 'projects.issuetypes.fields' }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/createmeta?expand=projects.issuetypes.fields');
+    });
+
+    it('genericGet hits proper url', async () => {
+      // Test with field endpoint as a simple example
+      const result = await dummyURLCall('genericGet', ['field']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
     });
   });
 });

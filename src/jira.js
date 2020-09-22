@@ -1964,6 +1964,19 @@ export default class JiraApi {
     })));
   }
 
+  /** Get Filter
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/filter)
+   * @name getFilter
+   * @function
+   * @param {string} filterId - Id of filter to retrieve
+   */
+
+  getFilter(filterId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/filter/${filterId}`,
+    })));
+  }
+
   /** Get Epic
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-getEpic)
    * @name getEpic
@@ -2063,6 +2076,38 @@ export default class JiraApi {
   getServerInfo() {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: '/serverInfo',
+    })));
+  }
+
+  /**
+   * @name getIssueCreateMetadata
+   * @param {object} optional - object containing any of the following properties
+   * @param {array} [optional.projectIds]: optional Array of project ids to return metadata for
+   * @param {array} [optional.projectKeys]: optional Array of project keys to return metadata for
+   * @param {array} [optional.issuetypeIds]: optional Array of issuetype ids to return metadata for
+   * @param {array} [optional.issuetypeNames]: optional Array of issuetype names to return metadata
+   * for
+   * @param {string} [optional.expand]: optional Include additional information about issue
+   * metadata. Valid value is 'projects.issuetypes.fields'
+   * Get metadata for creating an issue.
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-createmeta-get)
+   */
+  getIssueCreateMetadata(optional = {}) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/issue/createmeta',
+      query: optional,
+    })));
+  }
+
+  /** Generic Get Request
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/2/)
+   * @name genericGet
+   * @function
+   * @param {string} endpoint - Rest API endpoint
+   */
+  genericGet(endpoint) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/${endpoint}`,
     })));
   }
 }
