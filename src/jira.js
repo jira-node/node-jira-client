@@ -543,7 +543,7 @@ export default class JiraApi {
    * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#d2e510)
    * @name updateVersion
    * @function
-   * @param {string} version - an new object of the version to update
+   * @param {object} version - an new object of the version to update
    */
   updateVersion(version) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
