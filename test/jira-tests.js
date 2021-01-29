@@ -16,6 +16,7 @@ function getOptions(options) {
     intermediatePath: actualOptions.intermediatePath,
     bearer: actualOptions.bearer || null,
     ca: actualOptions.ca || null,
+    headers: actualOptions.headers || null,
   };
 }
 
@@ -1037,5 +1038,24 @@ describe('Jira API Tests', () => {
       const result = await dummyURLCall('genericGet', ['field']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/field');
     });
+
+    it('Constructor with headers options', () => {
+      const options = getOptions({
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'someUserAgent',
+        },
+      });
+
+      const jira = new JiraApi(options);
+
+      expect(jira.headers).to.eql({
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'someUserAgent',
+      });
+    });
+
   });
 });
