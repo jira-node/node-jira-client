@@ -727,8 +727,12 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment');
     });
 
-    it('addCommentAdvanced hits proper url', async () => {
-      const result = await dummyURLCall('addCommentAdvanced', ['someIssueNumber', 'someComment']);
+    it.only('addComment with options hits proper url', async () => {
+      const commentOptions = {
+        body: 'someComment',
+        visibility: { type: 'role', value: 'Service Desk Team' },
+      };
+      const result = await dummyURLCall('addComment', ['someIssueNumber', commentOptions]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/comment');
     });
 

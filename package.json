@@ -7,7 +7,8 @@
     "Chris Moultrie <chris@moultrie.org>",
     "Lucas Vogelsang <l@lucasvo.com>",
     "Matt Smith <mtscout6+node-jira@gmail.com>",
-    "Anson Wayman <kanoyugoro+node-jira@gmail.com>"
+    "Anson Wayman <kanoyugoro+node-jira@gmail.com>",
+    "Yarden Bar <ayash.jorden+node-jira@gmail.com>"
   ],
   "homepage": "http://github.com/jira-node/node-jira-client",
   "repository": {

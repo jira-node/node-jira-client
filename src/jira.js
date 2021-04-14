@@ -1134,32 +1134,20 @@ export default class JiraApi {
    * @name addComment
    * @function
    * @param {string} issueId - Issue to add a comment to
-   * @param {string} comment - string containing comment
+   * @param {object} commentOrOptions - comment string or comment options object
    */
-  addComment(issueId, comment) {
-    return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueId}/comment`,
-    }), {
-      body: {
-        body: comment,
-      },
-      method: 'POST',
-      followAllRedirects: true,
-    }));
-  }
+  addComment(issueId, commentOrOptions) {
+    let payload;
+    if (typeof (commentOrOptions) === 'string') {
+      payload = { body: commentOrOptions };
+    } else if (typeof commentOrOptions === 'object' && commentOrOptions !== null) {
+      payload = commentOrOptions;
+    }
 
-  /** Add a comment to an issue, supports full comment object
-   * [Jira Doc](https://docs.atlassian.com/jira/REST/latest/#id108798)
-   * @name addCommentAdvanced
-   * @function
-   * @param {string} issueId - Issue to add a comment to
-   * @param {object} comment - The object containing your comment data
-   */
-  addCommentAdvanced(issueId, comment) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/issue/${issueId}/comment`,
     }), {
-      body: comment,
+      body: payload,
       method: 'POST',
       followAllRedirects: true,
     }));
