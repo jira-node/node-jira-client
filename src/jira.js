@@ -323,6 +323,19 @@ export default class JiraApi {
   }
 
   /**
+   * @name deleteAttachment
+   * @function
+   * Remove the attachment
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-attachments/#api-rest-api-3-attachment-id-delete)
+   * @param {string} attachmentId - the attachment id
+   */
+  deleteAttachment(attachmentId) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/attachment/${attachmentId}`,
+    }), { method: 'DELETE', json: false, encoding: null }));
+  }
+
+  /**
    * @name getUnresolvedIssueCount
    * @function
    * Get the unresolved issue count

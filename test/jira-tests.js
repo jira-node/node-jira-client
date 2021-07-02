@@ -412,6 +412,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/secure/attachment/123456/attachment-%C3%A6%C3%B8%C3%A5.txt');
     });
 
+    it('deleteAttachment hits proper url', async () => {
+      const result = await dummyURLCall('deleteAttachment', ['123456']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/attachment/123456');
+    });
+
     it('getUnresolvedIssueCount hits proper url', async () => {
       async function dummyRequest(requestOptions) {
         return { issuesUnresolvedCount: requestOptions };
