@@ -27,6 +27,10 @@ export default class JiraApi {
     this.greenhopperVersion = options.greenhopperVersion || '1.0';
     this.baseOptions = {};
 
+    if (options.headers){
+      this.headers = options.headers;
+    }
+
     if (options.ca) {
       this.baseOptions.ca = options.ca;
     }
@@ -122,13 +126,19 @@ export default class JiraApi {
    * @param {object} [options] - an object containing fields and formatting how the
    */
   makeRequestHeader(uri, options = {}) {
-    return {
+    var optionsRequestHeader = {
       rejectUnauthorized: this.strictSSL,
       method: options.method || 'GET',
       uri,
       json: true,
       ...options,
     };
+
+    if (this.headers){
+      optionsRequestHeader.headers = this.headers;
+    };
+
+    return optionsRequestHeader;
   }
 
   /**
