@@ -1930,9 +1930,10 @@ export default class JiraApi {
    * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
    * Default: true.
    * @param {string} [fields] - The list of fields to return for each issue.
+   * @param {string} [fields] - The list of fields to return for each issue.
    */
   getBoardIssuesForSprint(boardId, sprintId, startAt = 0, maxResults = 50, jql,
-    validateQuery = true, fields) {
+    validateQuery = true, fields, expand) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
       pathname: `/board/${boardId}/sprint/${sprintId}/issue`,
       query: {
@@ -1941,6 +1942,7 @@ export default class JiraApi {
         jql,
         validateQuery,
         fields,
+        expand
       },
     })));
   }
