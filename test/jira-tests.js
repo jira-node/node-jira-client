@@ -983,7 +983,7 @@ describe('Jira API Tests', () => {
 
       it('getBoardIssuesForSprint hits proper url', async () => {
         const result = await dummyURLCall('getBoardIssuesForSprint', ['someBoardId', 'someSprintId']);
-        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board/someBoardId/sprint/someSprintId/issue?startAt=0&maxResults=50&jql=&validateQuery=true&fields=');
+        result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/board/someBoardId/sprint/someSprintId/issue?startAt=0&maxResults=50&jql=&validateQuery=true&fields=&expand=');
       });
 
       it('getAllVersions hits proper url', async () => {
