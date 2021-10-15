@@ -1942,7 +1942,7 @@ export default class JiraApi {
         jql,
         validateQuery,
         fields,
-        expand
+        expand,
       },
     })));
   }
