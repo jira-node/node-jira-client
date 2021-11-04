@@ -484,7 +484,7 @@ describe('Jira API Tests', () => {
 
     it('addIssueToSprint hits proper url', async () => {
       const result = await dummyURLCall('addIssueToSprint', ['someIssueId', 'someSprintId']);
-      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/sprint/someSprintId/issues/add');
+      result.should.eql('http://jira.somehost.com:8080/rest/agile/1.0/sprint/someSprintId/issue');
     });
 
     it('issueLink hits proper url', async () => {
