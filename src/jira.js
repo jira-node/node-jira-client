@@ -512,6 +512,22 @@ export default class JiraApi {
     }));
   }
 
+  /**
+   * @name deleteRemoteLink
+   * @function
+   * Delete a remote link with given issueNumber and id
+   * @param {string} issueNumber - The issue number to delete the remotelink under
+   * @param {string} id the remotelink id 
+   */
+  deleteRemoteLink(issueNumber, id) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueNumber}/remotelink/${id}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+    }));
+  }
+
   /** Get Versions for a project
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#id289653)
    * @name getVersions
@@ -1309,9 +1325,9 @@ export default class JiraApi {
       this.makeUri({
         pathname: `/issue/${issueId}/worklog/${worklogId}`,
       }), {
-        method: 'DELETE',
-        followAllRedirects: true,
-      },
+      method: 'DELETE',
+      followAllRedirects: true,
+    },
     ));
   }
 
@@ -1346,11 +1362,11 @@ export default class JiraApi {
           expand,
         },
       }), {
-        method: 'POST',
-        body: {
-          ids: worklogsIDs,
-        },
+      method: 'POST',
+      body: {
+        ids: worklogsIDs,
       },
+    },
     ));
   }
 
