@@ -441,6 +441,17 @@ export default class JiraApi {
     })));
   }
 
+  /** Get details about a Sprint
+   * @name getSprint
+   * @function
+   * @param {string} sprintId - the id for the sprint view
+   */
+  getSprint(sprintId) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
+      pathname: `/sprint/${sprintId}`,
+    })));
+  }
+
   /** Add an issue to the project's current sprint
    * @name addIssueToSprint
    * @function
@@ -2111,6 +2122,18 @@ export default class JiraApi {
    */
   genericGet(endpoint) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/${endpoint}`,
+    })));
+  }
+
+  /** Generic Get Request to the Agile API
+   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/2/)
+   * @name genericGet
+   * @function
+   * @param {string} endpoint - Rest API endpoint
+   */
+  genericAgileGet(endpoint) {
+    return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
       pathname: `/${endpoint}`,
     })));
   }
