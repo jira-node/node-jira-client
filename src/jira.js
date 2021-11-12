@@ -517,7 +517,7 @@ export default class JiraApi {
    * @function
    * Delete a remote link with given issueNumber and id
    * @param {string} issueNumber - The issue number to delete the remotelink under
-   * @param {string} id the remotelink id 
+   * @param {string} id the remotelink id
    */
   deleteRemoteLink(issueNumber, id) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
@@ -1325,9 +1325,9 @@ export default class JiraApi {
       this.makeUri({
         pathname: `/issue/${issueId}/worklog/${worklogId}`,
       }), {
-      method: 'DELETE',
-      followAllRedirects: true,
-    },
+        method: 'DELETE',
+        followAllRedirects: true,
+      },
     ));
   }
 
@@ -1362,11 +1362,11 @@ export default class JiraApi {
           expand,
         },
       }), {
-      method: 'POST',
-      body: {
-        ids: worklogsIDs,
+        method: 'POST',
+        body: {
+          ids: worklogsIDs,
+        },
       },
-    },
     ));
   }
 
