@@ -751,9 +751,7 @@ export default class JiraApi {
    */
   getUsersIssues(username, open) {
     const openJql = open ? ' AND status in (Open, \'In Progress\', Reopened)' : '';
-    return this.searchJira(
-      `assignee = ${username.replace('@', '\\u0040')}${openJql}`, {},
-    );
+    return this.searchJira(`assignee = ${username.replace('@', '\\u0040')}${openJql}`, {});
   }
 
   /** Returns a user.
@@ -1331,14 +1329,12 @@ export default class JiraApi {
    * @param {string} worklogId - the Id of the worklog in issue to delete
    */
   deleteWorklog(issueId, worklogId) {
-    return this.doRequest(this.makeRequestHeader(
-      this.makeUri({
-        pathname: `/issue/${issueId}/worklog/${worklogId}`,
-      }), {
-        method: 'DELETE',
-        followAllRedirects: true,
-      },
-    ));
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/worklog/${worklogId}`,
+    }), {
+      method: 'DELETE',
+      followAllRedirects: true,
+    }));
   }
 
   /** Deletes an issue link.
@@ -1365,19 +1361,17 @@ export default class JiraApi {
    *
    */
   getWorklogs(worklogsIDs, expand) {
-    return this.doRequest(this.makeRequestHeader(
-      this.makeUri({
-        pathname: '/worklog/list',
-        query: {
-          expand,
-        },
-      }), {
-        method: 'POST',
-        body: {
-          ids: worklogsIDs,
-        },
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/worklog/list',
+      query: {
+        expand,
       },
-    ));
+    }), {
+      method: 'POST',
+      body: {
+        ids: worklogsIDs,
+      },
+    }));
   }
 
   /** Get worklogs list from a given issue
@@ -1784,8 +1778,15 @@ export default class JiraApi {
    * Default: true.
    * @param {string} [fields] - The list of fields to return for each issue.
    */
-  getBoardIssuesForEpic(boardId, epicId, startAt = 0, maxResults = 50, jql,
-    validateQuery = true, fields) {
+  getBoardIssuesForEpic(
+    boardId,
+    epicId,
+    startAt = 0,
+    maxResults = 50,
+    jql,
+    validateQuery = true,
+    fields,
+  ) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
       pathname: `/board/${boardId}/epic/${epicId}/issue`,
       query: {
@@ -1958,8 +1959,16 @@ export default class JiraApi {
    * @param {string} [fields] - The list of fields to return for each issue.
    * @param {string} [fields] - The list of fields to return for each issue.
    */
-  getBoardIssuesForSprint(boardId, sprintId, startAt = 0, maxResults = 50, jql,
-    validateQuery = true, fields, expand) {
+  getBoardIssuesForSprint(
+    boardId,
+    sprintId,
+    startAt = 0,
+    maxResults = 50,
+    jql,
+    validateQuery = true,
+    fields,
+    expand,
+  ) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
       pathname: `/board/${boardId}/sprint/${sprintId}/issue`,
       query: {
@@ -2049,8 +2058,14 @@ export default class JiraApi {
    * Default: true.
    * @param {string} [fields] - The list of fields to return for each issue.
    */
-  getIssuesForEpic(epicId, startAt = 0, maxResults = 50, jql,
-    validateQuery = true, fields) {
+  getIssuesForEpic(
+    epicId,
+    startAt = 0,
+    maxResults = 50,
+    jql,
+    validateQuery = true,
+    fields,
+  ) {
     return this.doRequest(this.makeRequestHeader(this.makeAgileUri({
       pathname: `/epic/${epicId}/issue`,
       query: {
