@@ -1946,7 +1946,7 @@ export default class JiraApi {
   }
 
   /** Get Board issues for sprint
-   * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board/{boardId}/sprint-getIssuesForSprint)
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/software/rest/api-group-board/#api-agile-1-0-board-boardid-sprint-sprintid-issue-get)
    * @name getBoardIssuesForSprint
    * @function
    * @param {string} boardId - Id of board to retrieve
@@ -1957,7 +1957,7 @@ export default class JiraApi {
    * @param {boolean} [validateQuery] - Specifies whether to validate the JQL query or not.
    * Default: true.
    * @param {string} [fields] - The list of fields to return for each issue.
-   * @param {string} [fields] - The list of fields to return for each issue.
+   * @param {string} [expand] - A comma-separated list of the parameters to expand.
    */
   getBoardIssuesForSprint(
     boardId,
