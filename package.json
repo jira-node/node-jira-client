@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.6.0",
-    "request": "^2.88.0",
+    "postman-request": "^2.88.1-postman.30",
     "request-promise": "^4.1.1"
   },
   "scripts": {

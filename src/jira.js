@@ -1,6 +1,18 @@
-import request from 'request-promise';
+import _request from 'postman-request';
 import url from 'url';
 
+function request(uri, options) {
+  return new Promise((resolve, reject) => {
+    _request(uri, options, (err, httpResponse) => {
+      if (err) {
+        reject(err);
+      } else {
+        // for compatibility with request-promise
+        resolve(httpResponse.body);
+      }
+    });
+  });
+}
 /**
  * @name JiraApi
  * @class
