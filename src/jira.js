@@ -1103,10 +1103,11 @@ export default class JiraApi {
    */
   getIssueChangelog(issueNumber, startAt = 0, maxResults = 50) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: `/issue/${issueNumber}/changelog`,
+      pathname: `/issue/${issueNumber}`,
       query: {
         startAt,
         maxResults,
+        expand: "changelog"
       },
     })));
   }
