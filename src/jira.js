@@ -555,10 +555,12 @@ export default class JiraApi {
    * @name getVersions
    * @function
    * @param {string} project - A project key to get versions for
+   * @param {object} query - An object containing the query params
    */
-  getVersions(project) {
+  getVersions(project, query = {}) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/project/${project}/versions`,
+      query,
     })));
   }
 
