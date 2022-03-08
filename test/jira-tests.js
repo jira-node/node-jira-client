@@ -512,6 +512,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject/versions');
     });
 
+    it('getVersions hits proper url with query', async () => {
+      const result = await dummyURLCall('getVersions', ['someProject', { maxResults: 10 }]);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/project/someProject/versions?maxResults=10');
+    });
+
     it('createVersion hits proper url', async () => {
       const result = await dummyURLCall('createVersion', ['someVersion']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/version');
