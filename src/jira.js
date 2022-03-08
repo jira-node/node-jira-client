@@ -558,18 +558,14 @@ export default class JiraApi {
    * @param {object} query - An object containing the query params
    */
   getVersions(project, query = {}) {
-    const {
-      startAt, maxResults, orderBy, query: keyword, status,
-    } = query;
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/project/${project}/versions`,
-      query: {
-        startAt,
-        maxResults,
-        orderBy,
-        query: keyword,
-        status,
-      },
+      query: Object.keys(query).reduce((acc, key) => {
+        if (query[key]) {
+          acc[key] = query[key];
+        }
+        return acc;
+      }, {}),
     })));
   }
 
