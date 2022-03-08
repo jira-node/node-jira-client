@@ -560,12 +560,7 @@ export default class JiraApi {
   getVersions(project, query = {}) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
       pathname: `/project/${project}/versions`,
-      query: Object.keys(query).reduce((acc, key) => {
-        if (query[key]) {
-          acc[key] = query[key];
-        }
-        return acc;
-      }, {}),
+      query,
     })));
   }
 
