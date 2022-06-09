@@ -693,6 +693,22 @@ export default class JiraApi {
     }));
   }
 
+  /** Update a Jira user
+   * [Jira Doc](https://docs.atlassian.com/software/jira/docs/api/REST/latest/#user-updateUser)
+   * @name updateUser
+   * @function
+   * @param {object} user - Properly Formatted User object
+   */
+  updateUser(user) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: user,
+    }));
+  }
+
   /** Search user on Jira
    * [Jira Doc](http://docs.atlassian.com/jira/REST/latest/#d2e3756)
    * @name searchUsers
