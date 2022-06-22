@@ -1,10 +1,14 @@
 {
   "presets": [
-    "es2015",
-    "stage-0"
+    [
+      "@babel/preset-env",
+      {
+        "targets": "maintained node versions"
+      }
+    ]
   ],
   "plugins": [
     "add-module-exports",
-    "transform-runtime"
+    "@babel/plugin-transform-runtime"
   ]
 }

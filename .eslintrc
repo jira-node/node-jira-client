@@ -5,8 +5,9 @@
   "env": {
     "node": true
   },
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "rules": {
+    "default-param-last": 0,
     "no-prototype-builtins": 0,
     "prefer-spread": 0
   }
