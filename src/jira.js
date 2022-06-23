@@ -711,6 +711,22 @@ export default class JiraApi {
       body: user,
     }));
   }
+  
+  /** Update a Jira user
+   * [Jira Doc](https://docs.atlassian.com/software/jira/docs/api/REST/latest/#user-updateUser)
+   * @name updateUser
+   * @function
+   * @param {object} user - Properly Formatted User object
+   */
+     updateUser(user) {
+      return this.doRequest(this.makeRequestHeader(this.makeUri({
+        pathname: '/user',
+      }), {
+        method: 'PUT',
+        followAllRedirects: true,
+        body: user,
+      }));
+    }
 
   /** Delete a Jira user
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-user-delete)
@@ -2145,7 +2161,7 @@ export default class JiraApi {
       },
     }));
   }
-  
+
   /** Get Filter
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/filter)
    * @name getFilter
