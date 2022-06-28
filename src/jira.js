@@ -718,12 +718,12 @@ export default class JiraApi {
    * @function
    * @param {object} user - Properly Formatted User object
    */
-     updateUser(user, userKey) {
+     updateUser(user, key) {
       return this.doRequest(this.makeRequestHeader(this.makeUri({
         pathname: '/user',
-	query: {
-	    userKey,
-	},
+	  query: {
+	      key,
+	  },
       }), {
         method: 'PUT',
         followAllRedirects: true,
