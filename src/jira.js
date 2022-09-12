@@ -7,6 +7,10 @@ function request(uri, options) {
       if (err) {
         reject(err);
       } else {
+        if (httpResponse.statusCode >= 400) {
+          reject(httpResponse.body);
+        }
+
         // for compatibility with request-promise
         resolve(httpResponse.body);
       }
@@ -285,15 +289,19 @@ export default class JiraApi {
       ...requestOptions,
     };
 
-    const response = await this.request(options);
+    try {
+      const response = await this.request(options);
 
-    if (response) {
-      if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
-        throw new Error(response.errorMessages.join(', '));
+      if (response) {
+        if (Array.isArray(response.errorMessages) && response.errorMessages.length > 0) {
+          throw new Error(response.errorMessages.join(', '));
+        }
       }
-    }
 
-    return response;
+      return response;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
   /**
