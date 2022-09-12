@@ -1,4 +1,7 @@
-import JiraApi from '../src/jira';
+import { expect } from 'chai';
+import rewire from 'rewire';
+
+const JiraApi = rewire('../src/jira');
 
 function getOptions(options) {
   const actualOptions = options || {};
@@ -247,20 +250,17 @@ describe('Jira API Tests', () => {
 
   describe('doRequest Tests', () => {
     it('doRequest functions properly in the average case', async () => {
-      const dummyObject = {
-        someKey: 'someValue',
-      };
-      async function dummyRequest() {
-        return dummyObject;
-      }
-      const jira = new JiraApi(
-        getOptions({
-          request: dummyRequest,
-        }),
-      );
+      // eslint-disable-next-line no-underscore-dangle
+      const revert = JiraApi.__set__('_request', (uri, options, callback) => {
+        callback(undefined, { body: 'Successful response!' });
+      });
+
+      const jira = new JiraApi(getOptions());
 
       const response = await jira.doRequest({});
-      response.should.eql(dummyObject);
+      response.should.eql('Successful response!');
+
+      revert();
     });
 
     it('doRequest authenticates properly when specified', async () => {
@@ -297,57 +297,69 @@ describe('Jira API Tests', () => {
     });
 
     it('doRequest throws an error properly', async () => {
-      const dummyObject = {
-        errorMessages: ['some error to throw'],
-      };
-      async function dummyRequest() {
-        return dummyObject;
-      }
+      // eslint-disable-next-line no-underscore-dangle
+      const revert = JiraApi.__set__('_request', (uri, options, callback) => {
+        callback(undefined, {
+          body: {
+            errorMessages: ['some error to throw'],
+          },
+        });
+      });
 
-      const jira = new JiraApi(
-        getOptions({
-          request: dummyRequest,
-        }),
-      );
+      const jira = new JiraApi(getOptions());
 
       await jira.doRequest({})
         .should.eventually.be.rejectedWith('some error to throw');
+
+      revert();
     });
 
     it('doRequest throws a list of errors properly', async () => {
-      const dummyObject = {
-        errorMessages: [
-          'some error to throw',
-          'another error',
-        ],
-      };
-      async function dummyRequest() {
-        return dummyObject;
-      }
+      // eslint-disable-next-line no-underscore-dangle
+      const revert = JiraApi.__set__('_request', (uri, options, callback) => {
+        callback(undefined, {
+          body: {
+            errorMessages: ['some error to throw', 'another error'],
+          },
+        });
+      });
 
-      const jira = new JiraApi(
-        getOptions({
-          request: dummyRequest,
-        }),
-      );
+      const jira = new JiraApi(getOptions());
 
       await jira.doRequest({})
         .should.eventually.be.rejectedWith('some error to throw, another error');
+
+      revert();
     });
 
-    it('doRequest does not throw an error on empty response', (done) => {
-      function dummyRequest() {
-        return Promise.resolve(undefined);
-      }
-      const jira = new JiraApi(
-        getOptions({
-          request: dummyRequest,
-        }),
-      );
+    it('doRequest does not throw an error on empty response', async () => {
+      // eslint-disable-next-line no-underscore-dangle
+      const revert = JiraApi.__set__('_request', (uri, options, callback) => {
+        callback(undefined, {
+          body: undefined,
+        });
+      });
 
-      jira.doRequest({})
-        .should.eventually.be.fulfilled
-        .and.notify(done);
+      const jira = new JiraApi(getOptions());
+
+      const response = await jira.doRequest({});
+      expect(response).to.be.undefined;
+
+      revert();
+    });
+
+    it('doRequest throws an error when request failed', async () => {
+      // eslint-disable-next-line no-underscore-dangle
+      const revert = JiraApi.__set__('_request', (uri, options, callback) => {
+        callback('This is an error message', undefined);
+      });
+
+      const jira = new JiraApi(getOptions());
+
+      await jira.doRequest({})
+        .should.eventually.be.rejectedWith('This is an error message');
+
+      revert();
     });
   });
 

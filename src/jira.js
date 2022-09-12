@@ -1,5 +1,8 @@
-import _request from 'postman-request';
 import url from 'url';
+
+// Need to use require here for testing
+// eslint-disable-next-line no-underscore-dangle
+const _request = require('postman-request');
 
 function request(uri, options) {
   return new Promise((resolve, reject) => {
