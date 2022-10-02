@@ -1362,6 +1362,24 @@ export default class JiraApi {
     }));
   }
 
+  /** Update worklog from issue
+   * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issue-worklogs/#api-rest-api-2-issue-issueidorkey-worklog-id-put)
+   * @name updateWorklog
+   * @function
+   * @param {string} issueId - the Id of the issue to update
+   * @param {string} worklogId - the Id of the worklog in issue to update
+   * @param {string} body - value to set
+   */
+  updateWorklog(issueId, worklogId, body) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: `/issue/${issueId}/worklog/${worklogId}`,
+    }), {
+      method: 'PUT',
+      body,
+      followAllRedirects: true,
+    }));
+  }
+
   /** Deletes an issue link.
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-issueLink-linkId-delete)
    * @name deleteIssueLink
