@@ -798,6 +798,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId');
     });
 
+    it('updateWorklog hits proper url', async () => {
+      const result = await dummyURLCall('updateWorklog', ['someIssueNumber', 'someWorklogId']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/someIssueNumber/worklog/someWorklogId');
+    });
+
     it('deleteIssueLink hits proper url', async () => {
       const result = await dummyURLCall('deleteIssueLink', ['someLinkId']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issueLink/someLinkId');
