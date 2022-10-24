@@ -299,17 +299,17 @@ describe('Jira API Tests', () => {
     it('doRequest throws an error properly', async () => {
       // eslint-disable-next-line no-underscore-dangle
       const revert = JiraApi.__set__('_request', (uri, options, callback) => {
-        callback(undefined, {
-          body: {
+        callback({
+          body: JSON.stringify({
             errorMessages: ['some error to throw'],
-          },
+          }),
         });
       });
 
       const jira = new JiraApi(getOptions());
 
       await jira.doRequest({})
-        .should.eventually.be.rejectedWith('some error to throw');
+        .should.eventually.be.rejectedWith('{"body":"{\\"errorMessages\\":[\\"some error to throw\\"]}"}');
 
       revert();
     });
@@ -317,17 +317,16 @@ describe('Jira API Tests', () => {
     it('doRequest throws a list of errors properly', async () => {
       // eslint-disable-next-line no-underscore-dangle
       const revert = JiraApi.__set__('_request', (uri, options, callback) => {
-        callback(undefined, {
-          body: {
-            errorMessages: ['some error to throw', 'another error'],
-          },
+        callback({
+          body:
+            JSON.stringify({ errorMessages: ['some error to throw', 'another error'] }),
         });
       });
 
       const jira = new JiraApi(getOptions());
 
       await jira.doRequest({})
-        .should.eventually.be.rejectedWith('some error to throw, another error');
+        .should.eventually.be.rejectedWith('{"body":"{\\"errorMessages\\":[\\"some error to throw\\",\\"another error\\"]}"}');
 
       revert();
     });
