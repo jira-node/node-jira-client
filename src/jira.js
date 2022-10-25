@@ -303,7 +303,7 @@ export default class JiraApi {
 
       return response;
     } catch (e) {
-      throw new Error(e);
+      throw new Error(JSON.stringify(e));
     }
   }
 
