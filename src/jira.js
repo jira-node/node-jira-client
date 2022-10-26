@@ -752,14 +752,16 @@ export default class JiraApi {
    * @param {string} groupname - A query string used to search users in group
    * @param {integer} [startAt=0] - The index of the first user to return (0-based)
    * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
+   * @param {boolean} [includeInactiveUsers] - Fetch inactive users too (defaults to false).
    */
-  getUsersInGroup(groupname, startAt = 0, maxResults = 50) {
+  getUsersInGroup(groupname, startAt = 0, maxResults = 50, includeInactiveUsers = false) {
     return this.doRequest(
       this.makeRequestHeader(this.makeUri({
-        pathname: '/group',
+        pathname: '/group/member',
         query: {
           groupname,
           expand: `users[${startAt}:${maxResults}]`,
+          includeInactiveUsers,
         },
       }), {
         followAllRedirects: true,
