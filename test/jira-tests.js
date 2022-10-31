@@ -574,6 +574,11 @@ describe('Jira API Tests', () => {
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/group?groupname=someGroupName&expand=users[0:50]');
     });
 
+    it('getMembersOfGroup hits proper url', async () => {
+      const result = await dummyURLCall('getMembersOfGroup', ['someGroupName']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/group/member?groupname=someGroupName&expand=users[0:50]&includeInactiveUsers=false');
+    });
+
     it('getUsersIssues hits proper url', async () => {
       const result = await dummyURLCall('getUsersIssues', ['someUsername', true]);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/search');

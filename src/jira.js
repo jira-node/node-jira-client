@@ -753,6 +753,9 @@ export default class JiraApi {
    * @param {integer} [startAt=0] - The index of the first user to return (0-based)
    * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
    */
+  /**
+ * @deprecated
+ */
   getUsersInGroup(groupname, startAt = 0, maxResults = 50) {
     return this.doRequest(
       this.makeRequestHeader(this.makeUri({
@@ -760,6 +763,29 @@ export default class JiraApi {
         query: {
           groupname,
           expand: `users[${startAt}:${maxResults}]`,
+        },
+      }), {
+        followAllRedirects: true,
+      }),
+    );
+  }
+
+  /** Get all members of group on Jira
+   * @name getMembersOfGroup
+   * @function
+   * @param {string} groupname - A query string used to search users in group
+   * @param {integer} [startAt=0] - The index of the first user to return (0-based)
+   * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
+   * @param {boolean} [includeInactiveUsers=false] - Fetch inactive users too (defaults to false).
+   */
+  getMembersOfGroup(groupname, startAt = 0, maxResults = 50, includeInactiveUsers = false) {
+    return this.doRequest(
+      this.makeRequestHeader(this.makeUri({
+        pathname: '/group/member',
+        query: {
+          groupname,
+          expand: `users[${startAt}:${maxResults}]`,
+          includeInactiveUsers,
         },
       }), {
         followAllRedirects: true,
