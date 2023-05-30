@@ -829,10 +829,11 @@ export default class JiraApi {
    */
   getUsers(startAt = 0, maxResults = 100) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/users',
+      pathname: this.apiVersion === '2' ? '/user/search' : '/users',
       query: {
         startAt,
         maxResults,
+        ...(this.apiVersion === '2' ? {username: '.', includeInactive: 'true'} : {})
       },
     })));
   }
