@@ -4,22 +4,45 @@ import url from 'url';
 // eslint-disable-next-line no-underscore-dangle
 const _request = require('postman-request');
 
-function request(uri, options) {
+async function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function request(uri, options, retry = true) {
   return new Promise((resolve, reject) => {
-    _request(uri, options, (err, httpResponse) => {
+    _request(uri, options, async (err, httpResponse) => {
       if (err) {
         reject(err);
-      } else {
-        if (httpResponse.statusCode >= 400) {
-          reject(httpResponse.body);
+      } else if (httpResponse.statusCode >= 400) {
+        if (
+          (httpResponse.headers['retry-after'] || httpResponse.statusCode === 429)
+              && retry
+        ) {
+          await wait(parseInt(httpResponse.headers['retry-after'], 10) * 1000);
+          try {
+            const result = await request(uri, options, false);
+            resolve(result);
+          } catch (retryError) {
+            reject(retryError);
+          }
+        } else {
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject({
+            body: httpResponse.body,
+            headers: httpResponse.headers,
+            statusCode: httpResponse.statusCode,
+          });
         }
-
+      } else {
         // for compatibility with request-promise
         resolve(httpResponse.body);
       }
     });
   });
 }
+
 /**
  * @name JiraApi
  * @class
