@@ -711,25 +711,25 @@ export default class JiraApi {
       body: user,
     }));
   }
-  
+
   /** Update a Jira user
    * [Jira Doc](https://docs.atlassian.com/software/jira/docs/api/REST/latest/#user-updateUser)
    * @name updateUser
    * @function
    * @param {object} user - Properly Formatted User object
    */
-     updateUser(user, key) {
-      return this.doRequest(this.makeRequestHeader(this.makeUri({
-        pathname: '/user',
-	  query: {
-	      key,
-	  },
-      }), {
-        method: 'PUT',
-        followAllRedirects: true,
-        body: user,
-      }));
-    }
+  updateUser(user, key) {
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+      pathname: '/user',
+      query: {
+        key,
+      },
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: user,
+    }));
+  }
 
   /** Delete a Jira user
    * [Jira Doc](https://developer.atlassian.com/cloud/jira/platform/rest/v2/#api-api-2-user-delete)
@@ -743,7 +743,7 @@ export default class JiraApi {
     }), {
       method: 'DELETE',
       followAllRedirects: true,
-      query: {accountId: accountId},
+      query: { accountId },
     }));
   }
 
@@ -2078,14 +2078,14 @@ export default class JiraApi {
    */
   createOrganization(name) {
     return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
-      pathname: `/organization`,
+      pathname: '/organization',
     }), {
       method: 'POST',
       followAllRedirects: true,
-      body: {'name': name},
+      body: { name },
       headers: {
-        'X-ExperimentalApi': 'opt-in'
-      }
+        'X-ExperimentalApi': 'opt-in',
+      },
     }));
   }
 
@@ -2132,6 +2132,9 @@ export default class JiraApi {
    * @name getUsersInOrganization
    * @function
    * @param {string} organizationId - The organization indentifier.
+   * @param {number} [start=0] - The starting index of the returned versions. Base index: 0.
+   * @param {number} [limit=50] - The maximum number of versions to return per page.
+   * Default: 50.
    */
   getUsersInOrganization(organizationId, start = 0, limit = 50) {
     return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
@@ -2161,7 +2164,7 @@ export default class JiraApi {
       method: 'POST',
       followAllRedirects: true,
       body: {
-        usernames: usernames,
+        usernames,
       },
       headers: {
         'X-ExperimentalApi': 'opt-in',
@@ -2276,7 +2279,7 @@ export default class JiraApi {
       method: 'DELETE',
       followAllRedirects: true,
       body: {
-        usernames: usernames,
+        usernames,
       },
       headers: {
         'X-ExperimentalApi': 'opt-in',
@@ -2298,13 +2301,14 @@ export default class JiraApi {
       method: 'POST',
       followAllRedirects: true,
       body: {
-        organizationId: organizationId,
+        organizationId,
       },
       headers: {
         'X-ExperimentalApi': 'opt-in',
       },
     }));
   }
+
   /** Rank Epics
    * [Jira Doc](https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/epic-rankEpics)
    * @name rankEpics
