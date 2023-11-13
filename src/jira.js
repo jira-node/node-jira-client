@@ -2133,9 +2133,13 @@ export default class JiraApi {
    * @function
    * @param {string} organizationId - The organization indentifier.
    */
-  getUsersInOrganization(organizationId) {
+  getUsersInOrganization(organizationId, start = 0, limit = 50) {
     return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
       pathname: `/organization/${organizationId}/user`,
+      query: {
+        start,
+        limit,
+      },
     }), {
       headers: {
         'X-ExperimentalApi': 'opt-in',
