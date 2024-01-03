@@ -827,12 +827,13 @@ export default class JiraApi {
    * @param {integer} [startAt=0] - The index of the first user to return (0-based)
    * @param {integer} [maxResults=50] - The maximum number of users to return (defaults to 50).
    */
-  getUsers(startAt = 0, maxResults = 100) {
+  getUsers(startAt = 0, maxResults = 100, local = false) {
     return this.doRequest(this.makeRequestHeader(this.makeUri({
-      pathname: '/users',
+      pathname: this.apiVersion === '2' && local ? '/user/search' : '/users',
       query: {
         startAt,
         maxResults,
+        ...(this.apiVersion === '2' && local ? {username: '.', includeInactive: 'true'} : {})
       },
     })));
   }
