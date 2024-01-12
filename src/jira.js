@@ -2098,6 +2098,7 @@ export default class JiraApi {
    */
   renameOrganization(organizationId, name) {
     return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      intermediatePath: 'rest/servicedesk/1',
       pathname: `/organisations/${organizationId}/update`,
     }), {
       method: 'PUT',
