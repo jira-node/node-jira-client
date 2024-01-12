@@ -2089,6 +2089,26 @@ export default class JiraApi {
     }));
   }
 
+  /** Rename an organization.
+   * [Jira Doc](https://youtu.be/dQw4w9WgXcQ?si=RWwWdNwZ2xBfY9dI)
+   * @name renameOrganization
+   * @function
+   * @param {string} organizationId - The organization identifier.
+   * @param {string} name - The new organization name.
+   */
+  renameOrganization(organizationId, name) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organisations/${organizationId}/update`,
+    }), {
+      method: 'PUT',
+      followAllRedirects: true,
+      body: { newName: name },
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
   /** Get Organizations
    * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getOrganizations)
    * @name getOrganization
