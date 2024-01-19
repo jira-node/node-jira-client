@@ -2112,7 +2112,7 @@ export default class JiraApi {
 
   /** Get Organizations
    * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-getOrganizations)
-   * @name getOrganization
+   * @name getOrganizations
    * @function
    * @param {number} [start=0] - The starting index of the returned versions. Base index: 0.
    * @param {number} [limit=50] - The maximum number of versions to return per page.
@@ -2142,6 +2142,23 @@ export default class JiraApi {
     return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
       pathname: `/organization/${organizationId}`,
     }), {
+      headers: {
+        'X-ExperimentalApi': 'opt-in',
+      },
+    }));
+  }
+
+  /** Delete Organization
+   * [Jira Doc](https://docs.atlassian.com/jira-servicedesk/REST/3.15.1/#servicedeskapi/organization-deleteOrganization)
+   * @name deleteOrganization
+   * @function
+   * @param {string} organizationId - The organization indentifier.
+   */
+  deleteOrganization(organizationId) {
+    return this.doRequest(this.makeRequestHeader(this.makeServiceDeskUri({
+      pathname: `/organization/${organizationId}`,
+    }), {
+      method: 'DELETE',
       headers: {
         'X-ExperimentalApi': 'opt-in',
       },
