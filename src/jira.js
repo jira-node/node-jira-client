@@ -869,6 +869,26 @@ export default class JiraApi {
     }));
   }
 
+  /** Deletes a user as a watcher on an issue
+   * @name deleteWatcher
+   * @function=
+   * @param {string} issueKey - the key of the existing issue
+   * @param {string} accountId - the accountId of user which should be deleted from the watchers
+   */
+  deleteWatcher(issueKey, accountId){ 
+    const accountIdQuery=`accountId=${accountId}`
+    return this.doRequest(this.makeRequestHeader(this.makeUri({
+        pathname:`/issue/${issueKey}/watchers`,
+        query:
+        { 
+          accountIdQuery
+        }
+    }), {
+        method: 'DELETE',
+        followAllRedirects: true,
+    }));
+  }
+
   /** Change an assignee on an issue
    * [Jira Doc](https://docs.atlassian.com/jira/REST/cloud/#api/2/issue-assign)
    * @name assignee
