@@ -614,6 +614,11 @@ describe('Jira API Tests', () => {
       result.should.eql('John Smith');
     });
 
+    it('deleteWatcher hits proper url', async() => {
+      const result = await dummyURLCall('deleteWatcher', ['ZQ-9001', 'some-account-Id']);
+      result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/watchers?accountId=some-account-Id')
+    });
+
     it('getIssueChangelog hits proper url', async () => {
       const result = await dummyURLCall('getIssueChangelog', ['ZQ-9001']);
       result.should.eql('http://jira.somehost.com:8080/rest/api/2.0/issue/ZQ-9001/changelog?startAt=0&maxResults=50');
